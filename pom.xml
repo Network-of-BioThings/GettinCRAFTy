@@ -12,7 +12,7 @@
   <properties>
   </properties>
 
-  <groupId></groupId>
+  <groupId>Network-of-BioThings</groupId>
   <version>0.0.1-SNAPSHOT</version>
   <artifactId>GettinCRAFTy</artifactId>
   <packaging>jar</packaging>
@@ -86,8 +86,10 @@
       </resource>
     </resources>
 
-    <!--
     <plugins>
+
+
+    <!--
       <plugin>
         <groupId>com.theoryinpractise</groupId>
         <artifactId>clojure-maven-plugin</artifactId>
