@@ -1,3 +1,4 @@
+package GettingCRAFTy;
 public class example {
 
     // method main(): ALWAYS the APPLICATION entry point
