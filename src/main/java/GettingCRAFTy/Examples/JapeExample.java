@@ -85,18 +85,33 @@ public class JapeExample  {
 	  Factory.createResource("gate.creole.ontology.impl.sesame.OWLIMOntology", 
 				 fm); 
  
-      // retrieving a list of top classes 
-      Set<OClass> topClasses = ontology.getOClasses(true); 
- 
-      // for all top classes, printing their direct sub classes and print 
-      // their URI or blank node ID in turtle format. 
-      for(OClass c : topClasses) { 
-	  Set<OClass> dcs = c.getSubClasses(OConstants.DIRECT_CLOSURE); 
-	  for(OClass sClass : dcs) { 
-	      System.out.println(sClass.getONodeID().toTurtle()); 
-	      System.out.println(sClass.getLabels());
-	  } 
-      } 
+      // //PRINT ALL THE CLASSES
+      // // retrieving a list of top classes 
+      // Set<OClass> topClasses = ontology.getOClasses(true); 
+      //  // for all top classes, printing their direct sub classes and print 
+      // // their URI or blank node ID in turtle format. 
+      // for(OClass c : topClasses) { 
+      // 	  Set<OClass> dcs = c.getSubClasses(OConstants.DIRECT_CLOSURE); 
+      // 	  for(OClass sClass : dcs) { 
+      // 	      System.out.println(sClass.getONodeID().toTurtle()); 
+      // 	      System.out.println(sClass.getLabels());
+      // 	  } 
+      // } 
+
+
+      // FeatureMap params = Factory.newFeatureMap();  
+      // params.put("listsUrl", listsDefLocation);  
+      // LanguageAnalyser mainGazetteer = (LanguageAnalyser)Factory
+      // 	  .createResource("gate.creole.gazetteer.DefaultGazetteer", params);
+
+      // Then create any number of SharedDefaultGazetteer instances, 
+      // 	  passing this regular gazetteer as a parameter:
+	  
+      // 	  FeatureMap params = Factory.newFeatureMap();  
+      // params.put("bootstrapGazetteer", mainGazetteer);  
+      // LanguageAnalyser sharedGazetteer = (LanguageAnalyser)Factory
+      // 	  .createResource("gate.creole.gazetteer.SharedDefaultGazetteer", params);
+
 
 
       pipeline.add(tokeniser);
@@ -115,8 +130,8 @@ public class JapeExample  {
       // extract results
       System.out.println("Found annotations of the following types: " +
 			 doc.getAnnotations().getAllTypes());
-      System.out.println("Found annotations of the following types: " +
-			 doc.getAnnotations());
+      System.out.println("Number of annotations: " +
+			 doc.getAnnotations().size());
 
 
     System.exit(0);
