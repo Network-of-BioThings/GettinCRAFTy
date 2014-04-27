@@ -112,7 +112,7 @@ public class JapeExample  {
       // LanguageAnalyser sharedGazetteer = (LanguageAnalyser)Factory
       // 	  .createResource("gate.creole.gazetteer.SharedDefaultGazetteer", params);
 
-
+      // testing
 
       pipeline.add(tokeniser);
       //pipeline.add(ontology);
