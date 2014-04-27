@@ -88,8 +88,7 @@
     </resources>
 
     <plugins>
-
-
+      
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>exec-maven-plugin</artifactId>
@@ -111,10 +110,13 @@
 	  <!--
           <mainClass>GettingCRAFTy.example</mainClass>
           <arguments>
-            <argument>-Dgate.home="src/main/resources/plugins"</argument>
-            <argument>-Dgate.site.config="src/main/resources/gate.xml"</argument>
+            <argument>"-Dgate.home=src/main/resources"</argument>
+            <argument>"-Dgate.plugins.home=src/main/resources/plugins"</argument>
+            <argument>"-Dgate.site.config=src/main/resources/gate.xml"</argument>
           </arguments>
+	  -->
 
+	  <!--
 	  <systemProperties>
             <systemProperty>
               <key>gate.home</key>

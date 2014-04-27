@@ -9,5 +9,12 @@ public class example {
 	System.out.println ("Hello World!");
 
 	gate.Gate.init();
+
+	// load ANNIE as an application from a gapp file 
+	// SerialAnalyserController controller = (SerialAnalyserController) 
+	//     PersistenceManager.loadObjectFromFile(new File(new File( 
+	// 							    Gate.getPluginsHome(), ANNIEConstants.PLUGIN_DIR), 
+	// 						   ANNIEConstants.DEFAULT_FILE));
+	
     }
 }
