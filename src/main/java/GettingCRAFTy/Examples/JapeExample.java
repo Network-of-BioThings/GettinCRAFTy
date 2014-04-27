@@ -12,6 +12,7 @@ import gate.corpora.RepositioningInfo;
 import gate.creole.ontology.*;
 import gate.creole.gazetteer.*;
 import gate.creole.gazetteer.DefaultGazetteer;
+import gate.creole.gazetteer.FlexibleGazetteer;
 //import gate.clone.ql.*;
 
 
@@ -180,11 +181,12 @@ public class JapeExample  {
 
       FeatureMap paramsFlexGaz = Factory.newFeatureMap();     
       paramsFlexGaz.put("gazetteerInst",ontGazetteer); 
-      ArrayList inputAnnos = new ArrayList();
-      inputAnnos.add ("Token.root");
-      //inputAnnos.add ("Token.lemma");
-      //inputAnnos.add ("Token.string");
-      paramsFlexGaz.put("inputFeatureNames", inputAnnos);
+      paramsFlexGaz.put("inputFeatureNames","Token.root"); 
+      // ArrayList inputAnnos = new ArrayList();
+      // inputAnnos.add ("Token.root");
+      // //inputAnnos.add ("Token.lemma");
+      // //inputAnnos.add ("Token.string");
+      // //paramsFlexGaz.put("inputFeatureNames", inputAnnos);
 
       LanguageAnalyser flexGazetteer = (LanguageAnalyser)Factory
 	  .createResource("gate.creole.gazetteer.FlexibleGazetteer",paramsFlexGaz);
@@ -208,6 +210,14 @@ public class JapeExample  {
       System.out.println(
        ((gate.creole.gazetteer.DefaultGazetteer)ontGazetteer)
        .lookup("blood cell"));
+
+      System.out.println(
+       ((gate.creole.gazetteer.DefaultGazetteer)ontGazetteer)
+       .lookup("http://purl.obolibrary.org/obo/CL_0000009"));
+
+      System.out.println(
+       ((gate.creole.gazetteer.DefaultGazetteer)ontGazetteer)
+       .lookup("CL_0000009"));
 
       // extract results
       System.out.println("Found annotations of the following types: " +
