@@ -121,7 +121,6 @@ public class JapeExample  {
       // LanguageAnalyser sharedGazetteer = (LanguageAnalyser)Factory
       // 	  .createResource("gate.creole.gazetteer.SharedDefaultGazetteer", params);
 
-<<<<<<< HEAD
       // FeatureMap paramsOntoGaz = Factory.newFeatureMap();     
       // paramsOntoGaz.put("ontology",ontology); 
       // paramsOntoGaz.put("tokeniser",tokenizer);
@@ -131,9 +130,7 @@ public class JapeExample  {
       // 	  .createResource("gate.clone.ql.OntoRootGaz",paramsOntoGaz);            
 
 
-=======
       // testing
->>>>>>> 07d45f4184e5f586147a4a118c171891ed64b094
 
       pipeline.add(tokeniser);
       //pipeline.add(ontology);
