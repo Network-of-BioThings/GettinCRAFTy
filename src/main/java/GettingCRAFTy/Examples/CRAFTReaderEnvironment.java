@@ -1,7 +1,7 @@
 /**
  * 
  */
-package org.topicquests.craft;
+package GettingCRAFTy.Examples;
 import java.io.*;
 import java.util.*;
 /**
