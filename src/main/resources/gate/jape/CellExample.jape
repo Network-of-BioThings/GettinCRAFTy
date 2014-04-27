@@ -1,0 +1,10 @@
+Phase: Cell  
+Input:  Token  
+Options: control = all  
+ 
+Rule: cell 
+ 
+( {Token.string == "cell"}
+):cell 
+-->  
+:cell.Cell = {rule = "Cell", text = :cell@string, size = :cell@length}

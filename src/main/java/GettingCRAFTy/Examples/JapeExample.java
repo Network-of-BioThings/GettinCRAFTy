@@ -42,17 +42,20 @@ public class JapeExample  {
       LanguageAnalyser tokeniser = (LanguageAnalyser)Factory
 	  .createResource("gate.creole.tokeniser.DefaultTokeniser");
 
-      // LanguageAnalyser jape = (LanguageAnalyser)Factory
-      // 	  .createResource("gate.creole.Transducer", 
-      // 			  gate.Utils.featureMap("grammarURL", new File("D:\\path\\to\\my-grammar.jape").toURI().toURL(),
-      // 						"encoding", "UTF-8")); // ensure this matches the file
+      String japeFilePath = "src/main/resources/gate/jape/CellExample.jape";
+
+      LanguageAnalyser jape = (LanguageAnalyser)Factory
+      	  .createResource("gate.creole.Transducer", 
+      			  gate.Utils.featureMap("grammarURL", 
+						new File(japeFilePath).toURI().toURL(),
+      						"encoding", "UTF-8")); 
 
       pipeline.add(tokeniser);
-      //pipeline.add(jape);
+      pipeline.add(jape);
 
       // create document and corpus
       Corpus corpus = Factory.newCorpus(null);
-      Document doc = Factory.newDocument("This is test.");
+      Document doc = Factory.newDocument("This is test. And this is a mention of cell.");
       corpus.add(doc);
       pipeline.setCorpus(corpus);
 
@@ -62,5 +65,7 @@ public class JapeExample  {
       // extract results
       System.out.println("Found annotations of the following types: " +
 			 doc.getAnnotations().getAllTypes());
+      System.out.println("Found annotations of the following types: " +
+			 doc.getAnnotations());
   }
 }
