@@ -51,6 +51,15 @@ public class JapeExample  {
 						new File(japeFilePath).toURI().toURL(),
       						"encoding", "UTF-8")); 
 
+      // LanguageAnalyser ontoGaz = (LanguageAnalyser)Factory
+      // 	  .createResource("gate.creole.OntoRootGaz", 
+      // 			  gate.Utils.featureMap("grammarURL", 
+      // 						new File(japeFilePath).toURI().toURL(),
+      // 						"encoding", "UTF-8")); 
+
+
+
+
       // // Find the directory for the Ontology plugin 
       // 2File pluginHome = 
       // 3 new File(new File(Gate.getGateHome(), "plugins"), "Ontology"); 
@@ -111,6 +120,14 @@ public class JapeExample  {
       // params.put("bootstrapGazetteer", mainGazetteer);  
       // LanguageAnalyser sharedGazetteer = (LanguageAnalyser)Factory
       // 	  .createResource("gate.creole.gazetteer.SharedDefaultGazetteer", params);
+
+      // FeatureMap paramsOntoGaz = Factory.newFeatureMap();     
+      // paramsOntoGaz.put("ontology",ontology); 
+      // paramsOntoGaz.put("tokeniser",tokenizer);
+      // paramsOntoGaz.put("posTagger",this.tagger);
+      // paramsOntoGaz.put("morpher",this.morphologicalAnalyser);     
+      // LanguageAnalyser ontoGaz = (gate.clone.ql.OntoRootGaz)Factory
+      // 	  .createResource("gate.clone.ql.OntoRootGaz",paramsOntoGaz);            
 
 
 
