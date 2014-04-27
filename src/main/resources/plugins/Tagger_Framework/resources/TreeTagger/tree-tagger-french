@@ -1,0 +1,374 @@
+#!/bin/sh
+############################################################
+#        SCRIPT FOR FRENCH PART OF SPEECH TAGGING
+# for Helmut Schmid's TreeTagger with Achim Stein's lexicon
+############################################################
+# Achim Stein
+# Universitaet Stuttgart, Institut fuer Linguistik-Romanistik
+# Keplerstrasse 17, D-70174 Stuttgart
+# e-mail: achim@ims.uni-stuttgart.de
+# October 1997
+###########################################################################
+
+# Use Option -h to display a help screen.
+
+# THESE VARIABLES HAVE TO BE SET:
+
+BIN=/usr/local/durmtools/TreeTagger/bin
+LIB=/usr/local/durmtools/TreeTagger/lib
+
+# set your default options for the Tree Tagger
+TAGGEROPTS="-token -lemma -sgml"
+
+# set the path for the tagger command
+TAGGERCMD=${BIN}/tree-tagger
+
+# set the path for the parameter file
+PARAMETERS=${LIB}/french.par
+
+############################################################
+# The script requires gawk (we used V2.15), tr, grep,
+# the tree-tagger and the parameter file.
+# 
+# Input Files have to be in ISO-Latin-1, SGML-Codes (if any)
+# should be surrounded by carriage returns.
+#
+# WHAT THIS SCRIPT DOES:
+#
+# 1. PRE-PROCESSING:
+# The tokenization converts french text into a one-word-per-line
+# format which complies with our lexicon entries and with the
+# Parameter File(s) we distribute.
+#
+# 2. TAGGING with the options defined below or on the command line
+#
+# 3. POST-PROCESSING:
+# Some frequent errors are eliminated by the awk script following
+# the tagger command.
+#
+# 4. OPTIONALLY (if -m is set) MARKS SENTENCE BOUNDARIES:
+#
+###########################################################################
+
+HELP=0
+FILTER=0
+
+while getopts fho:p: myopts
+do case $myopts in
+   f) FILTER=1
+      TAGGERCMD=cat
+      TAGGEROPTS=""
+      PARAMETERS="";;
+   h) HELP=1;;
+   o) TAGGEROPTS="$OPTARG";;
+   p) PARAMETERS="$OPTARG";;
+   esac
+done
+shift `expr $OPTIND - 1`
+
+
+
+if [ $# -eq 1 ]
+then INPUT=$1
+else INPUT="$*"
+fi
+
+if [ "$HELP" -gt 0 ] || [ $# -gt 1 ];  then
+cat << EOM
+SYNTAX:
+  tree-tagger-french [Script-Options] [-o 'TreeTagger options'] [input]
+DESCRIPTION:
+- tokenizes and morphologically analyzes French texts
+- corrects the results
+- reads from stdin (unless input is specified), writes to stdout
+- requires Helmut Schmid's TreeTagger
+- requires Gnu Awk (Tested with gawk version 2.15, patchlevel 4)
+OPTIONS:
+ -p file   parameter file (Default: $PARAMETERS)
+TREETAGGER-OPTIONS:
+EOM
+$TAGGERCMD
+exit
+fi
+
+####### Tokenization for French texts
+cat -s $INPUT |\
+
+gawk '
+# SGML-Codes
+/^<.*>$/ { gsub(/ /, "~"); print; next }
+/<.*>/ {
+   gsub(/>/, "> ")
+}
+{
+# cut punctuation off
+  gsub(/\047/, "\047 ")
+  gsub(/  *%/, "%")
+  gsub(/\.\.\./, " ___ ")
+  gsub(/"/, " & ")
+  gsub(/[\.,;:!\?\)\]]/, " &")
+  gsub(/[\(\[]/, "& ")
+  gsub(/___/, "...")
+  gsub(/\#/, "")
+  gsub(/---?/, " - ")
+# Strip leading and trailing spaces
+  gsub(/^ */, "")
+  gsub(/ *$/, "")
+}
+{ print }' |\
+
+# One word per line
+
+tr ' ' '\12' |\
+grep -v '^$' |\
+
+
+
+############# Handle exceptions:
+
+gawk '
+
+# Abbreviations which are in the lexicon/parameter file)
+$0~/^\.$/ && p1~/^\*?(\..|Ets|Inc|M|MM|Mme|Mlle|Mr|etc|tél)$/ { append(N) }
+$0~/^(er|ère)$/ && p1~/^[1Ii]$/ { append(N) }
+$0~/^nde?$/ && p1~/^(2|II|ii)$/ { append(N) }
+
+# Abbreviations of type "U.e.f.a." and telephone numbers
+$0~/^\.[^\.]/ { append(N) }
+# decimal numbers
+$0~/^,[0-9]+/ && p1~/[0-9]+/ { append(N) }
+# append series of numbers (e.g. 300 000)
+$0~/^[0-9]+$/ && p1~/^[0-9]+$/ { append(N) }
+
+# print the remaining cases
+{printf "\n%s", $0; stack(N)}
+END {printf "\n"}
+
+function append(N) {
+  printf"%s", $0
+  stack(N); next
+}
+function append2(N) {
+  printf"_%s\n%s", $0, f1
+  p1=$0; $0=f1
+  stack(N); next
+}
+function stack(N) {
+  p1=$0
+}
+' |\
+
+# Hyphens
+
+gawk '
+############### Do not separate (forms are in the lexicon)
+
+$1~/^([mM]oi|\
+[tT]oi|\
+[lL]ui|\
+[eE]lle|\
+[nN]ous|\
+[vV]ous|\
+[eE]ux|\
+[eE]lles)-mêmes?$/ {
+  drucke($0)
+next
+}
+
+$1~/^([cC]elle|\
+[cC]elles|\
+[cC]elui|\
+[cC]eux|\
+[pP]ar)-(ci|là)$/ {
+  drucke($0)
+next
+}
+
+$1~/^rendez-vous|garde-à-vous$/ {
+  drucke($0)
+next
+}
+
+################ Separate: e.g. -il, -t-il
+
+$1 ~ /-(ce|ci|là|elle|elles|il|ils|je|la|le|les|leur|lui|même|mêmes|m\047|moi|nous|on|toi|tu|t\047|vous|en|y)$/ && (substr($1, 1, 1) != "-") {
+  max = split($1, wort, "-")
+   print lastword; lastword=""
+    print wort[1]
+      for(i=2; i<=max; i++) {
+	if(wort[i] == "t") {
+	  printf "-" wort[i]      # ohne CR: -t-elle ist Lexikoneintrag
+	    continue
+	}
+	print "-" wort[i]
+      }
+     next
+}
+
+############## Append words which should not be separated
+
+$1 ~ /^hui$/ {
+  if(match(lastword, /^[aA]ujourd\047$/)==1) joinwithlast($1)
+}
+
+$1 ~ /^est-à-dire$/ {
+  if(match(lastword, /^[cC]\047$/)==1) joinwithlast($1)
+}
+
+$1 ~ /^(abord|ailleurs|après|autant)$/ {
+  if(match(lastword, /^[dD]\047$/)==1) joinwithlast($1)
+}
+
+$1 ~ /^oeuvres?$/ {
+  if(match(lastword, /^d\047$/)==1) joinwithlast($1)
+}
+
+$1 ~ /^%$/ {
+  if(match(lastword, /^[0-9,\.]+$/)==1) joinwithlast($1)
+}
+
+# grand`père
+$1 ~ /^[gG]rand\047$/ {
+  drucke(N)
+   printf $0
+   getline f1
+    if(match(f1, /mère|père/) == 1) print f1
+      else {printf "\n"; lastword=f1}
+      next
+}
+# p`tit
+$1 ~ /^p\047$/ {
+  drucke(N)
+   printf $0
+   getline f1
+    if(match(f1, /tit/) == 1) print f1
+      else {printf "\n"; lastword=f1}
+      next
+}
+# quelqu`un
+$1 ~ /^[qQ]uelqu\047$/ {
+  drucke(N)
+   printf $0
+   getline f1
+    if(match(f1, /un/) == 1) print f1
+      else {printf "\n"; lastword=f1}
+      next
+}
+# entr`aimer
+$1 ~ /^[eE]ntr\047$/ {
+  drucke(N)
+   printf $0
+   getline f1
+    print f1
+     lastword=f1
+      next
+}
+# Mam`zelle
+$1 ~ /^[mM]am\047$/ {
+  drucke(N)
+   printf $0
+   getline f1
+    if(match(f1, /zelle/) == 1) print f1
+      else {printf "\n"; lastword=f1}
+      next
+}
+# v`là
+$1 ~ /^[vV]\047$/ {
+  drucke(N)
+   printf $0
+   getline f1
+    if(match(f1, /là/) == 1) print f1
+      else {printf "\n"; lastword=f1}
+      next
+}
+
+############## Default
+
+{ drucke($0) }
+
+END { print lastword }
+
+############# functions
+
+function drucke(N) {
+  if(NR>1) {
+    if(lastword != "") print lastword
+  }
+  lastword = N
+}
+
+function joinwithlast(N) {
+  printf lastword
+    lastword = N
+      next
+}'  |\
+
+
+
+$TAGGERCMD $PARAMETERS $TAGGEROPTS  |\
+
+
+###################  Improvement of the Tagging Results
+
+gawk '
+
+# Fehler 1: VER: statt VER:aux
+# Regel:  ersetze, wenn VER-VER oder VER-ADV-VER oder 
+# Effekt: +0.04%
+$2~/VER:[^a]/ && $3~/\352tre|avoir/{
+  p1 = $0
+  getline f1
+  if( (getline f2) == 0) {
+    print p1; print f1; last=f1; next
+  } 
+  if((match(f1, /VER:pper/)>0) || (match(f2, /VER:pper/)>0)) {
+    gsub(/VER:/, "VER:aux:", p1)
+    print p1
+    print f1
+    print f2; last=f2
+    count1++; next
+  }
+  print p1; print f1; print f2; last=f2; next
+}
+
+# Fehler 3: pour PRE statt CON:sub
+# Regel:  ersetze, wenn direkt danach ein VERb steht
+# Effekt: +0,09%
+$1~/^pour/ && $2~/PRE/ {
+  p1 = $0
+  getline f1
+  if(match(f1, /VER:/)>0) {
+    gsub(/PRE/, "CON:sub", p1)
+    print p1
+    print f1; last=f1
+    count3++; next
+  }
+  print p1; print f1; last=f1; next
+}
+
+# Fehler 4: grâce à/au/aux
+# Regel:  ersetze, wenn danach à kommt
+# Effekt: +0.06%
+$1~/^gr\342ce/ {
+  p1 = $0
+  getline f1
+  if(match(f1, /(\340|au|aux)/)>0) {
+    gsub(/NOM:femi:sg/, "PRE:1st", p1)
+    gsub(/PRE:det:(femi|masc):(pl|sg)/, "&:2nd", f1)
+    gsub(/NOM/, "PRE:1st", p1)
+    gsub(/PRE:det$/, "PRE:det:2nd", f1)
+    print p1
+    print f1; last=f1
+    count20++; next
+  }
+  print p1; print f1; last=f1; next
+}
+
+{print;last=$0}
+END {
+  printf"Rule based modification:\n" > "/dev/stderr"
+  printf"-- VER->VER:aux:                    %d\n", count1 > "/dev/stderr"
+  printf"-- PRE->CON:sub:                    %d\n", count3 > "/dev/stderr"
+  printf"-- grâce à: NOM->PRE:1st            %d\n", count20 > "/dev/stderr"
+}
+'

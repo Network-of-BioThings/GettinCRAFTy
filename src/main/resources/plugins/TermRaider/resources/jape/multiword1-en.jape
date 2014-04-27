@@ -1,0 +1,406 @@
+/*
+* MULTIWORD RECOGNIZER 
+
+* Annotates text with:
+* - the annotation type "MultiWord" and its attribute "multi_type".
+* - head and modifier information
+* - possessor and possessee information
+* - prepositions heading PPs
+* - head nouns of subcategorised NPs within PPs
+
+* Recognizes embeddings of multiwords within multiwords
+
+* Language: English
+
+* Requires tokenization, sentence splitting and tagging.
+*
+* Copyright (c), 2011, The University of Sheffield.
+*
+*  This file is part of GATE (see http://gate.ac.uk/), and is free
+*  software, licenced under the GNU LESSER GENERAL PUBLIC LICENSE,
+*  Version 3, 2007,
+*  also available at http://gate.ac.uk/gate/licence.html).
+*
+* Wim Peters
+* GATE group
+* Department of Computer Science
+* University of Sheffield, UK
+*
+* Linguistic filter rules:
+*
+* compounding_nn	(a)*nn
+* compounding_nnn	(a)*n(a)*(n)(n)
+* compounding_n_and_nn	(a)*n and/or (a)*(n)(n)
+* npn			(a)*(POSSESSIVE)*(n)+p(a)*(n)+
+*/
+
+Phase:multiword
+Input: Token Split
+Options: control = all
+
+Macro: NOUN
+(
+   {Token.category ==~ "N.*", Token.kind != "punctuation"}
+)
+
+
+Macro:NOUN_NOT_TINY
+(
+ {Token.category ==~ "N.*", Token.kind != "punctuation", Token.length > 1}
+)
+
+
+Macro: ADJECTIVE_STRICT
+({Token.category ==~ "JJ.*", Token.kind != "punctuation"})
+
+
+Macro: ADJECTIVE_MEDIUM
+(  {Token.category ==~ "JJ.*", Token.kind != "punctuation"}
+ | {Token.category == "VBG"}
+ | {Token.category == "VBN"}
+)
+
+
+Macro: ADJECTIVE
+(  {Token.category ==~ "JJ.*", Token.kind != "punctuation"}
+ | {Token.category == "VBG"}
+ | {Token.category == "VBN"}
+ | {Token.category == "CD"}
+)
+
+
+// Pronoun:
+// PN, PN$, PP$, PP$$, PPL, PPLS, PPO, PPS, PPSS -> POS-Tags of Hepple Tag Set
+Macro: PRONOUN
+(
+ {Token.category == "PP"}
+ | {Token.category == "PRP"}
+ | {Token.category == "PRP$"}
+ | {Token.category == "PRPR$"}
+)
+
+
+// Verbs:
+// VB, VBD, VBG, VBN, VBZ -> POS-Tags of Hepple Tag Set
+Macro: VERB
+(
+ {Token.category == "VB", Token.kind != "punctuation"}
+ | {Token.category == "VBD", Token.kind != "punctuation"}
+ | {Token.category == "VBG", Token.kind != "punctuation"}
+ | {Token.category == "VBN", Token.kind != "punctuation"}
+ | {Token.category == "VBP", Token.kind != "punctuation"}
+ | {Token.category == "VD", Token.kind != "punctuation"}
+)
+
+
+Macro: CONTEXT1
+(
+   {Token.category == RB} | {Token.category == RBS} 
+ | {Token.category == VB} | {Token.category == VBP} 
+ | {Token.category == VBG} 
+ | {Token.category == IN}  | {Token.category == WDT} 
+ | {Token.category == RP}  | {Token.category == TO} 
+ | {Token.category == DT}  | {Token.category == "PRP$"} 
+ | {Token.category == RBS} | {Token.category == MD} 
+ | {Token.category == VD}  | {Token.category == VBZ} 
+ | {Token.category == CC}  | {Token.category == VBD} 
+ | {Token.category == VBN} 
+ | {Token.kind == punctuation}
+)
+
+
+Macro: CONTEXT2
+(
+   {Token.category == RB}  | {Token.category == RBS} 
+ | (VERB) 
+ | {Token.category == IN}  | {Token.category == WDT} 
+ | {Token.category == RP}  | {Token.category == TO} 
+ | {Token.category == DT}  | {Token.category == "PRP$"} 
+ | {Token.category == RBS} | {Token.category == MD} 
+ | {Token.category == CC}  | {Token.kind == punctuation}
+)
+
+
+Rule: compounding_nn
+// preceding adjectives are included
+// No they're not!
+// TODO: check inclusion of adjectives
+(CONTEXT1)
+( (ADJECTIVE_STRICT):amod )*
+( ((NOUN)):nmod
+  ((NOUN)):headnoun
+):pat
+(CONTEXT2)
+-->
+:pat.MultiWord = { multi_type = compounding_nn, head=:headnoun.Token.canonical, nmod=:nmod.Token.canonical},
+:amod.MOD = {modtype=A},
+:nmod.MOD = {modtype=N},
+:headnoun.Head={multi_type = compounding_nn}
+
+
+Rule: compounding_nn_pos
+(CONTEXT1)
+// TODO: check inclusion of adjectives
+// TODO: check the apostrophe situation
+((ADJECTIVE_STRICT):amod)*
+(
+  (((NOUN))?
+  ((NOUN))):possessor
+  {Token.category=="POS"}
+  ({Token.string=="s"})?
+  ( ((ADJECTIVE)*):aamod
+    ((NOUN)*):nmod
+    ((NOUN)):headnoun
+  ):possessee
+):pat
+(CONTEXT2)
+-->
+:pat.MultiWord = { multi_type = compounding_nn, head=:headnoun.Token.canonical, rule=compounding_nn_pos},
+:possessor.Possessor= {head=:possessor.Token.canonical},
+:possessee.Possessee= {head=:headnoun.Token.canonical},
+:amod.MOD = {modtype=A},
+:aamod.MOD = {modtype=A},
+:nmod.MOD = {modtype=N},
+:headnoun.Head={multi_type = compounding_nn}
+
+
+Rule: compounding_nnn
+// preceding adjectives are included
+(CONTEXT1)
+(
+  ( (NOUN_NOT_TINY)
+    (NOUN) ):nmod
+  (NOUN):headnoun
+):pat
+(CONTEXT2)
+-->
+:pat.MultiWord = { multi_type = compounding_nnn, head=:headnoun.Token.canonical},
+:nmod.MOD = {modtype=NN},
+:headnoun.Head={multi_type = compounding_nnn}
+
+
+Rule: compounding_annn
+// preceding adjectives are included
+(CONTEXT1)
+(
+  (ADJECTIVE_MEDIUM):amod
+  ((NOUN)
+  (NOUN)):nmod
+  (NOUN):headnoun
+):pat
+(CONTEXT2)
+-->
+:pat.MultiWord = { multi_type = compounding_annn, head=:headnoun.Token.canonical},
+:amod.MOD = { modtype= :amod.Token.category },
+:headnoun.Head={multi_type = compounding_annn}
+
+
+Rule: compounding_n_and_nn
+(CONTEXT1)
+(
+  ((ADJECTIVE_MEDIUM):amod)?
+  (
+    ((NOUN))
+    {Token.category == CC}
+    ((NOUN))
+  ):nmod
+  ((NOUN)):headnoun
+):pat
+(CONTEXT2)
+-->
+:pat.MultiWord = { multi_type = compounding_n_and_nn, head=:headnoun.Token.canonical},
+:amod.MOD = { modtype = :amod.Token.category },
+:headnoun.Head={ multi_type = compounding_n_and_nn}
+
+
+Rule: compounding_nnn_pos
+// TODO: check the apostrophe situation
+(CONTEXT1)
+(
+  (NOUN):possessor
+  {Token.category == POS}
+  ({Token.string=="s"})?
+  ( ((ADJECTIVE)*((NOUN))):nmod
+    ((NOUN)):headnoun
+  ):possessee
+):pat
+(CONTEXT2)
+-->
+:pat.MultiWord = { multi_type = compounding_nnn, head=:headnoun.Token.canonical, rule=compounding_nnn_pos},
+:possessor.Possessor= {head=:possessor.Token.canonical},
+:possessee.Possessee= {head=:headnoun.Token.canonical},
+:nmod.MOD = {modtype=POSN},
+:headnoun.Head={multi_type = compounding_nnn}
+
+
+Rule: an
+// preceding adjectives are obligatorily included
+(CONTEXT1)
+(
+  (ADJECTIVE_MEDIUM):amod
+  (NOUN):headnoun
+):pat
+(CONTEXT2)
+-->
+:pat.MultiWord = { multi_type = an, head=:headnoun.Token.canonical},
+:amod.MOD = { modtype = :amod.Token.category },
+:headnoun.Head={multi_type = an}
+
+
+Rule: ann1
+// preceding adjectives are obligatorily included
+(CONTEXT1)
+(
+  (ADJECTIVE_MEDIUM):amod
+  ((NOUN)):nmod
+  ((NOUN)):headnoun
+):pat
+(CONTEXT2)
+-->
+:pat.MultiWord = { multi_type = ann1, head=:headnoun.Token.canonical, nmod=:nmod.Token.canonical},
+:amod.MOD = { modtype = :amod.Token.category },
+:headnoun.Head={multi_type = ann1}
+
+
+Rule: ann_gerund
+// preceding adjectives are obligatorily included
+(CONTEXT1)
+(
+({Token.category == VBG}):headnoun
+((NOUN))+
+):pat
+(CONTEXT2)
+-->
+:pat.MultiWord = { multi_type = ann-gerund, head=:headnoun.Token.canonical},
+:headnoun.Head={multi_type = ann_gerund}
+
+
+Rule: npn1
+// preceding adjectives are included
+(CONTEXT1)
+(
+  (ADJECTIVE_MEDIUM):amod
+  ((NOUN)?):nmod
+  (NOUN):headnoun
+  (
+    (({Token.category == IN, Token.string != "that"})+):prepos
+    ({Token.category == DT})?
+    (ADJECTIVE)?
+    (NOUN)?
+    (NOUN)?
+    (NOUN):ehead
+  ):pmod
+):pat
+(CONTEXT2)
+-->
+:pat.MultiWord = {multi_type = npn, head=:headnoun.Token.canonical, nmod=:nmod.Token.canonical, 
+                  ppembhead1=:ehead.Token.canonical, prep=:prepos.Token.string, rule=npn1},
+:nmod.MOD = {modtype=N},
+:pmod.MOD = {modtype=PP},
+:ehead.MOD= {modtype=PPHeadNoun},
+:amod.MOD = { modtype = :amod.Token.category },
+:headnoun.Head={multi_type=npn},
+:ehead.EmbeddedHead1={multi_type=npn}
+
+
+Rule: npn2
+// preceding adjectives are included
+(CONTEXT1)
+(
+   ((ADJECTIVE_MEDIUM)?):amod
+   ((NOUN)?):nmod
+   (NOUN):headnoun
+   (
+     (({Token.category == IN, Token.string != "that"})+):prepos
+     ({Token.category == DT})?
+     (ADJECTIVE)?
+     (NOUN)?
+     (NOUN)?
+     (NOUN):ehead
+     (({Token.category == CC} | {Token.category == IN})):prep2
+     ({Token.category == DT})?
+     ({Token.category == VBG} | {Token.category == JJ})*
+     (NOUN)*
+     (NOUN):ehead2
+   ):pmod
+):pat
+(CONTEXT2)
+-->
+:pat.MultiWord = {multi_type = npn, head=:headnoun.Token.canonical, nmod=:nmod.Token.canonical, 
+                  ppembhead1=:ehead.Token.canonical, ppembhead2=:ehead2.Token.canonical, prep=:prepos.Token.string, prep2=:prep2.Token.string, rule=npn2},
+:nmod.MOD = {modtype=N},
+:pmod.MOD = {modtype=PP},
+:ehead.MOD= {modtype=PPHeadNoun},
+:ehead2.MOD= {modtype=PPHeadNoun},
+:amod.MOD = { modtype = :amod.Token.category },
+:headnoun.Head={multi_type=npn},
+:ehead.EmbeddedHead1={multi_type=npn},
+:ehead2.EmbeddedHead2={multi_type=npn}
+
+
+Rule: npn3
+// preceding adjectives are included
+(CONTEXT1)
+(
+   ((ADJECTIVE_MEDIUM)?):amod
+   ((NOUN)?):nmod
+   (NOUN):headnoun
+   (
+     (({Token.category == IN, Token.string != "that"})+):prepos
+     ({Token.category == DT})?
+     (ADJECTIVE)?
+     (NOUN)?
+     (NOUN)?
+     (NOUN):ehead
+     (({Token.category == CC} | {Token.category == IN})):prep2
+     (
+       ({Token.category == DT})
+       ({Token.category == VBG} | {Token.category == JJ})*
+     )?
+     (NOUN)*
+     (NOUN):ehead2
+     (({Token.category == CC} | {Token.category == IN})):prep3
+     (
+       ({Token.category == DT})
+       ({Token.category == VBG} | {Token.category == JJ})*
+     )?
+     (NOUN)*
+     (NOUN):ehead3
+   ):pmod
+):pat
+(CONTEXT2)
+-->
+:pat.MultiWord = {multi_type = npn, head=:headnoun.Token.canonical, nmod=:nmod.Token.canonical, 
+                  ppembhead1=:ehead.Token.canonical, ppembhead2=:ehead2.Token.canonical, 
+                  ppembhead3=:ehead3.Token.canonical, prep=:prepos.Token.string, 
+                  prep2=:prep2.Token.string, prep3=:prep3.Token.string, rule=npn3},
+:nmod.MOD = {modtype=N},
+:pmod.MOD = {modtype=PP},
+:ehead.MOD= {modtype=PPHeadNoun},
+:ehead2.MOD= {modtype=PPHeadNoun},
+:ehead3.MOD= {modtype=PPHeadNoun},
+:amod.MOD = { modtype = :amod.Token.category },
+:headnoun.Head={multi_type=npn},
+:ehead.EmbeddedHead1={multi_type=npn},
+:ehead2.EmbeddedHead2={multi_type=npn},
+:ehead3.EmbeddedHead3={multi_type=npn}
+
+
+Rule: compounding_nn_pos_pn
+// TODO: check the apostrophe situation
+(CONTEXT1)
+(
+  (NOUN)+
+  {Token.string == "'"}
+  ({Token.string == "s"})?
+  (ADJECTIVE)*
+  ((NOUN)):headnoun
+  ({Token.category == IN, Token.string != "that"})+
+  ( (ADJECTIVE)?
+    ((NOUN))+
+  )+
+):pat
+(CONTEXT2)
+-->
+:pat.MultiWord = { multi_type = compounding_nn, head=:headnoun.Token.canonical, rule=compounding_nn_pos_pn},
+:headnoun.Head={multi_type=nn}

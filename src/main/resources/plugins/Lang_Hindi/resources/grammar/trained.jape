@@ -1,0 +1,73 @@
+/*
+*  trained.jape
+*
+* Copyright (c) 1998-2001, The University of Sheffield.
+*
+*  This file is part of GATE (see http://gate.ac.uk/), and is free
+*  software, licenced under the GNU Library General Public License,
+*  Version 2, June 1991 (in the distribution as file licence.html,
+*  and also available at http://gate.ac.uk/gate/licence.html).
+*
+*  Diana Maynard, 10 Sep 2001
+* 
+*  $Id $
+*/
+
+
+Phase:	Trained
+Input: Lookup Token
+Options: control = appelt debug = false
+
+Rule: LocCMUTrained
+Priority:50
+(
+ {Lookup.majorType == location, Lookup.minorType == cmu-trained}
+ ):loc
+ -->
+:loc.LOC = {kind = cmu-trained, rule = "LocCMUTrained"}
+
+Rule: OrgCMUTrained
+Priority:50
+
+(
+ {Lookup.majorType == organization, Lookup.minorType == cmu-trained}
+ ):loc
+ -->
+:loc.ORG = {kind = cmu-trained, rule = "OrgCMUTrained"}
+
+Rule: PersonCMUTrained
+Priority:50
+
+(
+ {Lookup.majorType == person, Lookup.minorType == cmu-trained}
+ ):loc
+ -->
+:loc.PER = {kind = cmu-trained, rule = "PersonCMUTrained"}
+
+
+Rule: LocTrained
+Priority:100
+(
+ {Lookup.majorType == location, Lookup.minorType == nyu-trained}
+ ):loc
+ -->
+:loc.LOC = {kind = nyu-trained, rule = "LocNYUTrained"}
+
+Rule: OrgTrained
+Priority:100
+
+(
+ {Lookup.majorType == organization, Lookup.minorType == nyu-trained}
+ ):loc
+ -->
+:loc.ORG = {kind = nyu-trained, rule = "OrgNYUTrained"}
+
+Rule: PersonTrained
+Priority:100
+
+(
+ {Lookup.majorType == person, Lookup.minorType == nyu-trained}
+ ):loc
+ -->
+:loc.PER = {kind = nyu-trained, rule = "PersonNYUTrained"}
+

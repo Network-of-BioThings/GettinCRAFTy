@@ -1,0 +1,26 @@
+#!/bin/sh
+
+# Set these paths appropriately
+
+# For Windows, these should be Windows paths with backslashes (which will need
+# single-quoting), not Cygwin-style paths, e.g.
+# BIN='C:\TreeTagger\bin'
+# The script will probably fail if the BIN or LIB directory names contain
+# spaces.  You should install the tree tagger in a directory that does not
+# contain spaces in its path (i.e. not under "Program Files").
+
+BIN=/usr/local/durmtools/TreeTagger/bin
+CMD=/usr/local/durmtools/TreeTagger/cmd
+LIB=/usr/local/durmtools/TreeTagger/lib
+
+TAGGER=${BIN}/tree-tagger
+ABBR_LIST=${LIB}/german-abbreviations
+PARFILE=${LIB}/german.par
+FILTER=${CMD}/filter-german-tags
+
+cat $* |
+# tagging
+$TAGGER $PARFILE -token -lemma -sgml | 
+# error correction
+$FILTER
+

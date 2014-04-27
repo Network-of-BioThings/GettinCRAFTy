@@ -1,0 +1,342 @@
+/*
+*  name_context.jape
+*
+* Copyright (c) 1998-2001, The University of Sheffield.
+*
+*  This file is part of GATE (see http://gate.ac.uk/), and is free
+*  software, licenced under the GNU Library General Public License,
+*  Version 2, June 1991 (in the distribution as file licence.html,
+*  and also available at http://gate.ac.uk/gate/licence.html).
+*
+*  Diana Maynard, 10 Sep 2001
+* 
+*  $Id: name_context.jape 11882 2009-11-03 16:08:22Z markagreenwood $
+*/
+
+Phase:	NameContext
+Input: LookupUnknown Lookup Unknown Person Token Organization JobTitle Break
+Options: control = appelt
+
+Rule: Jobtitle1
+Priority: 50
+(
+ {JobTitle}
+)
+(
+ ({Unknown}|{LookupUnknown})
+ ({Unknown}|{LookupUnknown})?
+)
+:person
+-->
+{
+//removes old "Unknown" annotation and adds a "Person" one
+gate.AnnotationSet person = (gate.AnnotationSet) bindings.get("person");
+gate.FeatureMap features = Factory.newFeatureMap();
+features.put("rule", "JobTitle1");
+outputAS.add(person.firstNode(), person.lastNode(), "Person",
+features);
+outputAS.removeAll(person);
+}
+
+Rule: Jobtitle2
+Priority: 50
+(
+ {JobTitle}
+ {Token.string == ","}
+)
+(
+ ({Unknown}|{LookupUnknown})
+ ({Unknown}|{LookupUnknown})?
+)
+:person
+( 
+ {Token.string == ","}
+)
+-->
+{
+//removes old "Unknown" annotation and adds a "Person" one
+gate.AnnotationSet person = (gate.AnnotationSet) bindings.get("person");
+gate.FeatureMap features = Factory.newFeatureMap();
+features.put("rule", "JobTitle2");
+outputAS.add(person.firstNode(), person.lastNode(), "Person",
+features);
+outputAS.removeAll(person);
+}
+
+Rule: PersonJobtitle2
+Priority: 40
+// X Y, former president
+
+(
+ ({Unknown}|{LookupUnknown})
+ ({Unknown}|{LookupUnknown})?
+):person
+(
+ {Token.string == ","}
+ ({Token.category == JJ}|
+  {Token.category == DT})?
+ {JobTitle}
+)
+-->
+{
+//removes old "Unknown" annotation and adds a "Person" one
+gate.AnnotationSet person = (gate.AnnotationSet) bindings.get("person");
+gate.FeatureMap features = Factory.newFeatureMap();
+features.put("rule", "PersonJobTitle2");
+outputAS.add(person.firstNode(), person.lastNode(), "Person",
+features);
+outputAS.removeAll(person);
+}
+
+Rule:PersonTitle1
+Priority: 40
+(
+ {Person.rule1 == PersonTitle1}
+ ({Unknown}|{LookupUnknown})
+ ({Person})?
+):person
+-->
+{
+//removes old "Person" and "Unknown" annotations and adds a new "Person" one
+gate.AnnotationSet person = (gate.AnnotationSet) bindings.get("person");
+gate.FeatureMap features = Factory.newFeatureMap();
+features.put("rule", "PersonTitle1");
+outputAS.add(person.firstNode(), person.lastNode(), "Person",
+features);
+outputAS.removeAll(person);
+}
+
+Rule:PersonUnknown
+Priority: 30
+(
+ {Person}
+ ({Unknown}|{LookupUnknown})
+ ({Person})?
+):person
+-->
+{
+//removes old "Person" and "Unknown" annotations and adds a new "Person" one
+gate.AnnotationSet person = (gate.AnnotationSet) bindings.get("person");
+gate.FeatureMap features = Factory.newFeatureMap();
+features.put("rule", "PersonUnknown");
+outputAS.add(person.firstNode(), person.lastNode(), "Person",
+features);
+outputAS.removeAll(person);
+}
+
+
+
+Rule: PersonContext1
+Priority: 10
+//note: this should really move to grammar following co-ref
+
+(
+ {Token.orth == upperInitial}
+):person
+
+(
+ {Token.string == "from"}
+ ({Organization} | {Location})
+)
+-->
+  :person.Person = {rule = "PersonContext1"}
+
+Rule: NotPersonContext1
+Priority: 20
+//if the unknown thing is already an org or person, don't change it
+
+
+(
+ ({Organization}|{Person})
+):label
+
+(
+ {Token.string == "from"}
+ ({Organization} | {Location})
+)
+-->
+  {}
+
+Rule: PersonConjPerson
+Priority: 20
+
+(
+ ({Unknown}|{LookupUnknown})
+ ({Unknown}|{LookupUnknown})?
+):person
+(
+ {Token.category == CC}
+ {Person}
+)
+-->
+{
+//removes old "Person" and "Unknown" annotations and adds a new "Person" one
+gate.AnnotationSet person = (gate.AnnotationSet) bindings.get("person");
+gate.FeatureMap features = Factory.newFeatureMap();
+features.put("rule", "PersonConjPerson");
+outputAS.add(person.firstNode(), person.lastNode(), "Person",
+features);
+outputAS.removeAll(person);
+}
+
+Rule: PersonConjPerson2
+Priority: 20
+
+(
+ {Person}
+ {Token.category == CC}
+)
+(
+ ({Unknown}|{LookupUnknown})
+ ({Unknown}|{LookupUnknown})?
+):person
+-->
+{
+//removes old "Person" and "Unknown" annotations and adds a new "Person" one
+gate.AnnotationSet person = (gate.AnnotationSet) bindings.get("person");
+gate.FeatureMap features = Factory.newFeatureMap();
+features.put("rule", "PersonConjPerson");
+outputAS.add(person.firstNode(), person.lastNode(), "Person",
+features);
+outputAS.removeAll(person);
+}
+
+
+Rule: NotPersonAge
+Priority: 30
+(
+ {Lookup.majorType == stop}
+ {Token.string == ","}
+ {Token.category == CD}
+ {Token.string == ","}
+):spur
+-->
+:spur.Spur = {rule = NotPersonAge}
+
+Rule: PersonAge
+Priority: 20
+
+// Hill, 53, ....
+
+(
+ {Unknown}|{LookupUnknown}
+):person
+(
+ {Token.string == ","}
+ {Token.category == CD}
+ {Token.string == ","}
+)
+-->
+{
+//removes old "Person" and "Unknown" annotations and adds a new "Person" one
+gate.AnnotationSet person = (gate.AnnotationSet) bindings.get("person");
+gate.FeatureMap features = Factory.newFeatureMap();
+features.put("rule", "PersonAge");
+outputAS.add(person.firstNode(), person.lastNode(), "Person",
+features);
+outputAS.removeAll(person);
+}
+ 
+Rule: PersonSays
+Priority: 20
+
+(
+ ({Lookup.minorType == prefix})?
+ {Unknown}
+):person
+(
+ {Token.string == "says"}|
+ {Token.string == "said"}
+)
+-->
+{
+//removes old "Unknown" annotations and adds a new "Person" one
+gate.AnnotationSet person = (gate.AnnotationSet) bindings.get("person");
+gate.FeatureMap features = Factory.newFeatureMap();
+features.put("rule", "PersonSays");
+outputAS.add(person.firstNode(), person.lastNode(), "Person",
+features);
+outputAS.removeAll(person);
+}
+
+Rule: NotSpeaker
+Priority: 140
+
+(
+ {Token.string == "spkr"}
+ {Token.string == ":"}
+ {Unknown.kind == PN}
+ {Token.string == "_"}
+ {Person}
+):person
+-->
+:person.Spur = {rule = NotSpeaker}
+
+Rule: SpeakerStop
+Priority: 140
+(
+ {Token.string == "spkr"}
+ {Token.string == ":"}
+)
+(
+ {Token.category == NNP}
+):person
+(
+ {Token.category == NNP}
+)
+-->
+{
+ gate.FeatureMap features = Factory.newFeatureMap();
+gate.AnnotationSet person = (gate.AnnotationSet)bindings.get("person");
+  features.put("kind", "personName");
+  features.put("confidence", "20");
+  features.put("rule", "SpeakerStop");
+outputAS.add(person.firstNode(), person.lastNode(), "Person",
+features);
+outputAS.removeAll(person);
+}
+
+Rule: Speaker
+Priority: 100
+
+(
+ {Token.string == "spkr"}
+ {Token.string == ":"}
+)
+(
+ {Unknown.kind == PN}
+):person
+-->
+{
+ gate.FeatureMap features = Factory.newFeatureMap();
+gate.AnnotationSet person = (gate.AnnotationSet)bindings.get("person");
+  features.put("kind", "personName");
+  features.put("confidence", "20");
+  features.put("rule", "Speaker");
+outputAS.add(person.firstNode(), person.lastNode(), "Person",
+features);
+outputAS.removeAll(person);
+}
+
+Rule: Speaker2
+Priority: 100
+
+(
+ {Token.string == "spkr"}
+ {Token.string == ":"}
+ {Person}
+ {Unknown.kind == PN}
+):spur
+-->
+:spur.Spur = {rule = Speaker2}
+
+
+
+
+
+
+
+
+
+
+

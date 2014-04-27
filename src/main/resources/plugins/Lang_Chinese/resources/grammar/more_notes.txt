@@ -1,0 +1,34 @@
+Hi Di
+Sorry, I make mistakes again in organisation rules here. It is impossible
+that a Token.String includes an org_key, as an org_key itself consists of at
+least one token. I change it as following:
+
+An Organization can be 'Location + organization name + org_key'
+where, organiztion name can be void or includes 1, 2 or 3 tokens.
+Examples:
+1) 'Hong Kong government', here 'Hong Kong' is 'Location', 'government' is a
+org_key, and organization name is void.
+2) 'Hong Kong Phoenix international school', here 'Phoenix' is organization
+name, and 'international school' is a org_key.
+
+Hi Di
+Items in the following lists can be shorter than the Token:
+currency_unit.lst
+digit.lst
+loc_key.lst
+more.lst
+number_unit
+percent_end.lst
+percent_pre.lst
+person_ending.lst
+point.lst
+surname.lst
+year_key.lst
+zero.lst
+
+For the two rules for Foreign Name,
+s_name (title appears before or after)
+s_name (person_ending appears after)
+the title/person_ending is just context.
+
+

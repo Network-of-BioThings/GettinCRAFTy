@@ -1,0 +1,50 @@
+/*
+*  org.jape
+*
+* Copyright (c) 1998-2001, The University of Sheffield.
+*
+*  This file is part of GATE (see http://gate.ac.uk/), and is free
+*  software, licenced under the GNU Library General Public License,
+*  Version 2, June 1991 (in the distribution as file licence.html,
+*  and also available at http://gate.ac.uk/gate/licence.html).
+*
+*  Diana Maynard, 1 October 2003
+* 
+*  $Id $
+*/
+
+Phase: Org
+Input: Lookup Token Location
+Options: control = appelt debug = false
+
+
+
+Rule: OrgLookup
+Priority: 200
+(
+ ({Lookup.majorType == org_pre})?
+ {Lookup.majorType == organization}
+ ):tag
+ -->
+ :tag.Organization = {rule = OrgLookup}
+ 
+/* An Organization can be 'Location + organization name + org_key'
+where, organization name can be void or includes 1, 2 or 3 tokens.
+Examples:
+1) 'Hong Kong government', here 'Hong Kong' is 'Location', 'government' is a
+org_key, and organization name is void.
+2) 'Hong Kong Phoenix international school', here 'Phoenix' is organization
+name, and 'international school' is a org_key.
+ */
+ 
+ Rule: LocOrgKey
+ Priority: 50
+ 
+(
+ {Location}
+ ({Lookup.majorType == organization})?
+ {Lookup.majorType == org_key}
+):tag
+-->
+ :tag.Organization = {rule = LocOrgKey}
+ 

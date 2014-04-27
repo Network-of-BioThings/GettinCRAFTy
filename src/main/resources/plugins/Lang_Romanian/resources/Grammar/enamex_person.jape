@@ -1,0 +1,327 @@
+// enamex_person.jape
+
+Phase:	enamex
+Input: Token SpaceToken Lookup TempOrganization TempLocation
+Options: control = appelt
+
+
+
+/////////////////////////////////////////////////////////////////
+Macro: TITLE
+(
+ {Lookup.majorType == title}
+ (SPACE)?
+ ({Token.string == "şi"} SPACE {Lookup.majorType == title} SPACE)?
+)
+
+Macro: INITIALS
+(
+  (({Token.orth == upperInitial, Token.length =="1"}|
+    {Token.orth == upperInitial, Token.length =="2"})
+   (DOT)
+  )+
+)
+
+Macro: FIRSTNAME
+(
+ {Lookup.majorType == person_first}|
+ (INITIALS)
+)
+
+Macro: JOB_NAME
+(
+ {Lookup.majorType == job_name}
+)
+
+Macro: PERSONENDING
+(
+ ({Token.string == "Jr"} (DOT)? ) |
+ ({Token.string == "jr"} (DOT)? ) |
+ ({Token.string == "Sr"} (DOT)? ) |
+ ((SPACE)?(DASH)?(SPACE)?({Token.string == "senior"}|{Token.string == "junior"}))|
+ ({Token.string == "sr"} (DOT)? ) |
+ {Token.string == "II"} |
+ {Token.string == "III"}
+)
+
+
+///////////////////////////////////////////////////////////
+// Person Rules
+
+Rule:	GazPerson
+Priority: 50
+(
+ {Lookup.majorType == person_full}
+)
+:person -->
+  :person.TempPerson = {kind = "personName", rule = GazPerson}
+
+Rule:	GazPersonFirst
+Priority: 20
+(
+ {Lookup.majorType == person_first, Lookup.minorType == male}|
+ {Lookup.majorType == person_first, Lookup.minorType == female}
+)
+:person 
+
+((SPACE)
+ {Token.orth == upperInitial, Token.length == "1"}
+)?
+-->
+  :person.TempPerson = {kind = "personName", rule = GazPersonFirst}
+
+
+Rule:	PersonTitle1
+Priority: 13
+// Mr. Jones
+// Mr Fred Jones
+// presedintele Ion Iliescu
+
+(
+ (TITLE)+
+ (FIRSTNAME (SPACE)?)*
+ (UPPER_LETTERS)
+ (SPACE PERSONENDING)?
+
+):person 
+
+-->
+  :person.TempPerson = {kind = "personName", rule = "PersonTitle1"}
+
+Rule:	PersonJobName1
+Priority: 13
+// inginerul Ionescu
+// inginerul Ion Popescu
+
+(
+ (JOB_NAME SPACE)+
+ (FIRSTNAME (SPACE)?)*
+ (UPPER_LETTERS)
+ (SPACE PERSONENDING)?
+
+):person 
+
+-->
+  :person.TempPerson = {kind = "personName", rule = "PersonJobName1"}
+
+
+Rule:	PersonTitle2
+Priority: 13
+// Domnul Popescu Vasile
+
+(
+ (TITLE)+
+ (SPACE)
+ (UPPER_LETTERS)
+ (SPACE)
+ (FIRSTNAME)
+):person 
+-->
+  :person.TempPerson = {kind = "personName", rule = "PersonTitle2"}  
+
+Rule:	PersonJobName2
+Priority: 13
+// Domnul Popescu Vasile
+
+(
+ (JOB_NAME SPACE)+
+ (UPPER_LETTERS)
+ (SPACE)
+ (FIRSTNAME)
+):person 
+-->
+  :person.TempPerson = {kind = "personName", rule = "PersonJobName2"}  
+
+
+Rule: 	PersonFull1
+Priority: 10
+// Al.I. Popescu
+// Ion Popescu
+// Stefan Banica, junior
+
+//(({Token.orth == upperInitial}|{Token.kind == punctuation,Token.string == "."}) SPACE)?
+
+(
+ (FIRSTNAME (SPACE)?)+ (({Token.string == "lui"}|{Token.string == "LUI"}) SPACE)?
+ (UPPER_LETTERS)(DASH(UPPER_LETTERS))?
+ ((SPACE)? (COMMA (SPACE)? )?  PERSONENDING)?
+)
+:person -->
+  :person.TempPerson = {kind = "personName", rule = "PersonFull1"}
+
+
+
+Rule: 	PersonFull2
+Priority: 20
+
+// Bujorianu Manuela jr.
+
+//({Token.orth == upperInitial} SPACE)?
+
+((UPPER_LETTERS)
+ (SPACE FIRSTNAME)+
+ (SPACE PERSONENDING)?
+)
+:person -->
+  :person.TempPerson = {kind = "personName", rule = "PersonFull2"}
+
+
+Rule:  PersonSaint
+Priority: 50
+// Note: ensure that it's not a Saints Day first
+(
+ (({Token.string == "St"} (DOT)?) |
+  {Token.string == "sfântul"}|
+  {Token.string == "Sfântul"}
+ )
+ (SPACE)?
+ (FIRSTNAME)
+ )
+:person -->
+  :person.TempPerson = {kind = "personName", rule = "PersonSaint"}
+
+  
+
+Rule: PersonFirstContext
+Priority: 30
+// Georgeta si Eleodor Popescu
+(
+ {Lookup.majorType == person_first}
+):personName1
+
+( SPACE {Token.string == "şi"} SPACE )
+
+( 
+ {Lookup.majorType == person_first}
+ (SPACE)
+ (UPPER_LETTERS)
+):personName2
+ -->
+  :personName1.TempPerson = {kind = "personName", rule = PersonFirstContext},
+  :personName2.TempPerson = {kind = "personName", rule = PersonFirstContext}
+
+Rule: PersonThirdContext
+Priority: 30
+
+// familia Popescu
+// clanului Ionescu
+
+(({Token.string == "familia"}|{Token.string == "familiei"}|
+ {Token.string == "Familia"}|{Token.string == "Familiei"}|
+ (({Token.string == "Fam"}|{Token.string == "fam"})DOT)  |
+ {Token.string == "clanul"}|{Token.string == "clanului"} |
+ {Token.string == "Clanul"}|{Token.string == "Clanului"} |
+ {Token.string == "fraţii"}|{Token.string == "Fraţii"}) SPACE)
+(
+ UPPER_LETTERS
+):personName
+ -->
+  :personName.TempPerson = {kind = "personName", rule = PersonThirdContext}  
+
+Rule: PersonSecondContext
+Priority: 30
+
+// dupa Roman (location or person)
+({Token.string == "după"}(SPACE))
+(
+ {Lookup.minorType ==male,Lookup.majorType == person_first}
+):personName
+ -->
+  :personName.TempPerson = {kind = "personName", rule = PersonSecondContext}
+ 
+
+Rule:  PersonNull1
+Priority: 150
+// presedintele PDSR
+
+( TITLE
+  SPACE
+)
+(
+ {Lookup.majorType == organization}
+)
+:personNull 
+-->
+ {}
+
+
+Rule:  PersonNull2
+Priority: 150
+// ambasadorul SUA
+
+( TITLE
+  SPACE
+)
+(
+ {Lookup.majorType == location}
+)
+:personNull 
+-->
+ {}
+
+
+//Rule:  PersonNull3
+//Priority: 150
+// PDSR Alex
+//(
+ 
+// ({Lookup.majorType == organization})
+// (SPACE)
+// (UPPER_LETTERS)
+//)
+//:personNull 
+//-->
+//{}
+
+Rule:  PersonNull4
+Priority: 150
+// Seful I.P.J. Buzau
+(
+// (INITIALS)
+// (SPACE)?
+// {Lookup.majorType == location}
+  (UPPER_LETTERS (SPACE))?
+  {TempOrganization}
+)
+:personNull 
+-->
+{}
+
+Rule:  PersonNull5
+Priority: 150
+// I.P.J
+(
+ ({Token.orth == upperInitial, Token.length =="1"} DOT)+
+  (SPACE)?
+  {Token.orth == upperInitial, Token.length =="1"}    
+)
+:personNull 
+-->
+{}
+
+Rule:  PersonNull4
+Priority: 150
+// C.A. Rosetti, P. Clnu
+(
+  {TempLocation}
+)
+:personNull 
+-->
+{}
+
+///////////////////////////////////////////////////////
+
+Rule: FirstNameContext
+Priority: 40
+// Draga elisa
+
+(
+ {Token.string == "Dragă"}
+ (SPACE)
+)
+(
+ ( UPPER_LETTERS |
+  {Token.orth == lowercase})
+)
+:person -->
+  :person.TempPerson = {kind = "personName", rule = "FirstNameContext"}

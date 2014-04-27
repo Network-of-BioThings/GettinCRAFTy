@@ -1,0 +1,7 @@
+<?xml version="1.0"?>
+<!-- $Id: creole.xml 15087 2012-01-16 19:04:43Z markagreenwood $ -->
+<CREOLE-DIRECTORY>
+   <JAR SCAN="true">crawl.jar</JAR>
+   <JAR>lib/websphinx.jar</JAR>
+   <JAR>lib/mail.jar</JAR>
+</CREOLE-DIRECTORY>

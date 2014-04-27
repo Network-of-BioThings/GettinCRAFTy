@@ -1,0 +1,194 @@
+// numex.jape
+
+
+Phase:	Numex
+Input: Token SpaceToken Lookup
+Options: control = appelt
+
+///////////////////////////////////////////////////////////////
+//Money Rules
+
+Macro: MILLION_BILLION
+({Token.string == "m"}|
+{Token.string == "milion"}|
+{Token.string == "milioane"}|
+{Token.string == "b"}|
+{Token.string == "miliard"}|
+{Token.string == "miliarde"}|
+{Token.string == "mii"}|
+{Token.string == "mie"}|
+{Token.string == "sute"}|
+{Token.string == "sută"}|
+{Token.string == "bn"}|
+{Token.string == "k"}|
+{Token.string == "K"}
+)
+
+Macro: NUMBER_WORDS
+// two hundred and thirty five
+// twenty five
+
+(
+ (({Lookup.majorType == number} SPACE)*
+   {Lookup.majorType == number}
+   (SPACE)
+   {Token.string == "şi"}
+   (SPACE)
+ )*
+ ({Lookup.majorType == number} SPACE)*
+   {Lookup.majorType == number}
+)
+
+
+Macro: AMOUNT_NUMBER
+// enables commas, decimal points and million/billion
+// to be included in a number
+ 
+(({Token.kind == number}
+  ((COMMA|DOT|SPACE){Token.kind == number})*
+  |
+  (NUMBER_WORDS)
+ )
+ (SPACE)?
+ ({Token.string == "de"} SPACE)?
+ (MILLION_BILLION)?
+ 
+)
+
+MACRO: CURRENCY_UNIT
+({Lookup.majorType == currency_unit})
+
+////////////////////////////////////////////////////////////////
+
+Rule:	MoneyCurrencyUnit
+// 30 pounds
+// 20 USD
+// 20 FF
+  (        
+      (AMOUNT_NUMBER)
+      (SPACE)? ({Token.string == "de"} SPACE)?
+      (CURRENCY_UNIT)
+      ((SPACE)? CURRENCY_UNIT)?
+      (SPACE NUMBER_WORDS)?
+  )
+:number -->
+  :number.Money = {kind = "number", rule = "MoneyCurrencyUnit"}
+
+Rule:	MoneyContext
+//pretul: 40 lei
+//pret 40-50 lei
+
+(
+ ({Token.string == "preţ"}|
+  {Token.string == "Preţ"}|
+  {Token.string == "Preţul"}|
+  
+  {Token.string == "preţul"}
+ ) 
+ (COLON)?
+ SPACE)
+
+ (        
+   (AMOUNT_NUMBER)
+   (DASH
+    (AMOUNT_NUMBER))?
+   ((SPACE)? CURRENCY_UNIT)?
+ ):number -->
+  :number.Money = {kind = "number", rule = "MoneyContext"}
+
+Rule:	MoneySpan1
+//intre 25 si 75 de milioane lei
+
+(
+ ({Token.string == "între"}|{Token.string == "Între"})
+ (SPACE)       
+ (AMOUNT_NUMBER)
+ (SPACE)
+ ({Token.string == "şi"})
+ (SPACE)
+ (AMOUNT_NUMBER)
+ ((SPACE)? CURRENCY_UNIT)
+):number -->
+  :number.Money = {kind = "number", rule = "MoneySpan1"}
+
+Rule:	MoneySpan2
+//de la 25 la 75 milioane lei
+
+(
+ (({Token.string == "de"}|{Token.string == "De"}) 
+    SPACE {Token.string == "la"})
+ (SPACE)       
+ (AMOUNT_NUMBER)
+ ((SPACE)? CURRENCY_UNIT)?
+ (SPACE)
+ ({Token.string == "la"})
+ (SPACE)
+ (AMOUNT_NUMBER)
+ ((SPACE)? CURRENCY_UNIT)
+):number -->
+  :number.Money = {kind = "number", rule = "MoneySpan2"}
+
+//////////////////////////////////////////////////////////////
+
+// Percentage Rules
+
+Macro: PERCENT
+({Token.string == "%"} | 
+ {Token.string == "procent"}|
+ {Token.string == "procente"}|
+ ({Token.string == "la"}
+ SPACE
+ {Token.string == "sută"})
+)
+
+//////////////////////////////////////////////////////////////
+
+Rule: PercentBasic
+// +20%
+// minus 10 procente
+// doi virgula patru la suta
+
+(
+ (({Token.string == "+"}|
+  {Token.string == "-"}|
+  {Token.string == "minus"}|
+  {Token.string == "plus"}) 
+  (SPACE)? 
+ )?
+ (({Token.kind == number}|NUMBER_WORDS)
+  SPACE
+  {Token.string == "virgulă"}
+  SPACE
+ )? 
+ (({Token.kind == number}(COMMA {Token.kind == number})? )
+  |NUMBER_WORDS)
+ (SPACE)?
+ (PERCENT)
+)
+:number -->
+  :number.Percent = {rule = "PercentBasic"}
+
+Rule: PercentSpan
+// 20-30%
+
+(
+ ({Token.kind == number}|NUMBER_WORDS)
+ (SPACE)?
+ (DASH)
+ (SPACE)?
+ ({Token.kind == number}|NUMBER_WORDS)
+ (SPACE)? 
+ (PERCENT)
+)
+:number -->
+  :number.Percent = {rule = "PercentSpan"}
+
+
+
+
+
+
+
+
+
+

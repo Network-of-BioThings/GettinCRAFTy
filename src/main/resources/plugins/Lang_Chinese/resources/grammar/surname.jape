@@ -1,0 +1,97 @@
+// Valentin Tablan, 29/06/2001
+// $id$
+
+
+Phase:surname
+Input: Lookup SpaceToken
+Options: control = appelt
+
+/* Chinese name
+	surname + firstname (1 or 2 characters) (title appears before surname or after firstname)
+	surname + person_ending
+	surname + firstname (1 or 2 characters) ( person_ending appears after firstname)
+*/
+
+
+/* if we find a surname in a gaz list (and possible forenames) AND a title either before or after it, get the whole Token to which 
+ the surname belongs and tag it as a name
+If we find a surname and a person_ending, tag as a name
+If we find just (one or more) surnames or just (one or more) forenames, tag as Unknown
+*/
+
+Rule:TitleSurname
+(
+ {Lookup.majorType == title}
+ {SpaceToken}
+ )
+ (
+ ({Lookup.majorType == surname})+
+  ({Lookup.majorType == forename})?
+ ):surname
+ -->
+ {
+ gate.AnnotationSet surnameAS = (gate.AnnotationSet)bindings.get("surname");
+ 
+ // get Token info associated with the surname found
+ 
+gate.AnnotationSet tokenAS = inputAS.get("Token", 
+surnameAS.firstNode().getOffset(),surnameAS.lastNode().getOffset());
+ 
+//create new annotation									     
+	gate.FeatureMap features = Factory.newFeatureMap();
+	features.put("kind", "titlename");
+	outputAS.add(tokenAS.firstNode(),
+	                       tokenAS.lastNode(), 
+			       "Person", features);
+}
+
+Rule:SurnameTitle
+
+ (
+ ({Lookup.majorType == surname})+
+  ({Lookup.majorType == forename})?
+ ):surname
+ (
+  {SpaceToken}
+  {Lookup.majorType == title}
+ )
+ -->
+ {
+ gate.AnnotationSet surnameAS = (gate.AnnotationSet)bindings.get("surname");
+ 
+ // get Token info associated with the surname found
+ 
+gate.AnnotationSet tokenAS = inputAS.get("Token", 
+surnameAS.firstNode().getOffset(),surnameAS.lastNode().getOffset());
+ 
+//create new annotation									     
+	gate.FeatureMap features = Factory.newFeatureMap();
+	features.put("kind", "nametitle");
+	outputAS.add(tokenAS.firstNode(),
+	                       tokenAS.lastNode(), 
+			       "Person", features);
+}
+
+Rule: SurnameEnding
+ (
+ ({Lookup.majorType == surname})+
+  {Lookup.majorType == person_ending}
+ ):tag
+ -->
+ :tag.Person = {rule = "SurnameEnding"}
+ 
+/* Rule: SurnameOnly
+ (
+  {Lookup.majorType == surname}
+ )+:tag
+ -->
+ :tag.Unknown = {rule = "SurnameOnly"}
+ 
+ Rule: ForenameOnly
+ 
+  (
+  {Lookup.majorType == forename}
+ )+:tag
+ -->
+ :tag.Unknown = {rule = "ForenameOnly"}
+ */

@@ -1,0 +1,38 @@
+/*
+*  cebuano-date.jape
+*
+* Copyright (c) 1998-2001, The University of Sheffield.
+*
+*  This file is part of GATE (see http://gate.ac.uk/), and is free
+*  software, licenced under the GNU Library General Public License,
+*  Version 2, June 1991 (in the distribution as file licence.html,
+*  and also available at http://gate.ac.uk/gate/licence.html).
+*
+*  Diana Maynard, 10 Sep 2001
+* 
+*  $Id: cebuano-date.jape 11882 2009-11-03 16:08:22Z markagreenwood $
+*/
+
+
+Phase:	Cebuano_Date
+Input: Token Lookup TempDate
+Options: control = appelt
+
+Rule:DatetoDate
+
+(
+ {TempDate}
+ {Token.string == "ngadto sa"}
+ {TempDate}
+):date
+-->
+{
+gate.AnnotationSet date = (gate.AnnotationSet)bindings.get("date");
+gate.Annotation dateAnn = (gate.Annotation)date.iterator().next();
+gate.FeatureMap features = Factory.newFeatureMap();
+features.put("rule1", dateAnn.getFeatures().get("rule"));
+features.put("rule2", "DatetoDate");
+outputAS.add(date.firstNode(), date.lastNode(), "Date",
+features);
+outputAS.removeAll(date);
+}

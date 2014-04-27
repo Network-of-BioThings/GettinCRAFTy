@@ -1,0 +1,6 @@
+Person.lst:Person:inferred:chinese
+Organization.lst:Organization:inferred:chinese
+Location.lst:Location:inferred:chinese
+Date.lst:Date:inferred:chinese
+Money.lst:Money:inferred:chinese
+Percent.lst:Percent:inferred:chinese

@@ -1,0 +1,81 @@
+Date:
+	Lookup.majorType==date  (This includes items in the following lists:
+Century/date/date_spec/day/decade/festival/month/season/year/year_spec)
+	adbc + century
+	adbc + century + century_suffix
+	decade +decade_suffix
+	century +decade
+	century +decade+decade_suffix
+	month + month_suffix
+	month + date
+	year + month + date
+	year + month + date +day
+	year + season
+	year + festival
+	year + year_suffix
+	year_spec+year_suffix
+	year_spec+month
+	digits + year_key (digits consists of 1 to 4 items from the digit.lst)
+	digits + year_key + year_suffix (digits consists of 1 to 4 items from the digit.lst)
+	adbc + year
+	adbc + digits + year_key 
+
+Location:
+	Lookup.majorType==location (This includes items in the following lists:
+city_abbrev/city_china/city_world/country/country_abbrev/county/county_abbrev/facility/loc_relig/ mountain/province/province_abbrev/region/river/state/town)
+	Token.String includes an item in loc_key.lst
+	Locations can be combined together to form a location. 
+
+Money:
+	number + currency_unit
+	money_prefix + number
+	money_prefix + number + currency_unit
+	number_unit + currency_unit
+
+Organization:
+	Lookup.majorType==organization (This includes items in the following lists:
+association/ company/ company_CHN/ company_media/ government/ org_sport/ organization/ university)
+	Token.String includes an item in org_key.lst
+	org_prefix + organization
+
+People:
+	Lookup.majorType==person (This includes items in the following lists:
+person/person_relig/surname_foreign)
+
+Chinese name
+	surname + firstname (1 or 2 characters) (title appears before surname or after firstname)
+	surname + person_ending
+	surname + firstname (1 or 2 characters) ( person_ending appears after firstname)
+
+Foreign name
+	forename + “.” + s_name  (forename consists of items from male.lst or female.lst)
+	forename + s_name  (forename consists of items from male.lst or female.lst)
+	s_name (title appears before or after)
+	s_name (person_ending appears after)
+
+Percent:
+	Lookup.majorType==percent (This includes items in percent.lst)
+	percent_pre + number
+	number + percent_end
+
+Number:
+	Lookup.majorType==number (This includes items in number.lst)
+	zero + point + number
+	digit + number_unit
+	digit + point + number
+	digit + point + zero + number
+	digit + point + digit + number
+	number + point + zero + number
+	number + zero + number
+	number + more + number_unit
+	numbers can be combined together to form a number.
+
+
+The longest string gets the highest priority.
+For example,
+century +decade
+century +decade+decade_suffix
+
+both construct a ‘DATE’, but ‘century +decade+decade_suffix’ gets the higher priority.
+
+Another example, if locations are not separated words or symbols, they (the whole string) must be marked as a location.

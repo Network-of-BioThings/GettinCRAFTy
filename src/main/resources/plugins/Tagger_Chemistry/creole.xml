@@ -1,0 +1,37 @@
+<!-- creole.xml for Chemistry Tagger -->
+<CREOLE-DIRECTORY>
+  <CREOLE>
+    <RESOURCE>
+      <NAME>Chemistry Tagger</NAME>
+      <COMMENT>A tagger for chemical names.</COMMENT>
+      <HELPURL>http://gate.ac.uk/userguide/sec:parsers:chemistrytagger</HELPURL>
+      <JAR>ChemTagger.jar</JAR>
+      <CLASS>mark.chemistry.Tagger</CLASS>
+      <PARAMETER NAME="annotationSetName"
+        COMMENT="The annotation set to use"
+        RUNTIME="true"
+        OPTIONAL="true">java.lang.String</PARAMETER>
+      <PARAMETER NAME="document"
+        COMMENT="The document to be analysed"
+        RUNTIME="true">gate.corpora.DocumentImpl</PARAMETER>
+      <PARAMETER NAME="compoundListsURL"
+        COMMENT="The gazetteer lists definition for spotting element symbols as part of compounds"
+        DEFAULT="resources/compound.def">java.net.URL</PARAMETER>
+      <PARAMETER NAME="elementListsURL"
+        COMMENT="The gazetteer lists definition for spotting element symbols and names alone"
+        DEFAULT="resources/element.def">java.net.URL</PARAMETER>
+      <PARAMETER NAME="transducerGrammarURL"
+        COMMENT="The JAPE grammar"
+        DEFAULT="resources/main.jape">java.net.URL</PARAMETER>
+      <PARAMETER NAME="removeElements"
+        COMMENT="Remove elements which are part of a larger compound or ion"
+        DEFAULT="true"
+        RUNTIME="true">java.lang.Boolean</PARAMETER>
+      <PARAMETER NAME="elementMapURL"
+        COMMENT="File which contains the mapping between element symbols and names"
+        DEFAULT="resources/element_map.txt">java.net.URL</PARAMETER>
+      <ICON>chemistry</ICON>
+    </RESOURCE>
+  
+  </CREOLE>
+</CREOLE-DIRECTORY>

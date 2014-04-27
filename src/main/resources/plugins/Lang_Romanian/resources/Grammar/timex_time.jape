@@ -1,0 +1,346 @@
+// timex_time.jape
+// recognises the time  
+
+
+Phase:	Timex_time
+Input: Token SpaceToken Lookup
+Options: control = appelt
+
+
+//////////////////////////////////////////////////////
+
+MACRO: NUMBER_WORDS
+({Lookup.majorType == number})
+
+Macro: ONE_DIGIT
+({Token.kind == number, Token.length == "1"})
+
+Macro: TWO_DIGIT
+({Token.kind == number, Token.length == "2"})
+
+Macro: FOUR_DIGIT
+({Token.kind == number, Token.length == "4"})
+
+Macro: DH_IH
+	(  {Token.string == "dh"} | {Token.string == "DH"}
+	|
+	  ({Token.string == "d"} DOT
+	   {Token.string == "h"} DOT)
+	|
+	  ({Token.string == "D"} DOT
+	   {Token.string == "H"} DOT)
+	|
+
+	  {Token.string == "ih"} | {Token.string == "IH"}
+	|
+	  ({Token.string == "i"} DOT
+	   {Token.string == "h"} DOT)
+	 
+	|
+ 	  ({Token.string == "I"} DOT
+	   {Token.string == "H"} DOT)
+	)
+
+
+Macro:  TIME_ZONE
+(({Lookup.minorType == zone})|
+ ({Token.string == "("}
+  {Lookup.minorType == zone}
+  {Token.string == ")"})
+)
+
+Macro: TIME_DIFF
+(
+ ({Token.string == "+"}|{Token.string == "-"})
+ (FOUR_DIGIT)
+)
+
+Macro: TIME_AMPM
+(
+ {Lookup.minorType == ampm}
+)
+
+///////////////////////////////////////////////////////////////
+// Time Rules 
+
+Rule: TimeDigital1
+// 20:14:25
+(
+ (ONE_DIGIT|TWO_DIGIT) COLON TWO_DIGIT 
+ (COLON TWO_DIGIT)?
+ ((SPACE)? TIME_AMPM)?	
+ (SPACE TIME_DIFF)?
+ (SPACE TIME_ZONE)? 
+)
+:time
+-->
+:time.TempTime = {kind = "positive", rule = "TimeDigital1"}
+
+Rule:	TimeDigital2
+// 8:14 am
+// 4.34 pm
+// 6am
+
+(
+ (ONE_DIGIT|TWO_DIGIT) 
+ ((COLON|DOT |DASH )
+   TWO_DIGIT)?
+ (SPACE)?
+ (TIME_AMPM)
+ (SPACE TIME_ZONE)?
+)
+:time
+-->
+:time.TempTime = {kind = "positive", rule = "TimeDigital"}
+
+Rule: TimeWordsContext
+Priority: 50
+// patru jumatate miine
+
+(
+ (NUMBER_WORDS)
+ ((SPACE) ({Token.string == "şi"} SPACE)?
+  (DASH)? 
+  (NUMBER_WORDS)
+ )?
+ (SPACE)
+ {Lookup.minorType == time_key}  
+):time1 
+ -->
+:time1.TempTime = {kind = "positive", rule = "TimeWordsContext"}
+
+
+Rule: TimeWordsContextNull
+// o seara, o dimineata
+Priority: 150
+(
+ {Token.string == "o"}
+ (SPACE)
+ {Lookup.minorType == time_key}  
+)
+:time
+-->
+  {}
+
+Rule: TimeDigitalContext1
+// 18,00 seara
+
+(SPACE)
+(
+ (FOUR_DIGIT)|
+ (TWO_DIGIT (COMMA|DOT) TWO_DIGIT)
+):time
+(SPACE)
+{Lookup.minorType == time_key}
+ -->
+ :time.TempTime = {kind = "positive", rule = "TimeDigitalContext1"}
+ 
+
+Rule: TimeDigitalContext2
+// orele 16,00 - 18,00
+// orele 11.00-12.00 dimineata
+// orele 16 - 18
+
+({Token.string == "orele"} SPACE )
+(
+ (FOUR_DIGIT|
+  (TWO_DIGIT 
+   ((COMMA|DOT) TWO_DIGIT)?
+  )
+ ) 
+ (SPACE)? DASH (SPACE)?
+ (FOUR_DIGIT|
+  (TWO_DIGIT 
+   ((COMMA|DOT) TWO_DIGIT)?
+  )
+ )
+):time
+ (SPACE {Lookup.minorType == time_key})?
+ -->
+ :time.TempTime = {kind = "positive", rule = "TimeDigitalContext2"}
+
+Rule: TimeDigitalContext3
+//la 12,00 pm 
+//dupa 11.00 dimineata
+//la 13,00
+
+(
+ ({Token.string == "la"}|{Token.string == "după"}|{Token.string == "După"})
+ (SPACE)
+)
+
+(
+ ((ONE_DIGIT|TWO_DIGIT)
+  (COLON|DOT|COMMA) TWO_DIGIT
+ )
+ ((SPACE)? TIME_AMPM)?
+ (SPACE TIME_ZONE)?
+ (SPACE {Lookup.minorType == time_key})?
+ 
+)
+:time
+ -->
+ :time.TempTime = {kind = "positive", rule = "TimeDigitalContext3"}
+
+
+Rule: TimeDigitalTemp1
+//14:00
+
+(
+ FOUR_DIGIT | 
+ ((ONE_DIGIT|TWO_DIGIT)
+  (COLON) 
+  TWO_DIGIT
+ )
+)
+:time
+ -->
+ :time.TempTime = {kind = "temp", rule = "TimeDigitalTemp1"}
+
+
+Rule: TimeDigitalContextConj
+//la 16.00 si 18.00
+//dupa 15,00 si 17,00
+(
+ ({Token.string == "la"}|{Token.string == "după"})
+ (SPACE)
+)
+(
+ FOUR_DIGIT | 
+ ((ONE_DIGIT|TWO_DIGIT)
+  (COLON|COMMA|DOT) TWO_DIGIT
+ )
+)
+:time1
+(
+ (SPACE)
+ {Token.string == "şi"}
+ (SPACE)
+)
+(
+ FOUR_DIGIT | 
+ ((ONE_DIGIT|TWO_DIGIT)
+  (COLON|DASH|DOT) TWO_DIGIT
+ )
+):time2
+ -->
+ :time1.TempTime = {kind = "positive", rule = "TimeDigitalContextConj"},
+ :time2.TempTime = {kind = "positive", rule = "TimeDigitalContextConj"}
+
+Rule: TimeOClock
+// ora zece fix
+// ora 12,34
+// orele 16,00
+// ora 12.00
+
+({Token.string == "ora"}|{Token.string == "orei"}|{Token.string == "orele"})
+(SPACE {Token.string == "exactă"} (SPACE)? (COLON)? )?
+(SPACE)?
+(
+ ({Lookup.minorType == hour}|
+  ({Token.kind == number}
+   (
+    (COMMA|COLON|DOT)
+    {Token.kind == number}
+   )?
+  )
+ )
+  
+ (SPACE {Token.string == "fix"})?
+ (SPACE {Lookup.minorType == time_key})?
+)
+:time 
+-->
+ :time.TempTime = {kind = "positive", rule = "TimeOClock"}
+ 
+Rule: TimeAnalogue
+// sase jumatate
+// 10 si un sfert
+// 9 fara douazeci de minute
+// cinci si douazeci de minute si treizeci de secunde
+
+(
+ {Lookup.minorType == hour}
+ (SPACE)
+ 
+ ({Token.string == "şi"}|
+  {Token.string == "fără"}
+ )
+ 
+ (SPACE)
+ 
+ (
+  ({Token.string == "jumătate"} | 
+   ({Token.string == "un"} SPACE {Token.string == "sfert"})
+  )|
+ 
+  ({Lookup.majorType == number}
+   (SPACE {Token.string == "şi"} SPACE {Lookup.majorType == number})?
+   (SPACE ({Token.string == "de"} SPACE)? ({Token.string == "minute"}|{Token.string == "minut"})
+    (SPACE ({Token.string == "şi"} SPACE)? 
+     {Lookup.majorType == number}
+     (SPACE {Token.string == "şi"} SPACE {Lookup.majorType == number})?
+     (SPACE 
+      ({Token.string == "de"} SPACE)? 
+      ({Token.string == "secunde"}|{Token.string == "secundă"})
+     )
+    )? 
+   )
+  )
+ )	 
+)
+:time 
+-->
+ :time.TempTime = {kind = "positive", rule = "TimeAnalogue"}
+
+Rule: TimeInUrma
+Priority:30
+// cu 5 ani in urma
+
+( 
+ ({Token.string == "acum"}|{Token.string == "cu"} (SPACE))?
+ 
+ ({Token.kind == number}|{Lookup.majorType == number})
+ (SPACE) ({Token.string == "de"} SPACE)?
+ ({Token.string == "ani"}|{Token.string == "an"}|
+  {Token.string == "luni"}|{Token.string == "lună"}|
+  {Token.string == "săptămâni"}|{Token.string == "săptămână"}|
+  {Token.string == "zile"}|{Token.string == "zi"}|
+  {Token.string == "ore"}|{Token.string == "oră"}|
+  {Token.string == "minute"}|{Token.string == "minut"})
+ (SPACE)
+ {Token.string == "în"}
+ (SPACE)
+ {Token.string == "urmă"}
+)
+:date -->
+ :date.TempDate = {rule = "TimeInUrma"}
+
+Rule: TimeAcum
+Priority:30
+//acum 6 ani
+(
+ ({Token.string == "acum"}|({Token.string == "în"} SPACE {Token.string == "urmă"}))
+ (SPACE)
+ {Token.kind == number}
+ (SPACE)
+ ({Token.string == "ani"}|{Token.string == "an"}|
+  {Token.string == "luni"}|{Token.string == "lună"}|
+  {Token.string == "săptămâni"}|{Token.string == "săptămână"}|
+  {Token.string == "zile"}|{Token.string == "zi"}|
+  {Token.string == "ore"}|{Token.string == "oră"}|
+  {Token.string == "minute"}|{Token.string == "minut"})
+)
+:date -->
+ :date.TempDate = {rule = "TimeAcum"}
+
+
+Rule: TimeZone
+// +0400
+(
+ (TIME_DIFF)
+ (TIME_ZONE)?
+)
+:date
+-->
+ :date.TempZone = {rule = "TimeZone"}

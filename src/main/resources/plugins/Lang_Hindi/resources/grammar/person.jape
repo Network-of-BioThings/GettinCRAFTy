@@ -1,0 +1,279 @@
+/*
+*  person.jape
+*
+* Copyright (c) 1998-2001, The University of Sheffield.
+*
+*  This file is part of GATE (see http://gate.ac.uk/), and is free
+*  software, licenced under the GNU Library General Public License,
+*  Version 2, June 1991 (in the distribution as file licence.html,
+*  and also available at http://gate.ac.uk/gate/licence.html).
+*
+*  Diana Maynard, 10 Sep 2001
+* 
+*  $Id: person.jape 11883 2009-11-03 16:27:32Z markagreenwood $
+*/
+
+
+Phase:	Person
+Input: Token Lookup Title FirstPerson GazLocation Upper Initials Control
+Options: control = appelt
+
+// Person Rules
+
+/////////////////////////////////////////////////////////////////
+Macro: QUOTE
+(
+   {Token.kind=="punctuation",Token.string == "\""} |
+   (
+      {Token.kind=="symbol",Token.string == "`"}
+      {Token.kind=="symbol",Token.string == "`"}
+   ) |
+   (
+      {Token.kind=="punctuation",Token.string == "'"}
+      {Token.kind=="punctuation",Token.string == "'"}
+   )
+)
+
+MACRO: SINGLEOPENINGQUOTE
+( 
+ {Token.kind=="punctuation",Token.string == "'"}|
+ {Token.kind=="symbol",Token.string == "`"}
+)
+
+Macro: SINGLECLOSINGQUOTE
+( 
+ {Token.kind=="punctuation",Token.string == "'"}
+)
+
+
+Macro: TITLE
+(
+ {Title}
+ ({Token.string == "."})?
+ ({Title})?
+ ({Token.string == "."})?
+)
+
+
+
+Macro: FIRSTNAME
+(
+ ({FirstPerson.gender == male} |
+  {FirstPerson.gender == female})
+)
+
+Macro: FIRSTNAMEAMBIG
+(
+ {Lookup.majorType == person_first, Lookup.minorType == ambig}
+)
+
+
+Macro: PERSONENDING
+(
+ {Lookup.majorType == person_ending}
+)
+
+Macro: PREFIX
+(
+ {Lookup.majorType == surname, Lookup.minorType == prefix}
+)
+
+
+///////////////////////////////////////////////////////////
+
+
+// Person Rules
+
+Rule: Pronoun
+Priority: 1000
+//stops personal pronouns being recognised as Initials
+(
+ {Token.category == PP}|
+ {Token.category == PRP}|
+ {Token.category == RB}
+):pro
+-->
+{}
+
+Rule: NotPersonFirst
+Priority: 1000
+// stops modal verbs being recognised as FirstNames
+(
+ {Token.category == MD}
+):spur
+-->
+:spur.Spur = {}
+ 
+
+Rule:	GazPerson
+Priority: 50
+(
+ {Lookup.majorType == person_full}
+)
+:person -->
+{
+gate.AnnotationSet person = (gate.AnnotationSet)bindings.get("person");
+gate.Annotation personAnn = (gate.Annotation)person.iterator().next();
+gate.FeatureMap features = Factory.newFeatureMap();
+features.put("kind", "personName");
+Double num = new Double((double)50);
+features.put("confidence", num);
+features.put("rule", "GazPerson");
+outputAS.add(person.firstNode(), person.lastNode(), "TempPerson",
+features);
+}
+
+
+Rule:	GazPersonFirst
+Priority: 20
+(
+ {Token.category == DT}|
+ {Token.category == PRP}|
+ {Token.category == RB}
+)?
+(
+ {FirstPerson}
+)
+:person 
+
+-->
+{
+gate.AnnotationSet person = (gate.AnnotationSet)bindings.get("person");
+gate.Annotation personAnn = (gate.Annotation)person.iterator().next();
+gate.FeatureMap features = Factory.newFeatureMap();
+features.put("gender", personAnn.getFeatures().get("gender"));
+features.put("kind", "personName");
+Double num = new Double((double)20);
+features.put("confidence", num);
+features.put("rule", "GazPersonFirst");
+outputAS.add(person.firstNode(), person.lastNode(), "TempPerson",
+features);
+//outputAS.removeAll(person);
+}
+
+
+
+
+Rule: TitleOnly
+Priority: 100
+// Deputy Prime Minister
+
+(
+ (TITLE)
+):spur
+-->
+:spur.Spur = {}
+
+
+Rule: NotPersonTitle
+Priority: 50
+
+(
+ (TITLE)
+ {Lookup.majorType == organization}
+ {Lookup.majorType == jobtitle}
+)
+:spur -->
+:spur.Spur = {rule = NotPersonTitle}
+
+
+Rule:	PersonFirstTitleGender
+Priority: 55
+// use this rule when we know what gender the title indicates
+// Mr Fred
+
+(
+ ({Title.gender == male} | {Title.gender == female})
+)
+(
+ (FIRSTNAME | FIRSTNAMEAMBIG)
+)
+:person -->
+{
+ gate.FeatureMap features = Factory.newFeatureMap();
+gate.AnnotationSet personSet = (gate.AnnotationSet)bindings.get("person");
+gate.AnnotationSet title = (gate.AnnotationSet)personSet.get("Title");
+if (title != null && title.size()>0)
+{
+  gate.Annotation personAnn = (gate.Annotation)title.iterator().next();
+  features.put("gender", personAnn.getFeatures().get("gender"));
+}
+  features.put("kind", "personName");
+  Double num = new Double((double)55);
+  features.put("confidence", num);
+  features.put("rule", "PersonFirstTitleGender");
+outputAS.add(personSet.firstNode(), personSet.lastNode(), "TempPerson",
+features);
+}
+
+
+Rule: 	FirstPersonStop
+Priority: 20
+// surname contains stop words
+// e.g. Mary And
+
+(
+ (FIRSTNAME)+
+):person
+(
+ (
+  ({Lookup.majorType == stop}|
+   {Token.category == DT})
+ )
+)
+-->
+{
+ gate.FeatureMap features = Factory.newFeatureMap();
+gate.AnnotationSet personSet = (gate.AnnotationSet)bindings.get("person");
+gate.AnnotationSet firstPerson = (gate.AnnotationSet)personSet.get("FirstPerson");
+if (firstPerson != null && firstPerson.size()>0)
+{
+  gate.Annotation personAnn = (gate.Annotation)firstPerson.iterator().next();
+  features.put("gender", personAnn.getFeatures().get("gender"));
+}
+  features.put("kind", "personName");
+  Double num = new Double((double)20);
+  features.put("confidence", num);
+  features.put("rule", "FirstPersonStop");
+outputAS.add(personSet.firstNode(), personSet.lastNode(), "TempPerson",
+features);
+}
+
+
+
+Rule: FirstName
+Priority: 30
+// Kay, I
+(
+ ({FirstPerson.gender == male} |
+  {FirstPerson.gender == female})
+):person
+( {Token.string == ","}
+ {Token.category == PRP}
+) 
+-->
+{
+ gate.FeatureMap features = Factory.newFeatureMap();
+gate.AnnotationSet personSet = (gate.AnnotationSet)bindings.get("person");
+gate.AnnotationSet firstPerson = (gate.AnnotationSet)personSet.get("FirstPerson");
+if (firstPerson != null && firstPerson.size()>0)
+{
+  gate.Annotation personAnn = (gate.Annotation)firstPerson.iterator().next();
+  features.put("gender", personAnn.getFeatures().get("gender"));
+}
+  features.put("kind", "personName");
+  Double num = new Double((double)20);
+  features.put("confidence", num);
+  features.put("rule", "FirstName");
+outputAS.add(personSet.firstNode(), personSet.lastNode(), "TempPerson",
+features);
+}
+
+
+
+
+
+
+
+
+

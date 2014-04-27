@@ -1,0 +1,136 @@
+<?xml version="1.0"?>
+<!-- creole.xml for Ontology_Based_Gazetteer plugin -->
+<CREOLE-DIRECTORY>
+  <CREOLE>   
+  <JAR>obg.jar</JAR>
+  <JAR>lib/oro-2.0.8.jar</JAR>
+	<!-- creole.xml for Onto Root gazetteer -->
+	<RESOURCE>
+		<NAME>Onto Root Gazetteer</NAME>
+		<CLASS>gate.clone.ql.OntoRootGaz</CLASS>
+		<COMMENT>
+			A ontology  lookup component
+		</COMMENT>
+    <HELPURL>http://gate.ac.uk/userguide/sec:gazetteers:ontoRootGaz</HELPURL>
+	<PARAMETER NAME="ontology"
+			COMMENT="The Ontology to be used" 
+			>gate.creole.ontology.Ontology
+	</PARAMETER>
+	<PARAMETER NAME="tokeniser"
+		COMMENT="The internal tokeniser">
+		gate.creole.tokeniser.DefaultTokeniser
+	</PARAMETER>
+	<PARAMETER NAME="posTagger"
+		COMMENT="The internal POS Tagger">
+		gate.creole.POSTagger
+	</PARAMETER>
+	<PARAMETER NAME="morpher"
+		COMMENT="The internal Morphological Analyser">
+		gate.creole.morph.Morph
+	</PARAMETER>			
+	<PARAMETER NAME="document" RUNTIME="true"
+			COMMENT="The document to be processed">
+			gate.Document
+	</PARAMETER>
+	<PARAMETER NAME="separateCamelCasedWords"
+			DEFAULT="true"
+	COMMENT="Should this gazetteer separate camelCased words, e.g. ProjectName into Project Name">
+	java.lang.Boolean
+	</PARAMETER>
+	<PARAMETER NAME="considerHeuristicRules"
+			DEFAULT="false"
+	COMMENT="Should this gazetteer consider several heuristic rules or not:
+	the words containing spaces will be split; for example, if
+    'pos tagger for spanish' would be analysed, 'for' would be consider as a stop
+    word; heuristically derived would be
+    'pos tagger' and this would be further used to add 'pos tagger' with
+    heuristical level 0, and 'tagger' with hl 1 to the gazetteer list;
+    at runtime lower heuristical level should be prefered">
+	java.lang.Boolean
+	</PARAMETER>
+	<PARAMETER NAME="useResourceUri"
+			DEFAULT="true"
+	COMMENT="Should this gazetteer use resource URIs or not">
+	java.lang.Boolean
+	</PARAMETER>
+    <PARAMETER NAME="considerProperties"
+			DEFAULT="true"
+	COMMENT="Should this gazetteer consider properties or not">
+	java.lang.Boolean
+	</PARAMETER>
+	<PARAMETER NAME="propertiesToInclude" OPTIONAL="true"
+			DEFAULT=""
+	COMMENT="The list of property names to be included, comma separated">
+	java.lang.String
+	</PARAMETER>
+	<PARAMETER NAME="propertiesToExclude" OPTIONAL="true"
+		DEFAULT=""
+	COMMENT="The list of property names to be excluded, comma separated">
+	java.lang.String
+	</PARAMETER>
+	<PARAMETER NAME="typesToConsider" OPTIONAL="true"
+		DEFAULT=""
+	COMMENT="The list of types to be included. Possible values: instance, class, property">
+	java.util.Set
+	</PARAMETER>
+	<PARAMETER NAME="caseSensitive"
+	DEFAULT="false"
+	COMMENT="Should this gazetteer diferentiate on case">
+	java.lang.Boolean
+	</PARAMETER>
+	<PARAMETER NAME="annotationSetName" RUNTIME="true"
+	COMMENT="The annotation set to be used for the generated annotations"
+	OPTIONAL="true">
+	java.lang.String
+	</PARAMETER>
+	<PARAMETER NAME="wholeWordsOnly"
+	DEFAULT="true"
+		COMMENT="Should this gazetteer only match whole words"
+	RUNTIME="true">
+		java.lang.Boolean
+	</PARAMETER>
+	<PARAMETER NAME="longestMatchOnly"
+	DEFAULT="true"
+	COMMENT="Should this gazetteer only match the longest string starting from any offset?"
+	RUNTIME="true">
+	java.lang.Boolean
+	</PARAMETER>
+		<ICON>gazetteer</ICON>
+	</RESOURCE>    
+   </CREOLE>
+   
+    <!-- creole.xml for Fake Sentence Splitter-->
+    <RESOURCE>
+	<NAME>Fake Sentence Splitter</NAME>
+	<COMMENT>
+		Fake Sentence Splitter is used by Onto Root Gazetteer internally as it 
+    creates 'fake' annotation type 'Sentence' without analysing the text by 
+    a proper Sentence Splitter. The reason for doing this is enabling the
+    POS Tagger to work properly, as the input text is usually not a proper 
+    sentence (i.e. ontology resource name or label). 'Faking' sentence splitting
+    optimises the processing as Onto Root Gazetteer usually does not process 
+    internally any multisentence text.
+	</COMMENT>
+	<CLASS>gate.clone.ql.FakeSentenceSplitter</CLASS>
+	<PARAMETER COMMENT="The document to be processed"
+		NAME="document" RUNTIME="true">
+		gate.Document
+	</PARAMETER>
+	<PARAMETER NAME="inputASName"
+		COMMENT="The name used for the temporary annotation set"
+		RUNTIME="true" OPTIONAL="true">
+		java.lang.String
+	</PARAMETER>
+	<PARAMETER NAME="outputASName"
+		COMMENT="The name used for the temporary annotation set"
+		RUNTIME="true" OPTIONAL="true">
+		java.lang.String
+	</PARAMETER>
+	<PARAMETER NAME="encoding"
+		COMMENT="The encoding used for reading the definition files"
+		DEFAULT="UTF-8">
+		java.lang.String
+	</PARAMETER>
+	<ICON>sentence-splitter</ICON>
+    </RESOURCE>
+</CREOLE-DIRECTORY>

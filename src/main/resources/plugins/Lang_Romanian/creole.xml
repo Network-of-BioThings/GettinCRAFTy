@@ -1,0 +1,80 @@
+<?xml version="1.0"?>
+<!-- $Id: creole.xml 16192 2012-10-30 18:38:45Z markagreenwood $ -->
+<!-- creole.xml directory file for Romanian Processing resources -->
+<CREOLE-DIRECTORY>
+  <!-- Processing Resources -->
+  <CREOLE>
+    <JAR SCAN="true">romanian.jar</JAR>
+    <!-- creole.xml for the Englishtokeniser -->
+  
+    <RESOURCE>
+      <NAME>Romanian Tokeniser</NAME>
+      <CLASS>romanian.RomanianTokeniser</CLASS>
+      <COMMENT>A customisable Romanian tokeniser.</COMMENT>
+      <PARAMETER NAME="document" COMMENT="The document to be tokenised"
+        RUNTIME="true">gate.Document</PARAMETER>
+      <PARAMETER NAME="annotationSetName" RUNTIME="true"
+        COMMENT="The annotation set to be used for the generated annotations"
+        OPTIONAL="true">java.lang.String</PARAMETER>
+      <PARAMETER NAME="tokeniserRulesURL"
+        DEFAULT="resources/Tokeniser/OBtokeniser.rules"
+        COMMENT="The URL for the rules file" SUFFIXES="rules" >
+        java.net.URL</PARAMETER>     
+      <PARAMETER NAME="encoding"
+        COMMENT="The encoding used for reading the definitions" DEFAULT="UTF-8">
+        java.lang.String</PARAMETER>
+       <PARAMETER NAME="transducerGrammarURL"
+        DEFAULT="resources/Tokeniser/postprocess.jape"
+        COMMENT="The URL for the postprocessing transducer" SUFFIXES="jape">
+        java.net.URL</PARAMETER>
+      <ICON>shefTokeniser.gif</ICON>
+    </RESOURCE>
+    
+    <!-- creole.xml for gazetteer -->
+    <RESOURCE>
+      <NAME>Romanian Gazetteer</NAME>
+      <CLASS>romanian.RomanianGazetteer</CLASS>
+      <COMMENT>A list lookup component.</COMMENT>
+      <PARAMETER NAME="document" RUNTIME="true"
+        COMMENT="The document to be processed">gate.corpora.DocumentImpl</PARAMETER>
+      <PARAMETER NAME="annotationSetName" RUNTIME="true"
+        COMMENT="The annotation set to be used for the generated annotations"
+        OPTIONAL="true">java.lang.String</PARAMETER>
+      <PARAMETER NAME="listsURL"
+        DEFAULT="resources/Gazeteer/list.lst"
+        COMMENT="The URL to the file with list of lists" SUFFIXES="def">
+        java.net.URL</PARAMETER>
+      <PARAMETER DEFAULT="UTF-8"
+        COMMENT="The encoding used for reading the definitions" NAME="encoding">
+        java.lang.String</PARAMETER>
+      <PARAMETER DEFAULT="true"
+        COMMENT="Should this gazetteer diferentiate on case"
+        NAME="caseSensitive">java.lang.Boolean</PARAMETER>
+      <PARAMETER DEFAULT="true"
+        COMMENT="Should this gazetteer only match whole words"
+        NAME="wholeWordsOnly">java.lang.Boolean</PARAMETER>
+      <ICON>shefGazetteer.gif</ICON>
+    </RESOURCE>
+    
+    <!-- creole.xml for JapeTransducer -->
+    <RESOURCE>
+      <NAME>Romanian Transducer</NAME>
+      <CLASS>romanian.RomanianTransducer</CLASS>
+      <COMMENT>A module for executing Jape grammars</COMMENT>
+      <PARAMETER NAME="document" RUNTIME="true"
+        COMMENT="The document to be processed">gate.Document</PARAMETER>
+      <PARAMETER NAME="inputASName" RUNTIME="true"
+        COMMENT="The annotation set to be used as input for the transducer"
+        OPTIONAL="true">java.lang.String</PARAMETER>
+      <PARAMETER NAME="outputASName" RUNTIME="true"
+        COMMENT="The annotation set to be used as output for the transducer"
+        OPTIONAL="true">java.lang.String</PARAMETER>
+      <PARAMETER NAME="grammarURL" COMMENT="The URL to the grammar file"
+         DEFAULT="resources/Grammar/main.jape"
+        SUFFIXES="jape">java.net.URL</PARAMETER>
+      <PARAMETER NAME="encoding" DEFAULT="UTF-8"
+        COMMENT="The encoding used for reading the grammar">
+        java.lang.String</PARAMETER>
+    </RESOURCE>  
+ </CREOLE>
+</CREOLE-DIRECTORY>

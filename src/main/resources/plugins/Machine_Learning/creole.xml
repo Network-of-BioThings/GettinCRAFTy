@@ -1,0 +1,28 @@
+<?xml version="1.0"?>
+<!-- $Id: creole.xml 11850 2009-10-30 15:22:04Z ian_roberts $ -->
+<CREOLE-DIRECTORY>
+  <!-- Processing Resources -->
+  <CREOLE>    
+    <!-- creole.xml for MLTrainer -->
+    <RESOURCE>
+      <NAME>Machine Learning PR</NAME>
+      <JAR>lib/maxent-2.4.0.jar</JAR>
+      <JAR>lib/troveForMaxent.jar</JAR>
+      <JAR>lib/weka-3.4.6.jar</JAR>
+      <JAR>machinelearning.jar</JAR>
+      <COMMENT>Trains a machine learning algorithm from a corpus. For new code, consider using the "learning" plugin instead.</COMMENT>
+      <HELPURL>http://gate.ac.uk/userguide/sec:ml:machine-learning-pr</HELPURL>
+      <CLASS>gate.creole.ml.MachineLearningPR</CLASS>
+      <PARAMETER NAME="document" COMMENT="The document to be processed"
+        RUNTIME="true">gate.Document</PARAMETER>
+      <PARAMETER NAME="inputASName"
+        COMMENT="The name of the annotation set used for input" RUNTIME="true"
+        OPTIONAL="true">java.lang.String</PARAMETER>
+      <PARAMETER NAME="configFileURL"
+        COMMENT="The URL for the configuration file" SUFFIXES="xml">
+        java.net.URL</PARAMETER>
+      <PARAMETER NAME="training" COMMENT="Set to true for training mode"
+        RUNTIME="true" DEFAULT="true">java.lang.Boolean</PARAMETER>
+    </RESOURCE>
+  </CREOLE>
+</CREOLE-DIRECTORY>

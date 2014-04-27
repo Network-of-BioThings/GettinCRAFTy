@@ -1,0 +1,26 @@
+//  clean.jape
+
+Phase:	Clean
+Input: TempPerson TempLocation TempOrganization TempDate TempTime TempYear Street Email Url Phone Ip TempIdentifier
+Options: control = appelt
+
+Rule:CleanTempAnnotations
+( 
+ {TempOrganization}|
+ {TempLocation}|
+ {TempPerson}|
+ {TempDate}|
+ {TempTime}|
+ {TempIdentifier}|
+ {TempYear}|
+ {Street}|
+ {Email}|
+ {Url}|
+ {Phone}|
+ {Ip}
+):temp
+-->
+{
+ gate.AnnotationSet temp = (gate.AnnotationSet)bindings.get("temp");
+ outputAS.removeAll(temp);
+}

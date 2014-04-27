@@ -1,0 +1,34 @@
+Phase: FixTreeTaggerLemma
+Input: Token
+Options: control = appelt
+
+Rule: Token
+({Token}):token
+-->
+:token {
+  Annotation token = tokenAnnots.iterator().next();
+  FeatureMap fm = token.getFeatures();
+  if (fm.containsKey("lemma")) {
+     String lemma = fm.get("lemma").toString();
+
+     if (lemma.contains("@") || lemma.equals("<unknown>") ) {
+       String string = fm.get("string").toString();
+       fm.put("lemma", string);
+       fm.put("TT_lemma", lemma);
+     }
+
+     else if ( (lemma.length() > 1) && lemma.contains("|")) {
+        String[] splits = org.apache.commons.lang.StringUtils.split(lemma, '|');
+        if (splits.length > 0) {
+          fm.put("lemma", splits[0]);
+          fm.put("TT_lemma", lemma);
+        }
+     }
+  }
+  else {
+     String string = fm.get("string").toString();
+     fm.put("lemma", string);
+     fm.put("TT_lemma", "<missing>");
+  }
+
+}

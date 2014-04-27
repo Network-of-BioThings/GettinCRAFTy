@@ -1,0 +1,15 @@
+The RASP system is derived in part from portions of the Alvey NL Tools;
+see <http://www.cl.cam.ac.uk/Research/NL/anlt.html>. Development of the
+RASP system was funded by the UK EPSRC within the project "Robust
+Accurate Statistical Parsing (RASP)" (grants GR/N36462 and GR/N36493).
+
+The system is distributed for non-commercial use, and without any
+guarantee of support. We do however welcome reports of bugs or
+shortcomings; also fixes or work-rounds sent as email. But before
+reporting a bug, please read the documentation for the software and
+grammar since the behaviour may already be known about, or be an
+intentional feature. You can contact the RASP developers by emailing
+rasp @ informatics.sussex.ac.uk
+
+More extensive support and advice is available on a paid consultancy
+basis.

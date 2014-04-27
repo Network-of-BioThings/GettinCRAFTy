@@ -1,0 +1,386 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!-- $Id: build.xml 16174 2012-10-29 13:58:16Z ian_roberts $ -->
+<project name="uima-gate" default="build">
+  <!-- Prevent Ant from warning about includeantruntime not being set -->
+  <property name="build.sysclasspath" value="ignore" />
+
+  <property file="build.properties" />
+
+  <!-- default property values - to override, create a build.properties file in
+  this directory with the replacement values -->
+
+  <!-- Assume gate is at the same level as sins -->
+  <property name="gate.home" location="../.." />
+  <property name="gate.lib" location="${gate.home}/lib" />
+  <property name="gate.jar" location="${gate.home}/bin/gate.jar" />
+
+  <property name="lib.dir" location="lib" />
+  
+  <property name="jar.location" location="uima-gate.jar" />
+  <property name="doc.dir" location="doc" />
+  <property name="javadoc.dir" location="${doc.dir}/javadoc" />
+  <property name="java2html.dir" location="${doc.dir}/java2html" />
+
+
+  <!-- GATE libs -->
+  <fileset id="gate.libs" dir="${gate.lib}" >
+    <include name="*.jar"/>
+    <include name="*.zip"/>
+  </fileset>
+
+  <!-- UIMA libs -->
+  <fileset id="uima.libs" dir="${lib.dir}" >
+    <include name="*.jar"/>
+  </fileset>
+  
+  <!-- classpath to build includes GATE and UIMA classes -->
+  <path id="gate.and.uima.path">
+    <pathelement location="${gate.jar}" />
+    <fileset refid="gate.libs" />
+    <fileset refid="uima.libs" />
+  </path>
+
+  <!--========= Miscellaneous tools =========-->
+
+  <!-- default port for the Vinci name service -->
+  <property name="vns.port" value="9000" />
+  <property name="vns.tmpdir" location="vns-tmp" />
+
+  <!-- start the Vinci name service.  This target will not terminate, so should
+  be run in another terminal. -->
+  <target name="vns">
+    <!-- mak sure we have a clean start after any previous run -->
+    <delete includeemptydirs="true" dir="${vns.tmpdir}" />
+    <mkdir dir="${vns.tmpdir}" />
+    <echo>Starting the Vinci Name Service on port ${vns.port}</echo>
+    <echo>Temporary files will be written to ${vns.tmpdir}</echo>
+    <java classname="org.apache.vinci.transport.vns.service.VNS"
+          fork="true" dir="${vns.tmpdir}">
+      <classpath>
+        <pathelement location="${lib.dir}/jVinci.jar" />
+      </classpath>
+      <arg value="-p" />
+      <arg value="${vns.port}" />
+    </java>
+  </target>
+
+  <!--======== Core integration layer =========-->
+  
+  <property name="core.src.dir" location="src" />
+  <property name="core.classes.dir" location="classes" />
+
+  <!-- prepare the build directory -->
+  <target name="core.prepare">
+    <mkdir dir="${core.classes.dir}" />
+  </target>
+
+  <!-- compile the code -->
+  <target name="core.compile" depends="core.prepare">
+    <javac classpathref="gate.and.uima.path"
+           destdir="${core.classes.dir}"
+           debug="true"
+           debuglevel="lines,source"
+           source="1.4"
+           target="1.4" >
+      <src path="${core.src.dir}" />
+    </javac>
+  </target>
+
+  <!-- copy resources (i.e. anything non-.java) from src to classes -->
+  <target name="core.copy.resources" depends="core.prepare">
+    <copy todir="${core.classes.dir}" includeEmptyDirs="true">
+      <fileset dir="${core.src.dir}" excludes="**/*.java" />
+    </copy>
+  </target>
+
+  <!-- build the JAR file -->
+  <target name="core.jar" depends="core.compile, core.copy.resources" >
+    <jar destfile="${jar.location}" update="false" basedir="${core.classes.dir}"/>
+  </target>
+
+  <!-- remove the compiled classes (but not the JAR file) -->
+  <target name="core.clean.classes" >
+    <delete includeemptydirs="true" dir="${core.classes.dir}" />
+  </target>
+
+  <!-- remove all generated files (classes, generated source and the JAR) -->
+  <target name="core.clean" depends="core.clean.classes">
+    <delete file="${jar.location}" />
+  </target>
+
+  <!-- build the Javadoc documentation for the core integration layer -->
+  <target name="javadoc">
+    <mkdir dir="${javadoc.dir}" />
+    <javadoc destdir="${javadoc.dir}" packagenames="*">
+      <classpath refid="gate.and.uima.path" />
+      <sourcepath>
+        <pathelement location="${core.src.dir}" />
+      </sourcepath>
+      <link href="http://docs.oracle.com/javase/6/docs/api/" />
+      <link href="http://gate.ac.uk/gate/doc/javadoc/" />
+    </javadoc>
+  </target>
+
+  <!--========= Example annotators =========-->
+
+  <property name="examples.dir" location="examples" />
+  <property name="examples.src.dir" location="${examples.dir}/src" />
+  <property name="examples.generated.src.dir"
+            location="${examples.dir}/gen-src" />
+  <property name="examples.classes.dir" location="${examples.dir}/classes" />
+
+  <property name="examples.jar.location"
+            location="${examples.dir}/uima-gate-examples.jar" />
+
+  <property name="examples.conf.dir" location="${examples.dir}/conf" />
+  <property name="examples.uima_descriptors.dir"
+            location="${examples.conf.dir}/uima_descriptors" />
+  <property name="examples.mapping.dir"
+            location="${examples.conf.dir}/mapping" />
+  
+  <target name="examples.prepare" >
+    <mkdir dir="${examples.classes.dir}" />
+    <mkdir dir="${examples.generated.src.dir}" />
+  </target>
+
+  <!-- dependency checking for JCasGen -->
+  <target name="jcasgen.checkdepends">
+    <dependset>
+      <srcfileset dir="${examples.uima_descriptors.dir}" includes="**/*.xml" />
+      <targetfileset dir="${examples.generated.src.dir}" includes="**/*.java" />
+    </dependset>
+    <available file="${examples.generated.src.dir}/gate/uima/cas/Token.java"
+               property="jcas.uptodate"/>
+  </target>
+
+  <!-- generate JCas classes for the examples. -->
+  <target name="jcasgen" depends="examples.prepare, jcasgen.checkdepends"
+          unless="jcas.uptodate">
+    <echo level="info">Generating JCas classes for Token examples</echo>
+    <java classname="org.apache.uima.tools.jcasgen.Jg"
+          fork="true">
+      <classpath>
+        <fileset refid="uima.libs" />
+      </classpath>
+      <sysproperty key="java.util.logging.config.file"
+                   value="JCasGenFileConsoleLogger" />
+      <arg value="-jcasgeninput"/>
+      <arg file="${examples.uima_descriptors.dir}/AllTokenRelatedAnnotators.xml"/>
+      <arg value="-jcasgenoutput"/>
+      <arg file="${examples.generated.src.dir}"/>
+    </java>
+  </target>
+
+  <!-- compile the example code (both hand written and generated) -->
+  <target name="examples.compile" depends="core.jar, examples.prepare, jcasgen" >
+    <javac destdir="${examples.classes.dir}"
+           debug="true"
+           debuglevel="lines,source"
+           source="1.4"
+           target="1.4" >
+      <classpath>
+        <path refid="gate.and.uima.path" />
+        <pathelement location="${jar.location}" />
+      </classpath>
+      <src path="${examples.src.dir}" />
+      <src path="${examples.generated.src.dir}" />
+    </javac>
+  </target>
+
+  <!-- copy resources (i.e. anything non-.java) from src to classes -->
+  <target name="examples.copy.resources" depends="examples.prepare">
+    <copy todir="${examples.classes.dir}" includeEmptyDirs="true">
+      <fileset dir="${examples.src.dir}" excludes="**/*.java" />
+      <fileset dir="${examples.generated.src.dir}" excludes="**/*.java" />
+    </copy>
+  </target>
+
+  <!-- build the JAR file -->
+  <target name="examples.jar" depends="examples.compile, examples.copy.resources" >
+    <jar destfile="${examples.jar.location}"
+         update="false" basedir="${examples.classes.dir}"/>
+  </target>
+
+  <!-- remove the compiled classes (but not the JAR file) -->
+  <target name="examples.clean.classes" >
+    <delete includeemptydirs="true" dir="${examples.classes.dir}" />
+  </target>
+
+  <!-- remove all generated files (classes, generated source and the JAR) -->
+  <target name="examples.clean" depends="examples.clean.classes">
+    <delete file="${examples.jar.location}" />
+    <delete includeemptydirs="true" dir="${examples.generated.src.dir}" />
+  </target>
+
+  <!-- start the Vinci service for the example Token Handler TAE.  The VNS must
+  already be running for this to work. -->
+  <target name="vinciservice">
+    <echo>Starting Token Handler Vinci service</echo>
+    <java classname="org.apache.uima.adapter.vinci.VinciAnalysisEngineService_impl"
+          fork="true"
+          dir="${examples.conf.dir}">
+      <classpath>
+        <fileset refid="uima.libs" />
+        <pathelement location="${examples.jar.location}" />
+      </classpath>
+      <sysproperty key="VNS_PORT" value="${vns.port}"/>
+      <sysproperty key="VNS_HOST" value="localhost"/>
+      <sysproperty key="java.awt.headless" value="true" />
+      <arg value="${examples.conf.dir}/Deploy_TokenHandler.xml" />
+    </java>
+  </target>
+
+
+  <!--========= Unit tests =========-->
+
+  <property name="test.dir" location="test" />
+  <property name="test.jar.location" location="${test.dir}/tests.jar" />
+  <property name="test.src.dir" location="${test.dir}/src" />
+  <property name="test.conf.dir" location="${test.dir}/conf" />
+  <property name="test.classes.dir" location="${test.dir}/classes" />
+  
+  <!-- for running UIMAinGATE tests, include the compiled test JAR but EXCLUDE
+  UIMA libraries and uima-gate.jar, as they will be loaded by creole.xml -->
+  <path id="test.uimaingate.classpath">
+    <pathelement location="${test.jar.location}" />
+    <pathelement location="${gate.jar}" />
+    <fileset refid="gate.libs"/>
+  </path>
+
+  <!-- for running GATEinUIMA tests, we must include UIMA libs and
+  uima-gate.jar as well -->
+  <path id="test.gateinuima.classpath">
+    <path refid="test.uimaingate.classpath"/>
+    <pathelement location="${jar.location}" />
+    <fileset refid="uima.libs"/>
+  </path>
+
+  <target name="test.prepare" >
+    <mkdir dir="${test.classes.dir}" />
+  </target>
+
+  <!-- compile the test code -->
+  <target name="test.compile" depends="test.prepare">
+    <javac classpathref="gate.and.uima.path"
+           destdir="${test.classes.dir}"
+           debug="true"
+           debuglevel="lines,source"
+           source="1.4"
+           target="1.4"
+           srcdir="${test.src.dir}"/>
+  </target>
+
+  <!-- copy resources (i.e. anything non-.java) from src to classes -->
+  <target name="test.copy.resources" depends="test.prepare">
+    <copy todir="${test.classes.dir}" includeEmptyDirs="true">
+      <fileset dir="${test.src.dir}" excludes="**/*.java" />
+    </copy>
+  </target>
+
+  <!-- build the JAR file -->
+  <target name="test.jar" depends="test.compile, test.copy.resources" >
+    <jar destfile="${test.jar.location}" update="false"
+         basedir="${test.classes.dir}"/>
+  </target>
+
+  <!-- remove the compiled test classes (but not the JAR file) -->
+  <target name="test.clean.classes" >
+    <delete includeemptydirs="true" dir="${test.classes.dir}" />
+  </target>
+
+  <!-- remove all generated files (classes and the JAR) -->
+  <target name="test.clean" depends="test.clean.classes">
+    <delete file="${test.jar.location}" />
+  </target>
+  
+  <!-- UIMA-in-GATE tests - start VNS and Vinci service in parallel with JUnit
+  -->
+  <target name="test.uimaingate" depends="core.jar, examples.jar, test.jar" >
+    <parallel>
+      <ant target="vns" />
+      <sequential>
+        <!-- wait for vns to start before starting service -->
+        <sleep seconds="10" />
+        <ant target="vinciservice" />
+      </sequential>
+      <sequential>
+        <!-- wait for vns and service to start before running tests -->
+        <sleep seconds="20" />
+        <junit fork="true" showoutput="yes" printsummary="yes">
+          <classpath refid="test.uimaingate.classpath"/>
+          <!-- pass in the location of GATE and uima plugin -->
+          <sysproperty key="gate.home.location" value="${gate.home}" />
+          <sysproperty key="gate.uima.plugin.location" file="." />
+          <sysproperty key="VNS_PORT" value="${vns.port}"/>
+          <sysproperty key="VNS_HOST" value="localhost"/>
+          <sysproperty key="java.awt.headless" value="true" />
+          <formatter type="xml" />
+          <test name="gate.uima.test.TestUIMAInGATE" />
+        </junit>
+        <java fork="true" classname="org.apache.uima.adapter.vinci.util.Shutdown">
+          <classpath>
+            <path refid="test.uimaingate.classpath"/>
+            <fileset refid="uima.libs" />
+          </classpath>
+          <sysproperty key="VNS_PORT" value="${vns.port}"/>
+          <sysproperty key="VNS_HOST" value="localhost"/>
+          <sysproperty key="java.awt.headless" value="true" />
+          <arg value="gate.uima.TokenHandlerService" />
+        </java>
+        <touch file="${vns.tmpdir}/quit" />
+      </sequential>
+    </parallel>
+  </target>
+
+  <!-- GATE-in-UIMA tests -->
+  <target name="test.gateinuima" depends="core.jar, test.jar">
+    <junit fork="true" showoutput="yes" printsummary="yes">
+      <classpath refid="test.gateinuima.classpath"/>
+      <!-- pass in the location of GATE and sins/uima -->
+      <sysproperty key="gate.home.location" value="${gate.home}" />
+      <sysproperty key="gate.uima.plugin.location" file="." />
+      <sysproperty key="uima.datapath" value="${test.conf.dir}"/>
+      <sysproperty key="java.awt.headless" value="true" />
+      <formatter type="xml" />
+      <test name="gate.uima.test.TestGATEInUIMA" />
+    </junit>
+  </target>
+
+  <!-- all tests - called by nightly build -->
+  <target name="test" depends="test.gateinuima, test.uimaingate" />
+
+  <!-- run the UIMA document analyser with GATE and the integration layer on
+       the classpath.  This should allow you to experiment with the
+       GATEApplicationAnnotator. -->
+  <target name="documentanalyser">
+    <echo>Starting UIMA document analyser</echo>
+    <java classname="org.apache.uima.tools.docanalyzer.DocumentAnalyzer"
+          fork="true">
+      <classpath>
+        <path refid="gate.and.uima.path" />
+        <pathelement location="${jar.location}" />
+        <pathelement location="${examples.jar.location}" />
+      </classpath>
+      <sysproperty key="VNS_PORT" value="${vns.port}"/>
+      <sysproperty key="VNS_HOST" value="localhost"/>
+      <!-- set the right UIMA datapath - uncomment the one you need -->
+      <!--<sysproperty key="uima.datapath" value="${examples.conf.dir}" />-->
+      <sysproperty key="uima.datapath" value="${test.conf.dir}" />
+    </java>
+  </target>
+
+  <!-- clean up everything -->
+  <target name="clean" depends="core.clean, examples.clean, test.clean" />
+
+  <!-- targets used by top level GATE buildfile -->
+  <target name="build" depends="core.jar, examples.jar" />
+
+  <target name="distro.prepare"
+          depends="core.clean.classes, examples.clean.classes, test.clean" >
+    <!-- remove JUnit test reports -->
+    <delete>
+      <fileset dir="." includes="TEST*.xml" />
+    </delete>
+  </target>
+
+</project>

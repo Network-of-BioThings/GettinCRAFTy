@@ -1,0 +1,45 @@
+Phase:	MultiWord
+Input: Lookup
+Options: control = first
+
+/* Joins all tokens covered by a Lookup of type multi */
+Rule: Join
+({Lookup.majorType==multi}):multiword
+--> 
+{
+  Annotation multiLookup = (Annotation)((AnnotationSet)bindings.get("multiword")).iterator().next();
+  Long startOffset = multiLookup.getStartNode().getOffset();
+  Long endOffset = multiLookup.getEndNode().getOffset();
+  List tokens = new ArrayList(inputAS.get("Token", startOffset, endOffset));
+  Collections.sort(tokens, new gate.util.OffsetComparator());
+  Iterator tokIter = tokens.iterator();
+  boolean done = false;
+  String text = "";
+  
+  while(!done && tokIter.hasNext()){
+    Annotation token = (Annotation)tokIter.next();
+    if(token.getEndNode().getOffset().compareTo(endOffset) <= 0){
+      //covered token
+      if(text.length() > 0) text += " ";
+      text += token.getFeatures().get("string");
+      inputAS.remove(token);
+    }else{
+      //finished!
+      done = true;
+    }
+  }
+  //create the new Token
+  FeatureMap features = Factory.newFeatureMap();
+  features.put("kind", "word");
+  //features.put("length", Integer.toString(text.length()));
+  features.put("orth", "multi");
+ features.put("string", text);
+  try{
+    outputAS.add(multiLookup.getStartNode().getOffset(),
+                 endOffset, "Token", features);
+  }catch(InvalidOffsetException ioe){
+    ioe.printStackTrace();
+  }
+  //remove the used Lookup
+  outputAS.remove(multiLookup);
+}

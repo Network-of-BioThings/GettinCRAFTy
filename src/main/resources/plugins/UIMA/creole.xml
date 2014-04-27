@@ -1,0 +1,37 @@
+<CREOLE-DIRECTORY>
+
+<CREOLE>
+  <RESOURCE>
+    <NAME>UIMA Analysis Engine</NAME>
+    <COMMENT>Wrapper for a Text Analysis Engine from UIMA.</COMMENT>
+    <HELPURL>http://gate.ac.uk/userguide/chap:uima</HELPURL>
+    <CLASS>gate.uima.AnalysisEnginePR</CLASS>
+    <JAR>uima-gate.jar</JAR>
+    <JAR>lib/uima-core.jar</JAR>
+    <JAR>lib/uima-document-annotation.jar</JAR>
+    <JAR>lib/jVinci.jar</JAR>
+    <JAR>lib/uima-adapter-vinci.jar</JAR>
+    <JAR>lib/uima-adapter-soap.jar</JAR>
+    <JAR>lib/activation.jar</JAR>
+    <JAR>lib/axis.jar</JAR>
+    <JAR>lib/commons-discovery-0.2.jar</JAR>
+    <JAR>lib/commons-logging-1.0.4.jar</JAR>
+    <JAR>lib/jaxrpc.jar</JAR>
+    <JAR>lib/mail.jar</JAR>
+    <JAR>lib/saaj.jar</JAR>
+    <PARAMETER NAME="analysisEngineDescriptor"
+      COMMENT="The XML descriptor for the UIMA AE.  This must be a file: URL"
+      >java.net.URL</PARAMETER>
+    <PARAMETER NAME="mappingDescriptor"
+      COMMENT="The XML file describing the mapping between GATE and UIMA annotations"
+      >java.net.URL</PARAMETER>
+    <PARAMETER NAME="document"
+      COMMENT="The document to process"
+      RUNTIME="true">gate.Document</PARAMETER>
+    <PARAMETER NAME="annotationSetName"
+      COMMENT="The annotation set to use for annotations to be mapped to and from UIMA"
+      OPTIONAL="true" RUNTIME="true">java.lang.String</PARAMETER>
+  </RESOURCE>
+</CREOLE>
+
+</CREOLE-DIRECTORY>

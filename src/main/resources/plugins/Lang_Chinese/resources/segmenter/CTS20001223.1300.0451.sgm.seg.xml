@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="GB2312" ?>
+<GateDocument>
+<!-- The document's features-->
+
+<GateDocumentFeatures>
+<Feature>
+  <Name className="java.lang.String">gate.SourceURL</Name>
+  <Value className="java.lang.String">file:/share/nlp.18/diana/gatecorpora/ace/ace03/ACE3-V1.2/Chinese/bnews/CTS20001223.1300.0451.sgm</Value>
+</Feature>
+<Feature>
+  <Name className="java.lang.String">MimeType</Name>
+  <Value className="java.lang.String">text/sgml</Value>
+</Feature>
+</GateDocumentFeatures>
+<!-- The document content area with serialized nodes -->
+
+<TextWithNodes><Node id="0"/>
+<Node id="1"/> CTS20001223.1300.0451 <Node id="24"/>
+<Node id="25"/> NEWS STORY <Node id="37"/>
+<Node id="38"/> 12/23/2000 13:07:31.15 <Node id="62"/>
+<Node id="63"/>
+<Node id="64"/>
+ <Node id="66"/>̨����<Node id="69"/>�sǷ־�<Node id="73"/>�����<Node id="76"/>�ƻ���һ��ɫ�����ֲ 裬 ������ֲ�����һ�����ĭ������Ϊ���ӣ���
+ �ڲ����ظ�䰵�ش�ɫ��������Ů���ṩɫ����񡣾����ӻ��߱�֮����������ͻ�������Ȼ
+ һ�ٴ����˸����ˡ�Ů���������ο�һ��10���ˡ�
+<Node id="179"/>
+ ����������һ��������������s���±����ϳ�4������Ů�ӣ�ȫ���������ĭ���깤���Ů��
+ ����ֻ���������ṩ�ķ���ֻ�ǵ��������϶��ѣ�����(�������������ֵ�ɫ� 齻 �ף�����
+ �Ż���ô����ˡ�����10���Ӿ���ǰ��������<Node id="291"/>������<Node id="294"/>��<Node id="295"/>��ׯ<Node id="297"/>��·<Node id="300"/>�����<Node id="303"/>��÷��������ĭ���
+ ��<Node id="315"/>����Ϊ������ʱ����ͷ����ܿ��ܰ��ش�ɫ�����һ����ͷ��ֵ����а���ͨ���ڲ��ҵĸ�
+ �䣬����������������οͺ�Ů���������ڴ����Խ��ף�b�̽������˴��<Node id="391"/>�����<Node id="394"/>��Ѷ�������
+ �⸺����<Node id="406"/>������<Node id="409"/>��ȥ��11�µ׿�����ҵ꣬�Ϳ�ʼ�����ֲ�ķ�ʽ4��Ӫ��û�뵽�ϸ��¸�����
+ �꣬����¾ͱ��������ƻ񡣱�������16����Ԥ��������ͻᱻ���ͷ��졣<Node id="482"/>
+<Node id="483"/>
+<Node id="484"/>
+<Node id="485"/> 12/23/2000 13:08:38.44 <Node id="509"/>
+<Node id="510"/></TextWithNodes>
+<!-- The default annotation set -->
+
+<AnnotationSet>
+</AnnotationSet>
+<!-- Named annotation set -->
+
+<AnnotationSet Name="Key" >
+<Annotation Type="Per" StartNode="291" EndNode="294">
+</Annotation>
+<Annotation Type="Org" StartNode="303" EndNode="315">
+</Annotation>
+<Annotation Type="Org" StartNode="69" EndNode="73">
+</Annotation>
+<Annotation Type="GPE" StartNode="295" EndNode="297">
+<Feature>
+  <Name className="java.lang.String">ROLE</Name>
+  <Value className="java.lang.String">LOC</Value>
+</Feature>
+</Annotation>
+<Annotation Type="Fac" StartNode="297" EndNode="300">
+</Annotation>
+<Annotation Type="Org" StartNode="73" EndNode="76">
+</Annotation>
+<Annotation Type="Per" StartNode="406" EndNode="409">
+</Annotation>
+<Annotation Type="GPE" StartNode="66" EndNode="69">
+<Feature>
+  <Name className="java.lang.String">ROLE</Name>
+  <Value className="java.lang.String">ORG</Value>
+</Feature>
+</Annotation>
+<Annotation Type="Fac" StartNode="391" EndNode="394">
+<Feature>
+  <Name className="java.lang.String">REFERENCE</Name>
+  <Value className="java.lang.String">INTENDED</Value>
+</Feature>
+</Annotation>
+<Annotation Type="Org" StartNode="391" EndNode="394">
+<Feature>
+  <Name className="java.lang.String">REFERENCE</Name>
+  <Value className="java.lang.String">LITERAL</Value>
+</Feature>
+</Annotation>
+</AnnotationSet>
+<!-- Named annotation set -->
+
+<AnnotationSet Name="Original markups" >
+<Annotation Type="DOCTYPE" StartNode="25" EndNode="37">
+</Annotation>
+<Annotation Type="BODY" StartNode="63" EndNode="484">
+</Annotation>
+<Annotation Type="TURN" StartNode="179" EndNode="482">
+</Annotation>
+<Annotation Type="DOCNO" StartNode="1" EndNode="24">
+</Annotation>
+<Annotation Type="DATE_TIME" StartNode="38" EndNode="62">
+</Annotation>
+<Annotation Type="END_TIME" StartNode="485" EndNode="509">
+</Annotation>
+<Annotation Type="TEXT" StartNode="64" EndNode="483">
+</Annotation>
+<Annotation Type="DOC" StartNode="0" EndNode="510">
+</Annotation>
+</AnnotationSet>
+</GateDocument>

@@ -1,0 +1,6 @@
+<?xml version="1.0"?>
+
+<CREOLE-DIRECTORY>
+  <JAR SCAN="true">BoilerpipeTagger.jar</JAR>
+  <JAR>lib/boilerpipe-1.1.0.jar</JAR>
+</CREOLE-DIRECTORY>

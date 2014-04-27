@@ -1,0 +1,34 @@
+/*
+* Copyright (c) 1998-2001, The University of Sheffield.
+*
+*  This file is part of GATE (see http://gate.ac.uk/), and is free
+*  software, licenced under the GNU Library General Public License,
+*  Version 2, June 1991 (in the distribution as file licence.html,
+*  and also available at http://gate.ac.uk/gate/licence.html).
+*
+*  Diana Maynard, 10 Sep 2003
+* 
+*  $Id $
+*/
+
+
+Phase: CollectNouns
+Input: Token Person
+Options: control = appelt debug = false
+
+
+/* look for all common nouns that preced a Person annotation */
+/* NN = common noun */
+
+Rule: NounPerson
+
+(
+ {Token.category == NN}
+):tag
+(
+ {Person}
+)
+-->
+:tag.NounPerson = {rule="NounPerson"}
+
+

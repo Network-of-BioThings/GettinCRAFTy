@@ -1,0 +1,120 @@
+/*
+*  date.jape
+*
+* Copyright (c) 1998-2001, The University of Sheffield.
+*
+*  This file is part of GATE (see http://gate.ac.uk/), and is free
+*  software, licenced under the GNU Library General Public License,
+*  Version 2, June 1991 (in the distribution as file licence.html,
+*  and also available at http://gate.ac.uk/gate/licence.html).
+*
+*  Diana Maynard, 1 October 2003
+* 
+*  $Id $
+*/
+
+Phase: Date
+Input: Lookup Token YearKey
+Options: control = appelt debug = false
+
+Macro: YEAR_DIGITS
+( 
+ {Token.kind == digit}
+ ({Token.kind == digit})?
+ ({Token.kind == digit})?
+ ({Token.kind == digit})?
+ )
+
+Rule: Date
+(
+ {Lookup.majorType == date}
+):tag
+-->
+:tag.Date = {kind = date, rule = Date}
+
+ 
+Rule: AdbcCentury
+(
+ {Lookup.majorType == adbc}
+ {Lookup.minorType == century}
+ ({Lookup.majorType == century_suffix})?
+ ):tag
+ -->
+ :tag.Date = {kind = date, rule = AdbcCentury}
+
+Rule: Decade
+(
+ {Lookup.minorType == decade}
+ {Lookup.majorType == decade_suffix}
+ ):tag
+  -->
+ :tag.Date = {kind = date, rule = Decade}
+ 
+ Rule: CenturyDecade
+(
+ {Lookup.minorType == century}
+ {Lookup.minorType == decade}
+({Lookup.majorType == decade_suffix})?
+ ):tag
+  -->
+ :tag.Date = {kind = date, rule = CenturyDecade}
+ 
+ Rule: Month
+(
+ {Lookup.minorType == month}
+ ({Lookup.majorType == month_suffix} |
+ {Lookup.majorType == date})
+ ):tag
+  -->
+ :tag.Date = {kind = date, rule = Month}
+	
+Rule: YearMonthDate
+(
+ {Lookup.minorType == year}
+ {Lookup.minorType == month}
+ {Lookup.majorType == date}
+ ({Lookup.minorType == day})?
+ ):tag
+  -->
+ :tag.Date = {kind = date, rule = YearMonthDate}
+
+Rule: Year
+( 
+ {Lookup.minorType == year}
+ ({Lookup.minorType == season}|
+  {Lookup.minorType == festival}|
+  {Lookup.majorType == year_suffix})
+  ):tag
+   -->
+ :tag.Date = {kind = date, rule = Year}
+	
+Rule: YearSpecial
+( 
+ {Lookup.minorType == year_spec}
+ ({Lookup.majorType == year_suffix}|
+  {Lookup.minorType == month})
+):tag
+ -->
+ :tag.Date = {kind = date, rule = YearSpecial}
+  
+Rule: DigitsYearKey
+(
+ (YEAR_DIGITS)
+ {YearKey}
+ ( {Lookup.majorType == year_suffix})?
+):tag
+-->
+:tag.Date = {kind = date, rule = DigitsYearKey}
+
+
+Rule:AdbcYear
+(
+ {Lookup.majorType == adbc}
+ (
+  {Lookup.minorType == year}|
+  (YEAR_DIGITS
+  {YearKey})
+ )
+):tag
+-->
+:tag.Date = {kind = date, rule = AdbcYear}

@@ -1,0 +1,29 @@
+<?xml version="1.0"?>
+<!-- $Id$ -->
+<CREOLE-DIRECTORY>
+  <!-- Processing Resources -->
+  <CREOLE>    
+    <!-- creole.xml for the BDM Computation PR -->
+    <RESOURCE>
+      <NAME>BDM Computation PR</NAME>
+      <COMMENT>Compute BDM score for each  pair of concepts in the given ontology.</COMMENT>
+      <HELPURL>http://gate.ac.uk/userguide/sec:eval:bdmplugin</HELPURL>
+      <CLASS>gate.bdmComp.BDMCompMain</CLASS>
+      <JAR>BDMCompMain.jar</JAR>
+
+      <PARAMETER NAME="ontology"
+        COMMENT="The ontology used for BDM computing" RUNTIME="true"
+        OPTIONAL="false">gate.creole.ontology.Ontology</PARAMETER>
+
+	<PARAMETER NAME="outputBDMFile"
+        COMMENT="The URL storing the BDM scores" RUNTIME="true"
+        OPTIONAL="true">java.net.URL</PARAMETER>
+
+
+     </RESOURCE>
+     
+  </CREOLE>
+  
+  
+</CREOLE-DIRECTORY>
+

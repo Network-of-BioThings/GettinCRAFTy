@@ -1,0 +1,79 @@
+/*
+*  findperson.jape
+*
+* Copyright (c) 1998-2001, The University of Sheffield.
+*
+*  This file is part of GATE (see http://gate.ac.uk/), and is free
+*  software, licenced under the GNU Library General Public License,
+*  Version 2, June 1991 (in the distribution as file licence.html,
+*  and also available at http://gate.ac.uk/gate/licence.html).
+*
+*  Diana Maynard, 10 Sep 2003
+* 
+*  $Id $
+*/
+
+
+Phase:	FindPerson
+Input: Lookup Token Location Organization Date
+Options: control = appelt debug = false
+
+Rule: PersonVerb
+Priority:150
+(
+ ({Token.category == NR})+
+):tag
+(
+ {Lookup.majorType == personverb}
+ )
+ -->
+:tag.Person = {kind = inferred, rule = "PersonVerb"}
+
+Rule: NounPerson
+Priority: 100
+(
+  {Lookup.majorType == noun_person}
+)
+(
+ ({Token.category == NR})+
+):tag
+ -->
+
+{
+ gate.FeatureMap features = Factory.newFeatureMap();
+gate.AnnotationSet tagSet = (gate.AnnotationSet)bindings.get("tag");
+features.put("rule", "NounPerson");
+features.put("kind", "inferred");
+outputAS.add(tagSet.firstNode(), tagSet.lastNode(), "Person",
+features);
+Out.prln("NounPersons found: " +  tagSet);
+outputAS.removeAll(tagSet);
+}
+
+
+Rule: NotPerson
+Priority:200
+
+(
+ {Lookup.majorType == adj_person}|
+ {Token.category == JJ}
+)
+ (
+ ({Token.category == NR})+
+):tag
+ -->
+:tag.NotPerson = {rule = "NotPerson"}
+
+Rule: NotPerson2
+Priority: 250
+
+(
+  {Location}|
+  {Organization}|
+  {Date}
+ ):tag
+ (
+ {Lookup.majorType == personverb}
+ )
+ -->
+ :tag.NotPerson = {rule = "NotPerson2"}

@@ -1,0 +1,16 @@
+<CREOLE-DIRECTORY>
+  <CREOLE>
+    <JAR scan="true">SchemaTools.jar</JAR>
+
+    <!-- Annotation schema -->
+    <RESOURCE>
+      <NAME>Annotation Schema</NAME>
+      <CLASS>gate.creole.AnnotationSchema</CLASS>
+      <COMMENT>An annotation type and its features.</COMMENT>
+      <HELPURL>http://gate.ac.uk/userguide/sec:corpora:schemas</HELPURL>
+      <PARAMETER NAME="xmlFileUrl" 
+        COMMENT="The url to the definition file"
+        SUFFIXES="xml;xsd">java.net.URL</PARAMETER>
+    </RESOURCE>
+  </CREOLE>
+</CREOLE-DIRECTORY>

@@ -1,0 +1,9 @@
+<?xml version="1.0"?>
+<CREOLE-DIRECTORY>
+  <JAR SCAN="true">groovy-gate.jar</JAR>
+  <JAR>lib/groovy-all-1.7.6.jar</JAR>
+
+  <!-- We do not use Ivy directly, but the Groovy console sets up Grape when it
+  is initialized, and this requires access to Ivy classes -->
+  <JAR>lib/ivy-2.2.0.jar</JAR>
+</CREOLE-DIRECTORY>

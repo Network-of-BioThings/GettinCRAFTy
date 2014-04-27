@@ -1,0 +1,26 @@
+Phase: Chunks
+Input: Token
+Options: control = appelt
+
+Rule: Chunker
+(
+	{Token.chunk ==~ "B-.+"}
+	({Token.chunk ==~ "I-.+"})*
+):chunk
+-->
+{
+try {
+	AnnotationSet chunk = (AnnotationSet)bindings.get("chunk");
+	Annotation annot = chunk.iterator().next();
+	
+	String type = (String)annot.getFeatures().get("chunk");
+	type = type.substring(2);
+	
+	FeatureMap features = Factory.newFeatureMap();
+		
+	outputAS.add(chunk.firstNode().getOffset(),chunk.lastNode().getOffset(),type,features);
+}
+catch (Exception e) {
+	throw new LuckyException(e);
+}
+}

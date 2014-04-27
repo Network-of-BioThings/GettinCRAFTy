@@ -1,0 +1,207 @@
+// address_final.jape
+
+Phase:	address_final
+Input:  Token SpaceToken Lookup Street Block Scara Etaj Apart TempLocation Url Ip Email Phone
+Options: control = appelt
+
+////////////////////////////////////////////////////////////
+Rule: AddressFull1
+Priority: 100
+(
+ {Street} 
+ (COMMA|SPACE)*
+ {Block}
+ (COMMA|SPACE)*
+ {Scara}
+ (COMMA|SPACE)*
+ {Etaj}
+ (COMMA|SPACE)*
+ {Apart}
+ (COMMA)? (SPACE)*
+ 
+ 
+ ({TempLocation} 
+  (COMMA|SPACE)*
+ )+
+ 
+ (({Token.string == "cod"}|
+   {Token.string == "Cod"}|
+   {Token.string == "COD"}) 
+  SPACE)?	
+ 
+ ({Token.kind == number,Token.length == "4"}|
+  {Token.kind == number,Token.length == "5"}
+ )
+ 
+ (COMMA|SPACE)*
+ 
+ ({TempLocation})?
+)
+:address
+-->
+ :address.Address = {kind = "complete", rule = "AddressFull1"}
+
+//////////////////////////////////////////////////////
+
+Rule: AddressFull1
+Priority: 100
+// Resita 1700, str.Petru Maior nr 6
+
+(
+ {TempLocation}
+ (SPACE|COMMA)*
+
+ (({Token.string == "cod"}|{Token.string == "Cod"}|{Token.string == "COD"}) SPACE)?	
+ 
+ ({Token.kind == number,Token.length == "4"}|
+  {Token.kind == number,Token.length == "5"}
+ )
+ (SPACE|COMMA)*
+ ({Street})
+)
+:address
+-->
+ :address.Address = {kind = "complete", rule = "AddressFull1"} 
+   
+///////////////////////////////////////////////////////////////
+
+Rule: AddressShort
+Priority: 100
+//Str. Primaverii, Bloc D1, Sc.6, Etaj 2, Ap.12
+
+(
+ {Street} 
+ (COMMA|SPACE)*
+ (
+  {Block}
+  (COMMA|SPACE)*
+  {Scara}
+  (COMMA|SPACE)*
+  {Etaj}
+  (COMMA|SPACE)*
+  {Apart}
+ )?
+ 
+ 
+ ( (COMMA)? (SPACE)*
+    {TempLocation} 
+  )+
+)
+:address
+-->
+ :address.Address = {kind = "complete", rule = "AddressShort"}
+
+
+Rule: AddressBlockScaraApart
+Priority: 100
+// Bloc 235, Sc.D
+
+(
+ (
+  ({Street}(COMMA|SPACE)*)?
+  {Block}
+  (COMMA|SPACE)*
+  {Scara}
+  ((COMMA|SPACE)* {Etaj})?
+  ((COMMA|SPACE)* {Apart})?
+ )
+
+)
+:address
+-->
+ :address.Address = {kind = "complete", rule = "AddressBlockScaraApart"}
+
+Rule: AddressContext
+Priority: 100
+
+(
+ (
+  ({Street}(COMMA|SPACE)*)?
+  {Block}
+  (SLASH|SPACE)*
+  {Token.orth == upperInitial}
+  ({Token.kind == number})?
+  (SLASH|SPACE)*
+  {Token.kind == number}
+  ({Token.orth == upperInitial})?  
+ )
+)
+:address
+-->
+ :address.Address = {kind = "complete", rule = "AddressContext"}
+
+///////////////////////////////////////////////////////////////////
+
+
+Rule: StreetFinal
+Priority: 50
+(
+ {Street}
+)
+:address
+-->
+ :address.Address = {kind = "street", rule = "StreetFinal"}
+ 
+//////////////////////////////////////////////////////////////
+
+Rule: BlockFinal
+Priority: 50
+(
+{Block}
+)
+:address
+-->
+ :address.Address = {kind = "block", rule = "BlockFinal"} 
+
+//////////////////////////////////////////////////////////////
+Rule: EmailFinal
+Priority: 50
+(
+{Email}
+)
+:address
+-->
+ :address.Address = {kind = "email", rule = "EmailFinal"}
+
+////////////////////////////////////////////////////////////
+
+//Rule: PostcodeFinal
+//Priority: 50
+//(
+//{Postcode}
+//)
+//:address
+//-->
+// :address.Address = {kind = "postcode", rule = "PostcodeFinal"}
+
+////////////////////////////////////////////////////////////////////////
+Rule: IpFinal
+Priority: 50
+(
+ {Ip}
+)
+:address
+-->
+ :address.Address = {kind = "ip", rule = "IpFinal"}
+
+
+//////////////////////////////////////////////////////////////////////////
+Rule: UrlFinal
+Priority: 50
+(
+ {Url}
+)
+:address
+-->
+ :address.Address = {kind = "url", rule = "UrlFinal"}
+
+//////////////////////////////////////////////////////////////
+
+Rule: PhoneFinal
+Priority: 100
+(
+ {Phone}
+)
+:address
+-->
+ :address.Address = {kind = "phone", rule = "PhoneFinal"}

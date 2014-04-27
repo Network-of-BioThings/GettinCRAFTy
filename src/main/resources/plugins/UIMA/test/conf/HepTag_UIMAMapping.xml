@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+ *  Copyright (c) 2005, The University of Sheffield.
+ *
+ *  This file is part of the GATE/UIMA integration layer, and is free
+ *  software, released under the terms of the GNU Lesser General Public
+ *  Licence, version 2.1 (or any later version).  A copy of this licence
+ *  is provided in the file LICENCE in the distribution.
+ *
+ *  UIMA is a product of IBM, details are available from
+ *  http://alphaworks.ibm.com/tech/uima
+-->
+<!-- Mapping for HepTag.  UIMA provides the initial token and sentence
+annotations, and we add part of speech tags to the tokens. -->
+<uimaGateMapping>
+  <inputs>
+    <gateAnnotation type="Token" uimaType="org.apache.uima.examples.tokenizer.Token" indexed="true" />
+    <gateAnnotation type="Sentence" uimaType="org.apache.uima.examples.tokenizer.Sentence" />
+  </inputs>
+  <outputs>
+    <updated>
+      <uimaAnnotation type="org.apache.uima.examples.tokenizer.Token" gateType="Token">
+        <feature name="POS" kind="string">
+          <gateAnnotFeatureValue name="category" />
+        </feature>
+      </uimaAnnotation>
+    </updated>
+  </outputs>
+</uimaGateMapping>

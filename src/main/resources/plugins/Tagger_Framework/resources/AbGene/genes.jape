@@ -1,0 +1,31 @@
+Phase: Genes
+Input: Token
+Options: control = appelt
+
+Rule: Genes
+Priority: 1000
+(
+	({Token.category ==~ ".*GENE"})+
+):match
+-->
+{
+	AnnotationSet tokens = bindings.get("match");
+
+	try {
+		outputAS.add(tokens.firstNode().getOffset(), tokens.lastNode().getOffset(), "Gene", Factory.newFeatureMap());
+	}
+	catch (Exception e) {
+		e.printStackTrace();
+	}
+}
+
+Rule:Others
+(
+	{Token}
+):match
+-->
+{
+	Annotation a = bindings.get("match").iterator().next();
+
+	a.getFeatures().remove("category");
+}

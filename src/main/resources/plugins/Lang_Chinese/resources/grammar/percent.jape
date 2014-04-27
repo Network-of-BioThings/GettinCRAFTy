@@ -1,0 +1,71 @@
+// Valentin Tablan, 29/06/2001
+// $id$
+
+Phase:Percent
+Input: Lookup SpaceToken Number
+Options: control = appelt
+
+// if we find a percent in a gaz list, get the whole Token to which 
+// the percent belongs and tag it as a name
+
+Rule:Percent
+Priority: 200
+(
+ ({Lookup.majorType == percent})
+ ):tag
+ -->
+ :tag.Percent = {rule = Percent}
+
+
+Rule: PercentPre
+Priority: 100
+(
+ {Lookup.majorType == percent_pre}
+ ({SpaceToken})?
+ ({Number})?
+):tag
+-->
+:tag.Percent = {rule = PercentPreTest}
+/*
+ {
+ gate.AnnotationSet percentAS = (gate.AnnotationSet)bindings.get("tag");
+ 
+ // get Token info associated with the percent found
+ 
+gate.AnnotationSet tokenAS = inputAS.get("Token", 
+percentAS.firstNode().getOffset(),percentAS.lastNode().getOffset());
+ 
+//create new annotation									     
+	gate.FeatureMap features = Factory.newFeatureMap();
+	features.put("rule", "PercentPre");
+	outputAS.add(tokenAS.firstNode(),
+	                       tokenAS.lastNode(), 
+			       "Percent", features);
+}
+*/
+
+Rule: PercentEnd
+Priority: 100
+(
+({Number})?
+({SpaceToken})?
+ {Lookup.majorType == percent_end}
+):tag
+-->
+ {
+ gate.AnnotationSet percentAS = (gate.AnnotationSet)bindings.get("tag");
+ 
+ // get Token info associated with the percent found
+ 
+gate.AnnotationSet tokenAS = inputAS.get("Token", 
+percentAS.firstNode().getOffset(),percentAS.lastNode().getOffset());
+ 
+//create new annotation									     
+	gate.FeatureMap features = Factory.newFeatureMap();
+	features.put("rule", "PercentEnd");
+	outputAS.add(tokenAS.firstNode(),
+	                       tokenAS.lastNode(), 
+			       "Percent", features);
+}
+
+

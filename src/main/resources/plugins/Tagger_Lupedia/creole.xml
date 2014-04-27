@@ -1,0 +1,8 @@
+<?xml version="1.0"?>
+<CREOLE-DIRECTORY>
+      <JAR scan="true">LupediaTagger.jar</JAR>
+      <JAR>lib/commons-beanutils-1.8.3.jar</JAR>
+      <JAR>lib/commons-collections-3.2.1.jar</JAR>
+      <JAR>lib/ezmorph-1.0.6.jar</JAR>
+      <JAR>lib/json-lib-2.3-jdk15.jar</JAR>
+</CREOLE-DIRECTORY>

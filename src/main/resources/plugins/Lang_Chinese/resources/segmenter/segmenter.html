@@ -1,0 +1,67 @@
+<HTML>
+<HEAD>
+<TITLE>Chinese Segmenter and Annotation Tool</TITLE>
+</HEAD>
+<BODY>
+   You can download the zip file <A HREF="download/segment.zip">segment.zip</A> which
+contains four files.  First is the perl script segment.pl which takes
+one argument, the name of the source file to segment.  It expects the
+file name to end with ".txt".  It needs the library file segmenter.pl
+which has all the actual segmenation code.  The program also expects
+to find the lexicon file wordlist.txt in the same directory it's
+running in (though this is easily modified).  It outputs a new
+segmented file with ".txt" replaced with ".seg".  Right now it only
+works on GB encoded files, but a Big5 version (converting to GB,
+segmenting, and using the segmented file to segment the original Big5
+version file) would not be hard.  Also included is a convenience file,
+segment.bat, for people working in Windows.  It runs perl on
+segment.pl and expects a file name as an argument.
+<P>
+  The segmenter requires <A HREF="http://www.perl.com">Perl</A> to run.
+It is a free and easily downloaded program.
+<P>
+  I have also made available a <A
+ HREF="http://www.littlelit.com/download/segmenter.jar">Java version
+  of the segmenter</A> that works with Big5, GB, and UTF-8 encoded
+text files.
+<BLOCKQUOTE>
+Usage: java -jar segmenter.jar [-b|-g|-8] inputfile.txt<BR>
+-b Big5, -g GB2312, -8 UTF-8<BR>
+Segmented text will be saved to inputfile.txt.seg
+</BLOCKQUOTE>
+
+<P>
+  Words can be added or deleted directly from the lexicon file.  The
+segmenter has algorithms for grouping together the characters in a name,
+especially for Chinese and Western names, but Japanese and South-east Asian
+names may not work well yet.
+<P>
+  The segmentation process is also a perfect time to identify interesting
+"entities" in the text.  These could include dates, times, person names,
+locations, money amounts, organization names, and percentages.  This 
+collection of interesting nouns is often refered to as "named entities" 
+and the process of identifying them as "named entity extraction".  There
+is already code to identify person names and number amounts in the segmenter,
+and I will adding more code to find the rest in the future.
+<P>
+  The segmenter works with a version of the maximal matching algorithm.
+When looking for words, it attempts to match the longest word possible.
+This simple algorithm is suprisingly effective, given a large and diverse
+lexicon, but there also need to be ways of dealing with ambiguous word
+divisions, unkown proper names, and other words not in the lexicon.  I
+currently have algorithms for finding names, and am researching ways to
+better handle ambiguous word boundaries and unknown words.  Additional 
+knowledge that would be useful would be a list of characters and whether
+they are bound or unbound.  A segmentation that would leave a bound character
+by itself would not be allowed.  A statistical way of choosing amongst
+ambiguous segmentations would also be useful.
+<P>
+  More information on segmenting Chinese text can be found at
+<A HREF="http://www.chinesecomputing.com" target="_top">ChineseComputing.com</A>.
+
+<P>
+Contact Erik Peterson at <A HREF="mailto:erik@mandarintools.com">erik@mandarintools.com</A>
+with questions or comments.  Please visit <A HREF="http://www.mandarintools.com" target="_top">
+Online Chinese Tools</A> for many more useful Chinese-related software tools.
+</BODY>
+</HTML>

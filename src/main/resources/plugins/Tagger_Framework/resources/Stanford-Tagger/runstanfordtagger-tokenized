@@ -1,0 +1,11 @@
+#!/bin/sh
+# 
+# shell script to run the Stanford Tagger from the GenericTagger PR in GATE
+# see http://nlp.stanford.edu/software/tagger.shtml
+#
+
+# set the correct location of your stanford-postagger installation here
+STANFORDTAG_DIR=/usr/local/durmtools/stanford-postagger
+
+cd ${STANFORDTAG_DIR}
+java -mx300m -classpath stanford-postagger.jar edu.stanford.nlp.tagger.maxent.MaxentTagger -tokenize false -model models/$1 -textFile $2 | sed -e "s/ /\n/g"

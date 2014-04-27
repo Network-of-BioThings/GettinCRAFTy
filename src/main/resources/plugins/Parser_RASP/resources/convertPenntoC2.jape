@@ -1,0 +1,297 @@
+// DigitalPebble
+// Mapping between tags from the Penn tagset (as used by the GATE tagger) to C2
+// tagset (used by RASP)
+// generates annotations of new type (Morph)
+
+Phase:	PennToC2
+Input: Token
+Options: control = all
+
+Rule: convert
+
+(
+ {Token}
+):Token
+-->
+{
+	gate.AnnotationSet tokenas = (gate.AnnotationSet)bindings.get("Token");
+	gate.Annotation token = tokenas.iterator().next(); 	
+	String penn = (String)token.getFeatures().get("category");
+	String string = (String)token.getFeatures().get("string");
+	
+	// default value for c2 tag
+	String c2 = "???";
+	if (penn.equals("``")) c2 = "\\\"";
+	else if (penn.equals(",")) c2 = ",";
+	else if (penn.equals(":")) {
+		if (string.equalsIgnoreCase(":")) c2 = ":";
+		else if (string.equalsIgnoreCase(";")) c2 = ";";
+		else if (string.equalsIgnoreCase("...")) c2 = "...";
+		else c2 = ":";
+	}
+	else if (penn.equals(".")) {
+		if (string.equalsIgnoreCase(".")) c2 = ".";
+		else if (string.equalsIgnoreCase("!")) c2 = "!";
+		else if (string.equalsIgnoreCase("?")) c2 = "?";
+		else c2 = ".";
+	}
+	else if (penn.equals("''")) c2 = "\\\"";
+	else if (penn.equals("(")) c2 = "(";
+	else if (penn.equals(")")) c2 = ")";
+	else if (penn.equals("$")) c2 = "NNU";
+	else if (penn.equals("#")) c2 = "NN1";
+	// conjunction, coordinating
+	else if (penn.equals("CC"))  {
+		if (string.equalsIgnoreCase("as")) c2 = "CSA";
+		else if (string.equalsIgnoreCase("than")) c2 = "CSN";
+		else if (string.equalsIgnoreCase("that")) c2 = "CST";
+		else if (string.equalsIgnoreCase("whether")) c2 = "CSW";
+		// CC	    coordinating conjunction (and, or) 
+		else if (string.equalsIgnoreCase("and")) c2 = "CC";
+		else if (string.equalsIgnoreCase("or")) c2 = "CC";
+		// CCB	    coordinating conjunction (but) 
+		else if (string.equalsIgnoreCase("but")) c2 = "CCB";
+		// CF 	    semi-coordinating conjunction (so, then, yet) 
+		// CS 	    subordinating conjunction (if, because, unless) 
+		else c2 = "CS";
+	}
+	else if (penn.equals("CD")) {
+		// MC cardinal number neutral for number (two, three...)
+		// MC$ genitive cardinal number, neutral for number (10's)
+		// MC-MC hyphenated number 40-50, 1770-1827)
+		// MC1 singular cardinal number (one)
+		// MC2 plural cardinal number (tens, twenties)
+		// MD ordinal number (first, 2nd, next, last)
+		if (string.equalsIgnoreCase("1")) c2 = "MC1";
+		else if (string.endsWith("one")) c2 = "MC1";
+		else if (string.endsWith("'s")) c2 = "MC$";
+		else if (string.endsWith("s")) c2 = "MC2";
+		else  c2 = "MC";
+	}
+	else if (penn.equals("DT")) {
+		if (string.equalsIgnoreCase("a")) c2 = "AT1";
+		else if (string.equalsIgnoreCase("all")) c2 = "AT";
+		else if (string.equalsIgnoreCase("an")) c2 = "AT1";
+		else if (string.equalsIgnoreCase("another")) c2 = "AT1";
+		else if (string.equalsIgnoreCase("any")) c2 = "AT";
+		else if (string.equalsIgnoreCase("both")) c2 = "AT";
+		else if (string.equalsIgnoreCase("either")) c2 = "AT";
+		else if (string.equalsIgnoreCase("half")) c2 = "AT";
+		else if (string.equalsIgnoreCase("many")) c2 = "AT";
+		else if (string.equalsIgnoreCase("neither")) c2 = "AT";
+		else if (string.equalsIgnoreCase("no")) c2 = "AT";
+		else if (string.equalsIgnoreCase("some")) c2 = "AT";
+		else if (string.equalsIgnoreCase("the")) c2 = "AT";
+
+		// DA after-determiner or post-determiner capable of pronominal
+		// function (e.g. such, former, same)
+		if (string.equalsIgnoreCase("former")) c2 = "DA";
+		else if (string.equalsIgnoreCase("later")) c2 = "DA";
+		else if (string.equalsIgnoreCase("own")) c2 = "DA";
+		else if (string.equalsIgnoreCase("same")) c2 = "DA";
+		else if (string.equalsIgnoreCase("such")) c2 = "DA";
+		// DA1 singular after-determiner (e.g. little, much)
+		else if (string.equalsIgnoreCase("little")) c2 = "DA1";
+		else if (string.equalsIgnoreCase("much")) c2 = "DA1";
+		// DA2 plural after-determiner (e.g. few, several, many)
+		else if (string.equalsIgnoreCase("few")) c2 = "DA2";
+		else if (string.equalsIgnoreCase("many")) c2 = "DA2";
+		else if (string.equalsIgnoreCase("several")) c2 = "DA2";
+		// DAR comparative after-determiner (e.g. more, less, fewer)
+		else if (string.equalsIgnoreCase("more")) c2 = "DAR";
+		else if (string.equalsIgnoreCase("less")) c2 = "DAR";
+		// DAT superlative after-determiner (e.g. most, least, fewest)
+		else if (string.equalsIgnoreCase("most")) c2 = "DAT";
+		else if (string.equalsIgnoreCase("least")) c2 = "DAT";
+		else if (string.equalsIgnoreCase("fewest")) c2 = "DAT";
+		// DD determiner (capable of pronominal function) (e.g any, some)
+		else if (string.equalsIgnoreCase("any")) c2 = "DD";
+		else if (string.equalsIgnoreCase("enough")) c2 = "DD";
+		else if (string.equalsIgnoreCase("some")) c2 = "DD";
+		// DD1 singular determiner (e.g. this, that, another)
+		else if (string.equalsIgnoreCase("little")) c2 = "DD1";
+		else if (string.equalsIgnoreCase("lot")) c2 = "DD1";
+		else if (string.equalsIgnoreCase("neither")) c2 = "DD1";
+		else if (string.equalsIgnoreCase("same")) c2 = "DD1";
+		else if (string.equalsIgnoreCase("that")) c2 = "DD1";
+		else if (string.equalsIgnoreCase("this")) c2 = "DD1";
+		else if (string.equalsIgnoreCase("another")) c2 = "DD1";
+		else if (string.equalsIgnoreCase("either")) c2 = "DD1";
+		// DD2 plural determiner ( these,those)
+		else if (string.equalsIgnoreCase("many")) c2 = "DD2";
+		else if (string.equalsIgnoreCase("these")) c2 = "DD2";
+		else if (string.equalsIgnoreCase("those")) c2 = "DD2";
+		else if (string.equalsIgnoreCase("both")) c2 = "DD2";
+		// give it AT just in case
+		else c2 = "AT";
+	}
+	else if (penn.equals("EX")) c2 = "EX";
+	else if (penn.equals("FW")) c2 = "&FW";
+	else if (penn.equals("IN")) {
+		if (string.equalsIgnoreCase("of")) c2 = "IO";
+		else if (string.equalsIgnoreCase("o'")) c2 = "IO";
+		else if (string.equalsIgnoreCase("for")) c2 = "IF";
+		else c2 = "II";
+	}
+	else if (penn.equals("JJ")) c2 = "JJ";
+	else if (penn.equals("JJR")) c2 = "JJR";
+	else if (penn.equals("JJS")) c2 = "JJT";
+	else if (penn.equals("LS")) c2 = "MC";
+	else if (penn.equals("MD")) c2 = "VM";
+	else if (penn.equals("NN")) c2 = "NN1";
+	else if (penn.equals("NNS")) c2 = "NN2";
+	else if (penn.equals("NNP")) c2 = "NP1";
+	else if (penn.equals("NNPS")) c2 = "NP2";
+	// PDT	pre-determiner all both half many quite such sure this 	
+	else if (penn.equals("PDT")) {
+		if (string.equalsIgnoreCase("both")) c2 = "DB2";
+		else c2 = "DB";
+	}
+	
+	// genitive marker
+	else if (penn.equals("POS")) c2 = "$";
+	// pronouns
+	else if (penn.equals("PRP")){
+		if (string.equalsIgnoreCase("one")) c2 = "PN1";
+		else if (string.equalsIgnoreCase("oneself")) c2 = "PNX1";
+		else if (string.equalsIgnoreCase("it")) c2 = "PH1";
+		else if (string.equalsIgnoreCase("him")) c2 = "PHO1";
+		else if (string.equalsIgnoreCase("her")) c2 = "PHO1";
+		else if (string.equalsIgnoreCase("'em")) c2 = "PHO2";
+		else if (string.equalsIgnoreCase("them")) c2 = "PHO2";
+		else if (string.equalsIgnoreCase("he")) c2 = "PHS1";
+		else if (string.equalsIgnoreCase("she")) c2 = "PHS1";
+		else if (string.equalsIgnoreCase("they")) c2 = "PHS2";
+		else if (string.equalsIgnoreCase("me")) c2 = "PPIO1";
+		else if (string.equalsIgnoreCase("us")) c2 = "PPIO2";
+		else if (string.equalsIgnoreCase("i")) c2 = "PPIS1";
+		else if (string.equalsIgnoreCase("we")) c2 = "PPIS2";
+		else if (string.equalsIgnoreCase("you")) c2 = "PPY";
+		else if (string.equalsIgnoreCase("ya")) c2 = "PPY";
+		else if (string.equalsIgnoreCase("mine")) c2 = "PP$";
+		else if (string.equalsIgnoreCase("yours")) c2 = "PP$";
+		else if (string.equalsIgnoreCase("his")) c2 = "PP$";
+		else if (string.equalsIgnoreCase("hers")) c2 = "PP$";
+		else if (string.equalsIgnoreCase("its")) c2 = "PP$";
+		else if (string.equalsIgnoreCase("ours")) c2 = "PP$";
+		else if (string.equalsIgnoreCase("theirs")) c2 = "PP$"	;
+		else if (string.toLowerCase().endsWith("self")) c2 = "PPX1";
+		else if (string.toLowerCase().endsWith("selves")) c2 = "PPX2";
+		else c2 = "PN";
+	}
+	// possessives my your her etc...
+	else if (penn.equals("PRP$")){
+		c2 = "APP$";
+	}
+	// ADVERBS
+	else if (penn.equals("RB")) {
+		if (string.equalsIgnoreCase("not")) c2 = "XX";
+		else if (string.equalsIgnoreCase("n't")) c2 = "XX";
+		else c2 = "RR";
+	}
+	else if (penn.equals("RBR")) c2 = "RRR";
+	else if (penn.equals("RBS")) {
+		c2 = "RRT";
+	}
+	else if (penn.equals("RP")) c2 = "RP";
+	// covers all sorts of things from = tp single letters
+	else if (penn.equals("SYM")) {
+		if (string.equals("=")){
+			c2 = "&FO";
+		}
+		else if (string.matches("\\w")){
+			c2 = "ZZ1";
+		}
+		// in doubt
+		else c2 = "&FO";
+	}
+	else if (penn.equals("TO")) c2 = "TO";
+	
+	else if (penn.equals("UH")) c2 = "UH";
+	
+	// verb, base form
+	else if (penn.equals("VB")) {
+		if (string.equalsIgnoreCase("be")) c2 = "VB0";
+		else if (string.equalsIgnoreCase("do")) c2 = "VD0";
+		else if (string.equalsIgnoreCase("have")) c2 = "VH0";
+		else c2 = "VV0";
+	}
+	// verb, past tense
+	else if (penn.equals("VBD")) {
+		if (string.equalsIgnoreCase("were")) c2 = "VBDR";
+		else if (string.equalsIgnoreCase("was")) c2 = "VBDZ";
+		else if (string.equalsIgnoreCase("did")) c2 = "VDD";
+		else if (string.equalsIgnoreCase("had")) c2 = "VHD";
+		else c2 = "VVD";
+	}
+	// verb, present participle or gerund
+	else if (penn.equals("VBG")) {
+		if (string.equalsIgnoreCase("being")) c2 = "VBG";
+		else if (string.equalsIgnoreCase("doing")) c2 = "VDG";
+		else if (string.equalsIgnoreCase("having")) c2 = "VHG";
+		else c2 = "VVG";
+	}
+	// verb, past participle
+	else if (penn.equals("VBN")) {
+		if (string.equalsIgnoreCase("been")) c2 = "VBN";
+		else if (string.equalsIgnoreCase("done")) c2 = "VDN";
+		else if (string.equalsIgnoreCase("had")) c2 = "VHN";
+		else c2 = "VVN";
+	}
+	// verb, present tense, not 3rd person singular
+	else if (penn.equals("VBP")) {
+		if (string.equalsIgnoreCase("are")) c2 = "VBR";
+		else if (string.equalsIgnoreCase("am")) c2 = "VBM";
+		else if (string.equalsIgnoreCase("do")) c2 = "VD0";
+		else if (string.equalsIgnoreCase("have")) c2 = "VH0";
+		else c2 = "VV0";
+	}
+	// verb, present tense, 3rd person singular
+	else if (penn.equals("VBZ")) {
+		if (string.equalsIgnoreCase("is")) c2 = "VBZ";
+		else if (string.equalsIgnoreCase("does")) c2 = "VDZ";
+		else if (string.equalsIgnoreCase("has")) c2 = "VHZ";
+		else c2 = "VVZ";
+	}
+	
+	// what whatever which
+	else if (penn.equals("WDT")) {
+		// DDQ wh-determiner (which, what)
+		// DDQGE wh-determiner, genitive (whose)
+		// DDQV wh-ever determiner, (whichever, whatever)
+		if (string.equalsIgnoreCase("whose")) c2 = "DDQGE";
+		else if (string.toLowerCase().endsWith("ever")) c2 = "DDQV";
+		else c2 = "DDQ";
+	}
+	// WP ->	WH-pronoun what who whom whoever 
+	else if (penn.equals("WP")) {
+		if (string.equalsIgnoreCase("whom")) c2 = "PNQO";
+		else if (string.equalsIgnoreCase("who")) c2 = "PNQS";
+		else if (string.equalsIgnoreCase("whosever")) c2 = "PNQV$";
+		else if (string.equalsIgnoreCase("whomever")) c2 = "PNQVO";
+		else if (string.equalsIgnoreCase("whomsoever")) c2 = "PNQVO";
+		else if (string.equalsIgnoreCase("whoever")) c2 = "PNQVS";
+		else if (string.equalsIgnoreCase("whosoever")) c2 = "PNQVS";
+		else c2 = "PNQS";
+	}
+	// whose
+	else if (penn.equals("WP$")) c2 = "DDQ$";
+	// Wh-adverb
+	// how however when whenever why where whereby wherein wherever
+	else if (penn.equals("WRB")) {
+		if (string.equalsIgnoreCase("how")) c2 = "RGQ";
+		else if (string.equalsIgnoreCase("however")) c2 = "RGQV";
+		else if (string.toLowerCase().endsWith("ever")) c2 = "RRQV";
+		else c2 = "RRQ";
+	}
+
+	// create a new annotation corresponding to the Token
+	FeatureMap fm = Factory.newFeatureMap();
+	fm.put("pos",c2);
+	fm.put("string",string);
+	fm.put("probability",new Double(1.0d));
+	try {
+	outputAS.add(token.getStartNode().getOffset(), token.getEndNode().getOffset(), "WordForm", fm);
+	}
+	catch (Exception e){e.printStackTrace();}
+}

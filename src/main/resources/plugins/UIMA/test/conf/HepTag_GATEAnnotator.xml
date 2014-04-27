@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="UTF-8" ?> 
+<!--
+ *  Copyright (c) 2005, The University of Sheffield.
+ *
+ *  This file is part of the GATE/UIMA integration layer, and is free
+ *  software, released under the terms of the GNU Lesser General Public
+ *  Licence, version 2.1 (or any later version).  A copy of this licence
+ *  is provided in the file LICENCE in the distribution.
+ *
+ *  UIMA is a product of IBM, details are available from
+ *  http://alphaworks.ibm.com/tech/uima
+-->
+
+<!-- GATE application that adds part-of-speech tags to UIMA tokens -->
+
+<taeDescription xmlns="http://uima.apache.org/resourceSpecifier">
+<frameworkImplementation>org.apache.uima.java</frameworkImplementation>
+<primitive>true</primitive>
+<annotatorImplementationName>gate.uima.GATEApplicationAnnotator</annotatorImplementationName>
+ 
+<analysisEngineMetaData>
+  <name>ANNIE POS tagger</name>
+  <description>
+    A GATE application providing part-of-speech tagging using components from
+    ANNIE.
+  </description>
+  <version>1.0</version>
+  <vendor>GATE</vendor>
+ 
+<!-- TypeSystem Definition - The types declared here must be compatible with
+those the annotation mapping expects, or the behavious is not defined. -->
+  <typeSystemDescription>
+    <types>
+      <typeDescription>
+        <name>org.apache.uima.examples.tokenizer.Token</name>
+        <description></description>
+        <supertypeName>uima.tcas.Annotation</supertypeName>
+        <features>
+          <featureDescription>
+            <name>POS</name>
+            <description>Penn TreeBank part-of-speech tag</description>
+            <rangeTypeName>uima.cas.String</rangeTypeName>
+          </featureDescription>
+        </features>
+      </typeDescription>
+      <typeDescription>
+        <name>org.apache.uima.examples.tokenizer.Sentence</name>
+        <description></description>
+        <supertypeName>uima.tcas.Annotation</supertypeName>
+      </typeDescription>
+    </types>
+  </typeSystemDescription>
+
+<!-- Capabilities: Inputs, Outputs, and Preconditions - These capabilities must
+match what the particular GATE application will produce, or an error may occur
+-->
+  <capabilities>
+    <capability>
+      <inputs>
+        <type>org.apache.uima.examples.tokenizer.Sentence</type>
+        <type>org.apache.uima.examples.tokenizer.Token</type>
+      </inputs>
+      <outputs>
+        <feature>org.apache.uima.examples.tokenizer.Token:POS</feature>
+      </outputs>
+      <languagesSupported>
+        <language>en</language>
+      </languagesSupported>  
+    </capability>
+  </capabilities>
+
+</analysisEngineMetaData>
+
+<!-- External resource dependencies.  This section will be the same for all
+GATEApplicationAnnotators, and should not be edited. -->
+<externalResourceDependencies>
+  <externalResourceDependency>
+    <key>GateApplication</key>
+    <description>
+      The file containing the saved GATE application state (.gapp file)
+    </description>
+  </externalResourceDependency>
+
+  <externalResourceDependency>
+    <key>MappingDescriptor</key>
+    <description>
+      The file defining the mapping between GATE and UIMA annotation schemes.
+    </description>
+  </externalResourceDependency>
+</externalResourceDependencies>
+
+<!-- Resource manager configuration.  This is where the GATEApplication and
+MappingDescriptor must be supplied for your particular GATE application -->
+<resourceManagerConfiguration>
+  <externalResources>
+    <externalResource>
+      <name>gate.uima.heptag_application</name>
+      <fileResourceSpecifier>
+        <fileUrl>file:HepTag.gapp</fileUrl>
+      </fileResourceSpecifier>
+    </externalResource>
+
+    <externalResource>
+      <name>gate.uima.heptag_mapping</name>
+      <fileResourceSpecifier>
+        <fileUrl>file:HepTag_UIMAMapping.xml</fileUrl>
+      </fileResourceSpecifier>
+    </externalResource>
+  </externalResources>
+
+  <externalResourceBindings>
+    <externalResourceBinding>
+      <key>GateApplication</key>
+      <resourceName>gate.uima.heptag_application</resourceName>
+    </externalResourceBinding>
+
+    <externalResourceBinding>
+      <key>MappingDescriptor</key>
+      <resourceName>gate.uima.heptag_mapping</resourceName>
+    </externalResourceBinding>
+  </externalResourceBindings>
+</resourceManagerConfiguration>
+
+</taeDescription>
+

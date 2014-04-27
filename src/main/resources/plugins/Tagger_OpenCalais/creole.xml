@@ -1,0 +1,52 @@
+<!-- creole.xml for OpenCalais PR -->
+<CREOLE-DIRECTORY>
+  <CREOLE>
+    <RESOURCE>
+      <NAME>OpenCalais Tagger</NAME>
+      <COMMENT>An OpenCalais based semantic annotator</COMMENT>
+      <HELPURL>http://gate.ac.uk/userguide/sec:misc-creole:OpenCalais</HELPURL>
+      <JAR>OpenCalais.jar</JAR>
+      <JAR>./lib/jettison-1.1.jar</JAR>
+      <CLASS>gate.opencalais.OpenCalais</CLASS>
+      <PARAMETER NAME="document"
+        COMMENT="The document to be analysed."
+        RUNTIME="true">gate.corpora.DocumentImpl</PARAMETER>
+      <PARAMETER NAME="outputASName"
+        COMMENT="The name of the annotation set used for output" RUNTIME="true"
+        OPTIONAL="true">java.lang.String</PARAMETER>
+      <PARAMETER NAME="licenseID"
+        COMMENT="The user licence ID with which to connect to OpenCalais">java.lang.String</PARAMETER>
+      <PARAMETER NAME="openCalaisURL"
+        COMMENT="The URL for the OpenCalais REST service"
+        DEFAULT="http://api.opencalais.com/enlighten/rest/">java.net.URL</PARAMETER>
+      <PARAMETER NAME="calculateRelevanceScore"
+        COMMENT="Indicates whether the extracted metadata will include relevance score for each unique entity"
+        DEFAULT="false"
+        RUNTIME="true">java.lang.Boolean</PARAMETER>
+      <PARAMETER NAME="enableMetadataType"
+        COMMENT="Indicates whether output will include Generic Relation extractions (RDF) and/or SocialTags" 
+        OPTIONAL="true" 
+        RUNTIME="true">gate.opencalais.MetadataType</PARAMETER>
+      <PARAMETER NAME="docRDFaccessible"
+        COMMENT="Indicates whether entire XML/RDF document is saved in the Calais Linked Data repository"
+        DEFAULT="false"
+        RUNTIME="true">java.lang.Boolean</PARAMETER>
+      <PARAMETER NAME="allowDistribution"
+        COMMENT="Indicates whether the extracted metadata can be distributed"
+        DEFAULT="false"
+        RUNTIME="true">java.lang.Boolean</PARAMETER>
+      <PARAMETER NAME="allowSearch"
+        COMMENT="Indicates whether future searches can be performed on the extracted metadata"
+        DEFAULT="false"
+        RUNTIME="true">java.lang.Boolean</PARAMETER>
+      <PARAMETER NAME="externalID"
+        COMMENT="User-generated ID for the submission"
+        OPTIONAL="true" 
+        RUNTIME="true">java.lang.String</PARAMETER>
+      <PARAMETER NAME="submitter"
+        COMMENT="Identifier for the content submitter"
+        OPTIONAL="true" 
+        RUNTIME="true">java.lang.String</PARAMETER>
+    </RESOURCE>
+  </CREOLE>
+</CREOLE-DIRECTORY>

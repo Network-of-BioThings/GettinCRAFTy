@@ -1,0 +1,689 @@
+// timex_date.jape
+
+
+Phase:	Timex_date
+Input: Token SpaceToken Lookup
+Options: control = appelt
+
+////////////////////////////////////////////////////////////////////////////
+Macro: DAY_NAME 
+({Lookup.minorType == day }|{Token.string == "luni"}|
+ {Token.string == "Luni"}|{Token.string == "LUNI"})
+
+
+Macro: DAY_MONTH_NUM
+(ONE_DIGIT | TWO_DIGIT)
+
+Macro: DATE_PRE
+// possible modifiers of dates, eg. "inceput de October"
+({Token.string == "început"}|
+ {Token.string == "începutul"}|
+ {Token.string == "începutului"}|
+ {Token.string == "sfârşit"}|
+ {Token.string == "sfârşitul"}|
+ {Token.string == "sfârşitului"}|
+ {Token.string == "mijloc"}|
+ {Token.string == "mijlocul"}|
+ {Token.string == "mijlocului"}
+)
+
+Macro: DAY 
+(  ((DATE_PRE SPACE)? DAY_NAME) |
+    DAY_MONTH_NUM
+)
+
+Macro: MONTH_NAME
+( 
+  (DATE_PRE 
+    (SPACE ({Token.string == "de"}|{Token.string == "lui"}) SPACE)?
+  )?
+  ({Lookup.minorType == month}|{Token.string =="mai"}|
+   {Token.string =="Mai"}|{Token.string =="MAI"})
+)  
+
+Macro: MONTH 
+(MONTH_NAME | DAY_MONTH_NUM)
+
+Macro: YEAR
+(        
+ {Lookup.majorType == year}|
+  TWO_DIGIT | FOUR_DIGIT | 
+ ({Token.string == "'"}(TWO_DIGIT))|
+ ({Token.string == "a"}DOT{Token.string == "c"}DOT) 
+)
+ 
+//////////////////////////////////////////////////////////////////////////// 
+
+
+
+Rule:	DateRoman           // Romania only
+// 10.IX.1999
+(
+ (DAY_MONTH_NUM)
+ (SPACE|DOT)
+ {Lookup.minorType == monthRoman}
+ (SPACE|DOT)
+ (YEAR)
+)
+:date
+-->
+ :date.TempDate = {rule = "DateRoman"}
+
+Rule:	DateName1
+// miercuri 23 Ianurie 2000
+// joi, 20 martie
+// Duminica - 25 noiembrie
+// ieri, 20 martie a.c.
+
+(  
+ ((DAY_NAME|{Lookup.minorType == time_key})
+  (DASH|COMMA|SPACE)+
+ )?
+  
+ DAY_MONTH_NUM
+ SPACE 
+ MONTH_NAME 
+ (SPACE YEAR)?
+)
+:date
+-->
+ :date.TempDate = {rule = "DateName1"}
+ 
+Rule:	DateName2
+// miercuri,  14.11.2001
+
+(  
+ (DAY_NAME
+  (DASH|COMMA|SPACE)+
+ )?
+ 
+ (DAY_MONTH_NUM)
+  DOT (SPACE)?
+ (DAY_MONTH_NUM)
+  DOT (SPACE)?
+ (YEAR)  
+)
+:date
+-->
+ :date.TempDate = {rule = "DateName2"}
+
+Rule:	DateName3
+// 27/28.11.2001
+
+(  
+ (DAY_MONTH_NUM)
+ (SLASH DAY_MONTH_NUM)
+  DOT (SPACE)?
+ (DAY_MONTH_NUM)
+  DOT (SPACE)?
+ (YEAR)  
+)
+:date
+-->
+ :date.TempDate = {rule = "DateName3"}
+
+  
+Rule:	DateNameYear
+//Ianurie 2000
+
+(  
+ MONTH_NAME SPACE YEAR
+)
+:date
+-->
+ :date.TempDate = {rule = "DateNameYear"}
+ 
+ 
+Rule: DateNameSpan
+// 5-20 Ianurie 2000
+
+(
+ DAY_MONTH_NUM
+ (SPACE)?
+ (DASH|SLASH)
+ (SPACE)?
+ (DAY_MONTH_NUM (SPACE)? MONTH_NAME ((SPACE)? YEAR)?)
+)
+:date
+-->
+ :date.TempDate = {rule = "DateNameSpan"}
+ 
+Rule:	DateNum
+// 01-07-00
+// 01.07.2001
+// Note: not 07-00
+Priority:30
+
+(({Token.string == "la"})?(SPACE))  
+(
+ DAY_MONTH_NUM 
+ (SLASH|DASH|DOT) 
+ DAY_MONTH_NUM 
+ (SLASH|DASH|DOT) 
+ YEAR
+)
+:date
+-->
+ :date.TempDate = {rule = "DateNum"}
+
+Rule:DaySpan
+// de vineri pina luni
+(
+ ({Token.string == "de"}|{Token.string == "De"})
+ (SPACE)
+ (DAY_NAME)
+ (SPACE)
+ ({Token.string == "pînă"}|{Token.string == "până"})
+ (SPACE)
+ (DAY_NAME)
+):date
+-->
+:date.TempDate = {rule = "DaySpan"}
+
+Rule: DayMonthSpan1
+//08.12.-14.12.2000
+//05.12 � 28.12.2001
+Priority:25
+(
+  DAY_MONTH_NUM
+  DOT
+  DAY_MONTH_NUM
+  (DOT)? (SPACE)? DASH (SPACE)?
+  DAY_MONTH_NUM
+  DOT 
+  DAY_MONTH_NUM
+  DOT 
+  YEAR  
+)
+:date 
+-->
+ :date.TempDate = {rule = "DayMonthSpan"}
+ 
+Rule: DayMonthSpan2
+// mai-noiembrie 2000
+// 31 august - 2 septembrie
+
+(
+ (DAY_MONTH_NUM SPACE)?
+ (MONTH_NAME)
+ (SPACE)?
+ (DASH|SLASH)
+ (SPACE)?
+ ((DAY_MONTH_NUM SPACE)? MONTH_NAME (SPACE YEAR)?)
+)
+:date
+-->
+ :date.TempDate = {rule = "DayMonthSpan2"}  
+
+Rule: DayMonthSpan3
+// intre 22 dec si 13 ian
+(
+ ({Token.string == "între"}|{Token.string == "Între"}) 
+  SPACE
+  DAY_MONTH_NUM
+  SPACE 
+  MONTH_NAME 
+  (SPACE YEAR)?
+  SPACE
+  {Token.string == "şi"}
+  (SPACE)
+  DAY_MONTH_NUM
+  SPACE 
+  MONTH_NAME 
+  (SPACE YEAR)?
+)
+:date -->
+ :date.TempDate = {rule = "DayMonthSpan3"}
+
+Rule: DayMonthSpan4
+// intre 5 si 9 ian
+(
+ ({Token.string == "între"}|{Token.string == "Între"}) 
+  SPACE
+  DAY_MONTH_NUM
+  SPACE 
+  {Token.string == "şi"}
+  (SPACE)
+  DAY_MONTH_NUM
+  SPACE 
+  MONTH_NAME 
+  (SPACE YEAR)?
+)
+:date -->
+ :date.TempDate = {rule = "DayMonthSpan4"}
+
+Rule: DayMonthSpan5
+// 19 spre 20 februarie
+// 15 spre 19 martie 1999
+(
+  DAY_MONTH_NUM
+  SPACE 
+  {Token.string == "spre"}
+  SPACE
+  DAY_MONTH_NUM
+  SPACE 
+  MONTH_NAME 
+  (SPACE YEAR)?
+)
+:date -->
+ :date.TempDate = {rule = "DayMonthSpan4"}
+ 
+
+Rule: FestivalSpan
+// intre Florii si Duminica Tomei
+(
+ ({Token.string == "între"}|{Token.string == "Între"}) 
+  SPACE
+  {Lookup.minorType == festival}
+  SPACE
+  {Token.string == "şi"}
+  SPACE
+  {Lookup.minorType == festival}
+)
+:date -->
+ :date.TempDate = {rule = "FestivalSpan"}
+
+
+Rule: DayAndTimeKey
+//luni seara
+
+( 
+  DAY_NAME
+  (SPACE)
+  {Lookup.minorType == time_key}
+)
+:date -->
+ :date.TempDate = {rule = "DayAndTimeKey"}
+
+Rule: ModifierMonth
+//inceputul lui October
+//inceputul de October
+
+( DATE_PRE (SPACE) ({Token.string == "de"}|{Token.string == "lui"}) (SPACE)
+  {Lookup.minorType == month}
+)
+:date -->
+ :date.TempDate = {rule = "ModifierMonth"}
+
+
+Rule: YearDhIh
+
+// 1900 ih
+(
+ (YEAR 
+  (SPACE)?
+  DH_IH)
+)
+:year -->
+ :year.TempYear = {kind = "positive", rule = "YearDhIh"}
+
+
+Rule: YearSpan1
+// inceputul anilor 90
+// sfirsitul lui 80
+(
+
+ (DATE_PRE SPACE)
+ ({Lookup.minorType == date_pre}) 
+ (SPACE)
+ ({Token.string == "'"})?
+ (YEAR)
+)
+:date -->
+ :date.TempDate = {rule = "YearSpan1"}
+
+Rule: YearSpan7
+// anul 1990
+// anii '40-'50
+
+({Lookup.minorType == date_pre} SPACE) 
+(
+ ({Token.string == "'"})?
+ (YEAR)
+ ((SPACE)? (DASH)(SPACE)? ({Token.string == "'"})?(YEAR))?
+)
+:date -->
+ :date.TempDate = {rule = "YearSpan7"}
+ 
+Rule: YearSpan2
+// 1980/81
+(
+ (FOUR_DIGIT)
+ (SLASH)
+ (TWO_DIGIT | ONE_DIGIT)
+)
+:date 
+
+(SPACE)
+-->
+ :date.TempDate = {rule = "YearSpan2"}
+
+Rule: YearSpan3
+Priority: 80
+
+// din 1980 pina in 1981
+// intre 1980 si 1981
+// intre 1980-2000
+
+(
+ (({Token.string == "din"}| {Token.string == "Din"})
+  (SPACE)
+  (FOUR_DIGIT)
+  (SPACE) 
+  ({Token.string == "până"}|{Token.string == "până"})
+  (SPACE)
+  ({Token.string == "la"}|{Token.string == "în"}|{Token.string == "pe"})
+  (SPACE)
+  (FOUR_DIGIT)
+ ) |
+ ( ({Token.string == "între"}|{Token.string == "Între"})
+  (SPACE {Lookup.minorType == date_pre,Lookup.majorType == date }) 
+  (SPACE) 
+  (FOUR_DIGIT)
+  (SPACE)
+  {Token.string == "şi"}
+  (SPACE)
+  (FOUR_DIGIT)
+ )|
+ (({Token.string == "între"}|{Token.string == "Între"})
+  (SPACE)
+  (YEAR)
+  (SPACE)?
+   DASH
+  (SPACE)?
+  (YEAR)
+ ) 
+)
+:date -->
+ :date.TempDate = {rule = "YearSpan3"}
+
+Rule: YearSpan4
+// sfirsitul lui 80
+(
+
+ (DATE_PRE SPACE)
+ ({Token.string == "lui"}) 
+ (SPACE)
+ ({Token.string == "'"})?
+ (YEAR)
+)
+:date -->
+ :date.TempDate = {rule = "YearSpan4"}
+
+Rule: YearSpan5
+// 1980-1981
+
+(
+ (FOUR_DIGIT)
+  (SPACE)?
+  DASH
+  (SPACE)?
+ (FOUR_DIGIT)
+)
+:date 
+
+-->
+ :date.TempDate = {rule = "YearSpan5"}
+ 
+//Rule: YearSpan6 
+
+//({Token.string == "perioada"}(SPACE))
+//( (FOUR_DIGIT)
+//  DASH
+//  (FOUR_DIGIT)
+//)
+//:date 
+//(SPACE)
+//-->
+// :date.TempDate = {rule = "YearSpan6"}
+
+
+
+Rule: YearContext1
+Priority: 40
+// in 1998
+// din 1968
+
+(({Token.string == "în"}|
+ {Token.string == "din"}|
+ {Token.string == "prin"})
+ (SPACE)
+)
+
+(
+ FOUR_DIGIT |
+ ({Token.string == "'"}(TWO_DIGIT))
+):date
+
+ -->
+ :date.TempDate = {rule = "YearContext1"}
+
+ 
+ 
+ 
+Rule: YearContext2
+Priority: 40
+// prin 1298 sau 1490
+// in 1234 si 1235
+
+({Token.string == "în"}|
+ {Token.string == "prin"}
+ (SPACE)
+)
+
+(FOUR_DIGIT):date1
+
+(
+ SPACE
+ ({Token.string == "sau"}|{Token.string == "şi"})
+ SPACE
+ ) 
+ 
+(FOUR_DIGIT):date2
+ -->
+  :date1.TempDate = {rule = "YearContext2"},
+  :date2.TempDate = {rule = "YearContext2"} 
+
+// Currently, temp1, temp2 and temp3 look good; temp4 is not to be counted
+// but this may change according to the text
+// only positives will be used in final grammar, not negatives
+
+Rule: TempYear1
+Priority: 30
+// (1987)
+
+({Token.position == startpunct})
+(FOUR_DIGIT)
+:date
+({Token.position == endpunct})
+ -->
+ :date.TempYear = {kind = "positive", rule = "TempYear1"}
+
+
+Rule: TempYear2
+Priority: 20
+// 1987
+
+(SPACE)
+(
+ {Lookup.majorType == year}
+)
+:date 
+(SPACE)
+-->
+ :date.TempYear = {kind = "positive", rule = "TempYear2"}
+
+
+//Rule: TempYear3
+//Priority: 10
+// 1922
+
+//(({Token.kind == word}|{Token.kind == punctuation}|{Token.kind == symbol}) SPACE)
+//(FOUR_DIGIT)
+//:date 
+//(({Token.kind == word}|{Token.kind == punctuation}|{Token.kind == symbol}) SPACE)
+//-->
+// :date.TempYear = {kind = "positive", rule = "TempYear3"}
+
+//Rule: TempYear4
+// 20
+//
+//(YEAR)
+//:date -->
+// :date.TempYear = {kind = "negative", rule = "TempYear4"}
+
+Rule: TimeContext1
+Priority: 30
+// ultimii 10 ani
+// ultimelor trei ani
+
+(({Token.string == "ultimii"}|
+  {Token.string == "ultimele"}|
+  {Token.string == "ultimilor"})
+  SPACE
+ ({Lookup.majorType == number}|
+  {Token.kind == number})
+  SPACE
+  ({Token.string == "de"} SPACE)?
+  ({Token.string == "ani"}|
+   {Token.string == "luni"}|
+   {Token.string == "săptămîni"}|
+   {Token.string == "săptămâni"}
+   {Token.string == "decenii"}|
+   {Token.string == "ore"}|
+   {Token.string == "ceasuri"}|
+   {Token.string == "secole"})
+)
+:date 
+(SPACE)
+-->
+ :date.TempYear = {kind = "positive", rule = "TimeContext1"}
+
+//////////////////////////////////////////////////
+
+Rule: TimeContext2
+Priority: 30
+// ultima luna
+// ultimul an
+
+(({Token.string == "ultimul"}|
+  {Token.string == "ultima"})
+  SPACE
+  ({Token.string == "an"}|
+   {Token.string == "lună"}|
+   {Token.string == "săptămînă"}|
+   {Token.string == "săptămână"}
+   {Token.string == "deceniu"}|
+   {Token.string == "secol"})
+)
+:date 
+(SPACE)
+-->
+ :date.TempYear = {kind = "positive", rule = "TimeContext2"}
+
+////////////////////////////////////////////////////////
+
+Rule: TimeContext3
+Priority: 30
+// ultimile doua-trei luni
+// ultimilor 2-3 ani
+
+(({Token.string == "ultimii"}|
+  {Token.string == "ultimele"}|
+  {Token.string == "ultimilor"})
+  SPACE
+ ({Lookup.majorType == number}|
+  {Token.kind == number})
+  DASH
+ ({Lookup.majorType == number}|
+  {Token.kind == number})
+  SPACE
+  ({Token.string == "ani"}|
+   {Token.string == "luni"}|
+   {Token.string == "săptămîni"}|
+   {Token.string == "săptămâni"}
+   {Token.string == "decenii"}|
+   {Token.string == "secole"})
+)
+:date 
+(SPACE)
+-->
+ :date.TempYear = {kind = "positive", rule = "TimeContext3"}
+ 
+////////////////////////////////////////////////////////
+
+Rule: TimeContext4
+Priority: 30
+// luna trecuta
+// an trecut
+(
+  ({Token.string == "anul"}|
+   {Token.string == "luna"}|
+   {Token.string == "săptămîna"}|
+   {Token.string == "săptămâna"}
+   {Token.string == "deceniul"}|
+   {Lookup.minorType == day}|
+   {Token.string == "secolul"})
+   SPACE
+   ({Token.string == "trecut"}|
+    {Token.string == "trecută"}|
+    {Token.string == "viitoare"}|
+    {Token.string == "viitor"})
+)
+:date 
+(SPACE)
+-->
+ :date.TempYear = {kind = "positive", rule = "TimeContext4"}
+
+////////////////////////////////////////////////////////////////
+
+Rule: TimeContext5
+Priority: 30
+// luna trecuta
+// an trecut
+(
+  ({Token.string == "anul"}|
+   {Token.string == "luna"}|
+   {Token.string == "săptămîna"}|
+   {Token.string == "săptămâna"}
+   {Token.string == "deceniul"}|
+   {Lookup.minorType == day}|
+   {Lookup.minorType == month}|
+   {Token.string == "secolul"})
+   SPACE
+   ({Token.string == "trecut"}|
+    {Token.string == "trecută"}|
+    {Token.string == "viitoare"}|
+    {Token.string == "viitor"}|
+    {Token.string == "asta"}|
+    {Token.string == "aceasta"}|
+    {Token.string == "ăsta"}|
+    {Token.string == "acesta"})
+)
+:date 
+(SPACE)
+-->
+ :date.TempYear = {kind = "positive", rule = "TimeContext5"}
+////////////////////////////////////////////////////////////////
+
+Rule: TimeContext5
+Priority: 30
+// luna trecuta
+// an trecut
+(
+  ({Token.string == "această"}|
+   {Token.string == "acest"})
+   SPACE  
+  ({Token.string == "an"}|
+   {Token.string == "lună"}|
+   {Token.string == "săptămînă"}|
+   {Token.string == "săptămână"}
+   {Token.string == "deceniu"}|
+   {Lookup.minorType == day}|
+   {Lookup.minorType == month}|
+   {Token.string == "secol"})    
+)
+:date 
+(SPACE)
+-->
+ :date.TempYear = {kind = "positive", rule = "TimeContext5"}

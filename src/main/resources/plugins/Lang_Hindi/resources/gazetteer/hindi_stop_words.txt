@@ -1,0 +1,321 @@
+अंतिम
+अंदर
+अगर
+अगले
+अगला
+अगली
+अधिक
+अनेक
+अनेकों
+अन्य
+अपना	
+अपनी	
+अपने
+अब
+अभी
+अलग
+अलावा
+आगे
+आप
+आपके	
+आपका
+आपकी
+आपको
+इन
+इनका	
+इनके
+इनकी	
+इन्हें
+इन्होंने
+इनसे
+इनमें
+इस
+इसका	
+इसकी	
+इसके
+इसमें
+इसने
+इसलिए
+इससे
+इसी
+इसे
+उन
+उनका	
+उनकी	
+उनके
+उनमें
+उन्हें
+उन्होंने
+उनसे
+उस
+उसका
+उसकी
+उसके
+उसने
+उसमें
+उससे
+उसको
+उसी
+उसे
+एक
+ऐसा
+ऐसी
+ऐसे
+और
+कई
+कभी
+कम
+कर
+करूं
+करें
+करो
+कीजिए
+करता
+करती
+करते
+करना
+करनी
+करने
+करके
+किया
+किए
+करें
+करूंगा
+करूंगी
+करेंगे
+करेगा
+करेगी
+कह
+कहूँ
+कहें
+कहिए	
+कहता
+कहती
+कहते
+कहना
+कहनी
+कहने
+कहके
+कहा
+कही
+कहे
+कहेंगे
+कहूँगा
+कहूँगी
+कहेगा
+कहेगी
+कहीं
+का
+काफ़ी
+कि
+किसी
+की
+कुछ
+के
+केवल
+को
+कोई
+क्या
+क्यों
+क्योंकि
+ख़ुद
+जा	go	<auxiliary>
+जाऊँ	go	<auxiliary>
+जाए	go	<auxiliary>
+जाएँ	go	<auxiliary>
+जाइए	go	<auxiliary>
+जाता	go	<auxiliary>
+जाती	go	<auxiliary>
+जाते	go	<auxiliary>
+जाना	go	<auxiliary>
+जानी	go	<auxiliary>
+जाने	go	<auxiliary>
+जाके	go	<auxiliary>
+गया	went	<auxiliary>
+गई	went	<auxiliary>
+गईं	went (plural,)	<auxiliary>
+गए	went (plural)	<auxiliary>
+जाएँगे	go	<auxiliary>
+जाऊँगा	go	<auxiliary>
+जाऊँगी	go	<auxiliary>
+जाएगा	go	<auxiliary>
+जाएगी	go	<auxiliary>
+चाहते	want	<auxiliary>
+चाहता	want	<auxiliary>
+चाहती	want	<auxiliary>
+जब	when	<adverb>
+जबकि	when	<conjunction>
+जहाँ	where	<conjunction>
+ज़रूरत	need	<common>
+ज़्यादातर	mostly	<adverb>
+जिन	which (plural)	<pronoun>
+जिनमें	in	<pronoun>
+जिस	which	<pronoun>
+जिसके	which	<pronoun>
+जिसमें	in	<pronoun>
+जिससे	from	<pronoun>
+जिसे	to	<pronoun>
+जैसी	like	<adjective>
+जैसे	like	<adjective>
+जो	which	<pronoun>
+तक	till	<preposition>
+तब	then	<pronoun>
+तरह	type	<common>
+ताकि	so	<conjunction>
+तो	so	<conjunction>
+था	was	<auxiliary>
+थी	was	<auxiliary>
+थीं	was	<auxiliary>
+थे	were	<auxiliary>
+दिया	gave	<auxiliary>
+दी	gave	<auxiliary>
+दौरान	according	<preposition>
+द्वारा	by	<preposition>
+न	not	<adverb>
+नहीं	no	<adverb
+ने	case
+पर	on	<preposition>
+पहला	first	<adjective>
+पहली	first	<adjective>
+पास	near	<adverb>
+पिछले	before,	<preposition>
+पीछे	behind	<preposition>
+पूरा	whole	<adjective>
+पूरी	whole	<adjective>
+पूरे	whole	<adjective>
+प्रति	according	<preposition>
+
+फिर	then,	<adverb>
+
+बल्कि	however	<conjunction>
+
+बहुत	a	<adjective>
+
+बाद	after	<preposition>
+
+बार	repetition	<common>
+
+बारे	about	<preposition>
+
+बिना	without	<preposition>
+
+बीच	between	<preposition>
+
+भी	also	<adverb>
+
+मगर	but	<conjunction>
+
+में	in	<preposition>
+
+मैं	I	<pronoun>
+
+यदि	if	<conjunction>
+
+यह	this	<pronoun>
+
+यहाँ	here	<pronoun>
+
+यही	this	<pronoun>
+
+या	or	<conjunction>
+
+यानि	that	<conjunction>
+
+ये	these	<pronoun>
+
+रह	stay	<auxiliary>
+
+रहा	stayed	<auxiliary>
+
+रही	stayed	<auxiliary>
+
+रहे	stayed	<auxiliary>
+
+लगभग	almost,	<adjective>
+
+लगा	seemed	<auxiliary>
+
+लगाया	put	<auxiliary>
+
+लिए	for	<preposition>
+
+लिया	took	<auxiliary>
+
+लेकिन	but	<conjunction>
+
+वह	he,	<pronoun>
+
+वहाँ	there	<pronoun>
+
+वहीं	there	<pronoun>
+
+वे	they	<pronoun>
+
+वो	he/she	<pronoun>
+
+शायद	maybe	<adverb>
+
+सकता	can	<auxiliary>
+
+सकती	can	<auxiliary>
+
+सकते	can	<auxiliary>
+
+सके	can	<auxiliary>
+
+सका	can	<auxiliary>
+
+सकी	can	<auxiliary>
+
+सबसे	from	<pronoun>
+
+सभी	all	<pronoun>
+
+साथ	with	<preposition>
+
+सिर्फ़	only	<adjective>
+
+सी	like	<adjective>
+
+से	from	<preposition>
+
+हम	we	<pronoun>
+
+हमें	to<pronoun>
+
+हर	all	<pronoun>
+
+हालाँकि		<conjunction>
+
+ही	only	<adjective>
+
+हुआ	happened	<auxiliary>
+
+हुई	happened	<auxiliary>
+
+हुए	happened,	<auxiliary>
+
+है	is	<auxiliary>
+
+हैं	are	<auxiliary>
+
+हो	happen	<auxiliary>
+
+होंगे	will	<auxiliary>
+
+होगा	will	<auxiliary>
+
+होगी	will	<auxiliary>
+
+होता	is,	<auxiliary>
+
+होती	happens	<auxiliary>
+
+होते	being	<auxiliary>
+
+होना	to	<auxiliary>
+
+होनी	to	<auxiliary>
+
+होने	being,	<auxiliary>
+

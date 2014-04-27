@@ -1,0 +1,36 @@
+/*
+ * Adds string feature to Token annotations holding the string they cover.
+ */
+
+Phase: addstrings
+Input: Token
+Options: control = appelt
+
+Rule: Token
+(
+  {Token}
+):tok
+-->
+{
+  gate.AnnotationSet tokenSet = (gate.AnnotationSet)bindings.get("tok");
+  gate.Annotation token = (gate.Annotation)tokenSet.iterator().next();
+
+  gate.FeatureMap tokFeatures = token.getFeatures();
+  if(tokFeatures == null) {
+    tokFeatures = gate.Factory.newFeatureMap();
+    token.setFeatures(tokFeatures);
+  }
+
+  try {
+    String tokenString = doc.getContent().getContent(
+                               token.getStartNode().getOffset(),
+                               token.getEndNode().getOffset()).toString();
+
+    tokFeatures.put(gate.creole.ANNIEConstants.TOKEN_STRING_FEATURE_NAME,
+                    tokenString);
+  }
+  catch(InvalidOffsetException ioe) {
+    // shouldn't be possible...
+    throw new GateRuntimeException(ioe);
+  }
+}

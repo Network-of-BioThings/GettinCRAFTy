@@ -1,0 +1,80 @@
+/*
+*  location.jape
+*
+* Copyright (c) 1998-2001, The University of Sheffield.
+*
+*  This file is part of GATE (see http://gate.ac.uk/), and is free
+*  software, licenced under the GNU Library General Public License,
+*  Version 2, June 1991 (in the distribution as file licence.html,
+*  and also available at http://gate.ac.uk/gate/licence.html).
+*
+*  Diana Maynard, 1 October 2003
+* 
+*  $Id $
+*/
+
+Phase: Location
+Input: Lookup Token
+Options: control = appelt debug = false
+
+Rule: Location
+Priority: 100
+(
+ ({Lookup.majorType==location})+
+):tag
+-->
+{
+ gate.FeatureMap features = Factory.newFeatureMap();
+// create an annotation set consisting of all the annotations for tag
+gate.AnnotationSet locSet = (gate.AnnotationSet)bindings.get("tag");
+
+// create an annotation set consisting of the annotation matching Lookup
+gate.AnnotationSet loc = (gate.AnnotationSet)locSet.get("Lookup");
+// if the annotation type Lookup doesn't exist, do nothing
+if (loc != null && loc.size()>0)
+{
+// if it does exist, take the first element in the set
+  gate.Annotation locAnn = (gate.Annotation)loc.iterator().next();
+//propagate minorType feature (and value) from loc
+  features.put("locType", locAnn.getFeatures().get("minorType"));
+}
+// create some new features
+   features.put("rule", "Location");
+// create a GazLoc annotation and add the features we've created
+outputAS.add(locSet.firstNode(), locSet.lastNode(), "Location",
+features);
+outputAS.removeAll(loc);
+}
+
+//Token.String includes an item in loc_key.lst (at the end of the Token)
+
+/*Rule: LocKey
+(
+ {Lookup.majorType == location_key}
+):tag
+-->
+{
+ gate.AnnotationSet tagAS = (gate.AnnotationSet)bindings.get("tag");
+ Annotation lookup = (Annotation)tagAS.iterator().next();
+ 
+ // get Token info associated with the tag found
+ 
+gate.AnnotationSet tokenAS = inputAS.get("Token", 
+								      lookup.getStartNode().getOffset(),
+								      lookup.getEndNode().getOffset());
+if(tokenAS.size() != 1) return;
+Annotation token = (Annotation)tokenAS.iterator().next();
+
+if(token.getEndNode().getOffset().compareTo(lookup.getEndNode().getOffset()) == 0
+   &&
+   token.getStartNode().getOffset().compareTo(lookup.getStartNode().getOffset()) < 0){
+        //create new annotation		
+	gate.FeatureMap features = Factory.newFeatureMap();
+	features.put("rule", "LocKey");
+	outputAS.add(tokenAS.firstNode(),
+			       tokenAS.lastNode(), 
+			       "Location", features);   
+}
+}
+*/
+

@@ -1,0 +1,62 @@
+// identex.jape
+
+Phase:	Identex
+Input: Token SpaceToken Lookup
+Options: control = appelt
+
+Macro: IDENT
+
+({Lookup.majorType == ident_key, Lookup.minorType == pre}
+ (DOT|COLON)?
+ (SPACE)?
+)
+
+////////////////////////////////////////////////////////
+
+Rule: GazNotIdentifier
+Priority: 100
+(
+ {Lookup.majorType == spur_ident}
+)
+:ident -->
+ :ident.Temp = {rule = "GazNotIdentifier"}  
+
+Rule: Identifier1
+(	({Token.kind == number}	
+	 {Token.orth == allCaps}) |
+	({Token.orth == allCaps}
+	 {Token.kind == number})
+	({Token.orth == allCaps}|DOT|
+	 {Token.kind == number})*
+):ident -->
+:ident.TempIdentifier = {rule = "Identifier1"}
+
+Rule: ContextIdentifier1
+
+// nr.13
+(IDENT)
+(
+(({Token.kind == number}	
+	 {Token.orth == allCaps}) |
+	({Token.orth == allCaps}
+	 {Token.kind == number})
+	({Token.orth == allCaps}|
+	 {Token.kind == number})*)|
+	 ({Token.kind == number})
+):ident -->
+:ident.TempIdentifier = {rule = "ContextIdentifier1"}
+
+Rule: ContextIdentifier2
+
+// nr.13-14
+
+(IDENT (SPACE)?)
+({Token.kind == number}	
+ (SPACE)? 
+ {Token.kind == "-"} 
+ (SPACE)? 
+ {Token.kind == number}
+):ident -->
+:ident.TempIdentifier = {rule = "ContextIdentifier2"}
+
+

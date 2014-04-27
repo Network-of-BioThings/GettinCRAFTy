@@ -1,0 +1,20 @@
+// main.jape
+
+MultiPhase:	TestTheGrammars
+Phases: 
+
+enamex_org
+enamex_loc
+enamex_person
+date1
+timex_time
+timex_date
+identex
+numex
+addrex
+phone_context
+address_final
+final
+clean
+clean
+clean

@@ -1,0 +1,1257 @@
+/*
+*  name.jape
+*
+* Copyright (c) 1998-2001, The University of Sheffield.
+*
+*  This file is part of GATE (see http://gate.ac.uk/), and is free
+*  software, licenced under the GNU Library General Public License,
+*  Version 2, June 1991 (in the distribution as file licence.html,
+*  and also available at http://gate.ac.uk/gate/licence.html).
+*
+*  Diana Maynard, 10 Sep 2001
+* 
+*  $Id: name.jape 12077 2009-12-09 14:47:54Z thomas_heitz $
+*/
+
+
+Phase:	Name
+Input: Token Lookup TempPerson TempDate GazLocation Upper Initials JobTitle FirstPerson Initials
+Options: control = appelt debug = false
+
+///////////////////////////////////////////////////////////////////
+// Organisation Rules
+
+Macro:  CDG
+// cdg is something like "Ltd."
+ (
+  ({Lookup.majorType == cdg})|
+  ({Token.string == ","} 
+  {Lookup.majorType == cdg})
+  ({Token.string == "."})?
+ )
+
+
+Macro: SAINT
+(
+ ({Token.string == "St"} ({Token.string == "."})? |
+ {Token.string == "Saint"})
+)
+
+Macro: CHURCH
+(
+{Token.string == "Church"}|{Token.string == "church"}|
+{Token.string == "Cathedral"}|{Token.string == "cathedral"}|
+{Token.string == "Chapel"}|{Token.string == "chapel"}
+)
+
+/////////////////////////////////////////////////////////////
+Rule: GenericOrg
+Priority: 200
+(
+ {Token.category == DT}
+)?
+( 
+ {Lookup.majorType == organization, Lookup.minorType == generic}
+):org
+-->
+:org.Organization = {GENERIC = "TRUE", rule = "GenericOrg"}
+
+Rule:	GazOrganization
+Priority: 145
+(
+ {Token.category == DT}
+)?
+(
+ ({Lookup.majorType == location})?
+ {Lookup.majorType == organization}
+)
+:orgName
+(
+ {Lookup.majorType == org_spur_key_ext}
+)?
+:orgSpur
+-->
+ {
+ gate.FeatureMap features = Factory.newFeatureMap();
+// create an annotation set consisting of all the annotations for org 
+gate.AnnotationSet orgSet = (gate.AnnotationSet)bindings.get("orgName");
+// create an annotation set consisting of the annotation matching Lookup
+gate.AnnotationSet org = (gate.AnnotationSet)orgSet.get("Lookup");
+// if the annotation type Lookup doesn't exist, do nothing
+if (org != null && org.size()>0)
+{
+// if it does exist, take the first element in the set
+  gate.Annotation orgAnn = (gate.Annotation)org.iterator().next();
+//propagate minorType feature (and value) from org
+  features.put("orgType", orgAnn.getFeatures().get("minorType"));
+}
+// create some new features
+  features.put("rule", "GazOrganization");
+// create a TempOrg annotation and add the features we've created
+outputAS.add(orgSet.firstNode(), orgSet.lastNode(), "TempOrganization",
+features);
+// get spurious bit
+//gate.AnnotationSet spurSet = (gate.AnnotationSet)bindings.get("orgSpur");
+//outputAS.removeAll(spurSet);
+}
+
+Rule: GazOrgJobTitle
+Priority: 145
+(
+ {Token.category == DT}
+)?
+(
+ ({Lookup.majorType == location})?
+ {Lookup.majorType == organization}
+)
+:orgName
+(
+ {JobTitle}
+)
+-->
+ {
+ gate.FeatureMap features = Factory.newFeatureMap();
+// create an annotation set consisting of all the annotations for org 
+gate.AnnotationSet orgSet = (gate.AnnotationSet)bindings.get("orgName");
+// create an annotation set consisting of the annotation matching Lookup
+gate.AnnotationSet org = (gate.AnnotationSet)orgSet.get("Lookup");
+// if the annotation type Lookup doesn't exist, do nothing
+if (org != null && org.size()>0)
+{
+// if it does exist, take the first element in the set
+  gate.Annotation orgAnn = (gate.Annotation)org.iterator().next();
+//propagate minorType feature (and value) from org
+  features.put("orgType", orgAnn.getFeatures().get("minorType"));
+}
+// create some new features
+  features.put("rule", "GazOrgJobTitle");
+// create a TempOrg annotation and add the features we've created
+outputAS.add(orgSet.firstNode(), orgSet.lastNode(), "TempOrganization",
+features);
+}
+
+
+Rule:	LocOrganization
+Priority: 50
+// Ealing Police
+(
+ ({Lookup.majorType == location} |
+  {Lookup.majorType == country_adj})
+{Lookup.majorType == organization}
+({Lookup.majorType == organization})?
+)
+:orgName -->  
+  :orgName.TempOrganization = {kind = "orgName", rule=LocOrganization}
+
+Rule: SportsTeam
+Priority: 100
+// Inter Milan
+(
+ {Token.category == DT}
+)? 
+
+(
+ {Lookup.majorType == team_pre}
+ {Lookup.majorType == location}
+)
+:orgName --> 
+ :orgName.TempOrganization = {kind = "team", rule = "SportsTeam"}
+
+Rule: SportsTeamPost
+Priority: 60
+// Oakland Athletic
+(
+ {Token.category == DT}
+)? 
+
+(
+{GazLocation}
+{Lookup.majorType == team_post}
+):orgName 
+-->
+{
+ gate.FeatureMap features = Factory.newFeatureMap();
+gate.AnnotationSet orgSet = (gate.AnnotationSet)bindings.get("orgName");
+features.put("orgType", "team");
+features.put("rule", "SportsteamPost");
+outputAS.add(orgSet.firstNode(), orgSet.lastNode(), "TempOrganization",
+features);
+outputAS.removeAll(orgSet);
+}
+
+
+Rule: SportsTeamFirst
+Priority: 50
+// Inter
+(
+ {Token.category == DT}
+)? 
+
+(
+ {Lookup.majorType == team_pre}
+)
+:orgName --> 
+ {
+ gate.FeatureMap features = Factory.newFeatureMap();
+// create an annotation set consisting of all the annotations for orgName 
+  gate.AnnotationSet orgSet = (gate.AnnotationSet)bindings.get("orgName");
+ outputAS.removeAll(orgSet);
+}
+
+Rule:	TheOrgXandY
+Priority: 21
+
+// The Bradford & Bingley
+
+(
+ {Token.category == IN}|{Token.category ==DT}|{TempDate}
+)
+
+(
+ ({Token.category == NNP}
+  )+
+
+ {Token.string == "&"}
+
+ (
+  {Token.orth == upperInitial}
+ )+
+
+ (CDG)?
+
+)
+:orgName -->
+  :orgName.TempOrganization = {kind = "unknown", rule = "TheOrgXandY"}
+
+
+Rule:	OrgXandY
+Priority: 20
+
+// Bradford & Bingley
+// Bradford & Bingley Ltd
+(
+ {TempDate}
+)?
+(
+ ({Token.category == NNP}
+  )+
+
+ {Token.string == "&"}
+
+ (
+  {Token.orth == upperInitial}
+ )+
+
+ (CDG)?
+
+)
+:orgName -->
+  :orgName.TempOrganization = {kind = "unknown", rule = "OrgXandY"}
+
+Rule: LocUni
+Priority: 250
+// Arizona State University
+
+(
+ {GazLocation}
+ ({Token.category == NNP})?
+ ({Token.category == NNP})?
+ {Token.string == "University"}
+):orgName
+-->
+ {
+ gate.FeatureMap features = Factory.newFeatureMap();
+gate.AnnotationSet orgSet = (gate.AnnotationSet)bindings.get("orgName");
+features.put("orgType", "Unknown");
+features.put("rule", "LocUni");
+outputAS.add(orgSet.firstNode(), orgSet.lastNode(), "TempOrganization",
+features);
+outputAS.removeAll(orgSet);
+}
+
+
+Rule:OrgUni
+Priority: 25
+// University of Sheffield
+// Sheffield University
+// A Sheffield University
+
+(
+ {Token.string == "University"}
+ {Token.string == "of"}
+ (
+ {Token.category == NNP})+
+)
+:orgName -->
+  :orgName.TempOrganization = {kind = "org", rule = "OrgUni"}
+
+
+
+Rule: OrgDept
+Priority: 25
+// Department of Pure Mathematics and Physics
+
+(
+ ({Token.string == "Department"}|
+  {Token.string == "department"})
+ 
+ {Token.string == "of"}
+ ({Token.orth == upperInitial}|
+  {Token.orth == lowercase})+
+ (
+  {Token.string == "and"}
+  ({Token.orth == upperInitial}|
+   {Token.orth == lowercase})+
+   
+ )?
+)
+:orgName -->
+  :orgName.TempOrganization = {kind = "department", rule = "OrgDept"}
+
+
+Rule: TheOrgXKey2
+Priority: 125
+
+//the London-based Aaaa Ltd.
+
+(
+ {Token.category == DT}
+ {Token.hyphen == hashyphen}
+)
+(
+  ({Upper})
+  ({Upper})?
+  ({Upper})?
+  ({Upper})?
+  ({Upper})?
+ {Lookup.majorType == org_key}
+ (CDG)?
+)
+:orgName -->
+  :orgName.TempOrganization = {kind = "unknown", rule = "TheOrgXKey2"}
+
+
+Rule: TheOrgXKey
+Priority: 125
+
+//The Aaaa Ltd.
+
+(
+ {Token.category == DT}
+)
+(
+  ({Upper})
+  ({Upper})?
+  ({Upper})?
+  ({Upper})?
+  ({Upper})?
+ {Lookup.majorType == org_key}
+ (CDG)?
+)
+:orgName -->
+  :orgName.TempOrganization = {kind = "unknown", rule = "TheOrgXKey"}
+
+Rule: PersonOrgXKey
+Priority: 130
+(
+ {TempPerson}
+)
+(
+  ({Upper})
+  ({Upper})?
+  ({Upper})?
+  ({Upper})?
+  ({Upper})?
+ {Lookup.majorType == org_key}
+ (CDG)?
+)
+:orgName -->
+  :orgName.TempOrganization = {kind = "unknown", rule = "PersonOrgXKey"}
+
+
+Rule:	OrgXKey
+Priority: 125
+
+// Aaaa Ltd.
+// Xxx Services Ltd. 
+
+(
+  ({Upper})
+  ({Upper})?
+  ({Upper})?
+  ({Upper})?
+  ({Upper})?
+ {Lookup.majorType == org_key}
+ (CDG)?
+)
+:orgName -->
+  :orgName.TempOrganization = {kind = "unknown", rule = "OrgXKey"}
+
+Rule: NotOrgXEnding
+Priority: 500
+// Very Limited
+
+(
+ {Token.category == DT}
+)?
+(
+ {Token.category == RB}
+ (CDG)
+)
+:spur
+-->
+:spur.Spur = {rule = NotOrgXEnding}
+ 
+Rule:	TheOrgXEnding
+Priority: 121
+
+// The Coca Cola Co.
+
+(
+ {Token.category == DT}
+)
+(
+  ({Upper})
+  ({Upper})?
+  (CDG)
+)
+:orgName -->
+  :orgName.TempOrganization = {kind = "unknown", rule = "TheOrgXEnding"}
+
+
+Rule:	OrgXEnding
+Priority: 120
+
+// Coca Cola Co.
+
+(
+  ({Upper})
+  ({Upper})?
+  (CDG)
+)
+:orgName -->
+  :orgName.TempOrganization = {kind = "unknown", rule = "OrgXEnding"}
+
+
+Rule:	TheOrgXandYKey
+Priority: 121
+
+// The Aaaa Ltd.
+
+(
+ {Token.category == DT}
+)
+(
+ ({Upper})
+ ({Upper})?
+  (({Token.string == "and"} | 
+    {Token.string == "&"})
+   ({Upper})?
+   ({Upper})?
+   ({Upper})?
+  )
+ {Lookup.majorType == org_key}
+ (CDG)?
+)
+:orgName -->
+  :orgName.TempOrganization = {kind = "unknown", rule = "TheOrgXandYKey"}
+
+
+Rule:	OrgXandYKey
+Priority: 120
+
+// Aaaa Ltd.
+// Xxx Services Ltd. 
+// AA and BB Services Ltd.
+
+(
+ ({Upper})
+ ({Upper})?
+  (({Token.string == "and"} | 
+    {Token.string == "&"})
+   ({Upper})?
+   ({Upper})?
+   ({Upper})?
+  )
+ {Lookup.majorType == org_key}
+ (CDG)?
+)
+:orgName -->
+  :orgName.TempOrganization = {kind = "unknown", rule = "OrgXandYKey"}
+
+
+Rule:	OrgXsKeyBase
+Priority: 120
+ 
+// Gandy's Circus
+// Queen's Ware
+
+(
+  ({Upper})?
+  ({Upper})?
+  ({Token.orth == upperInitial}
+   {Token.string == "'"}
+   ({Token.string == "s"})?
+  )
+ ({Lookup.majorType == org_key}|
+  {Lookup.majorType == org_base})
+)
+:orgName -->
+  :orgName.TempOrganization = {kind = "org", rule = "OrgXsKeybase"}
+
+Rule: NotTheOrgXBase
+Priority: 1001
+// not things like British National
+// or The University
+
+
+(
+ {Token.category == DT} 
+)
+(
+ ({Lookup.majorType == country_adj}|
+  {Token.orth == lowercase})?
+ ({Lookup.majorType == org_base}|
+ {Lookup.majorType == govern_key})
+)
+:spur -->
+  :spur.Spur = {rule = "NotTheOrgXBase"}
+
+
+
+
+Rule: NotOrgXBase
+Priority: 1000
+// not things like British National
+// or The University
+
+(
+ ({Lookup.majorType == country_adj}|
+  {Token.orth == lowercase})
+ ({Lookup.majorType == org_base}|
+ {Lookup.majorType == govern_key})
+)
+:spur -->
+  :spur.Spurious = {rule = "NotOrgXBase"}
+
+
+Rule:	TheOrgXBase
+Priority: 131
+
+// same as OrgXKey but uses base instead of key
+// includes govern_key e.g. academy
+// Barclays Bank
+// Royal Academy of Art
+
+(
+ ({Token.category == DT}
+ )
+)
+(
+ ({Token.category == DT, Token.orth == upperInitial}
+ )?
+ (
+  ({Upper})|
+  {Lookup.majorType == organization}
+ )
+ ({Upper})?
+ ({Upper})?
+ ({Token.category == POS})?
+ ({Lookup.majorType == org_base}|
+  {Lookup.majorType == govern_key}
+ )
+ (
+  {Token.string == "of"}
+  ({Upper})
+  ({Upper})?
+  ({Upper})?
+ )?
+)
+:orgName -->
+  :orgName.TempOrganization = {kind = "unknown", rule = "TheOrgXBase"}
+
+
+Rule:	OrgXBase
+Priority: 130
+
+// same as OrgXKey but uses base instead of key
+// includes govern_key e.g. academy
+// Barclays Bank
+// Royal Academy of Art
+
+(
+ (
+  ({Upper})|
+  {Lookup.majorType == organization}
+ )
+ ({Token.string == "and"})?
+ ({Upper})?
+ ({Token.string == "and"})?
+ ({Upper})?
+ ({Lookup.majorType == org_base}|
+  {Lookup.majorType == govern_key}
+ )
+ (
+  {Token.string == "of"}
+  ({Upper})
+  ({Upper})?
+  ({Upper})?
+ )?
+ (CDG)?
+)
+:orgName -->
+  :orgName.TempOrganization = {kind = "unknown", rule = "OrgXBase"}
+
+Rule:	BaseofOrg
+Priority: 130
+
+(
+ {Token.category == DT}
+)?
+(
+ ({Lookup.majorType == org_base}|
+  {Lookup.majorType == govern_key}
+ )
+ 
+ {Token.string == "of"}
+ ( 
+  {Token.category == DT}
+ )?
+ ({Upper})
+ ({Upper})?
+)
+:orgName -->
+  :orgName.TempOrganization = {kind = "unknown", rule = "BaseofOrg"}
+
+
+
+Rule:	OrgPreX
+Priority: 130
+
+// Royal Tuscan
+
+(
+ {Lookup.majorType == org_pre}
+ (
+  {Token.orth == upperInitial})+
+ (CDG)?
+)
+:orgName -->
+  :orgName.TempOrganization = {kind = "unknown", rule = "OrgPreX"}
+
+
+
+
+Rule: OrgChurch
+Priority: 150
+// St. Andrew's Church
+
+(
+  (SAINT)
+  {Token.orth == upperInitial}
+  {Token.string == "'"}({Token.string == "s"})?
+  (CHURCH)
+)
+:orgName -->
+  :orgName.TempOrganization = {kind = "org", rule = "OrgChurch"}
+
+
+Rule:OrgPersonAmbig
+Priority: 130
+// Alexandra Pottery should be org not person
+// overrides PersonFull
+
+(
+ (FIRSTNAME )
+ ({Lookup.majorType == org_key}|
+  {Lookup.majorType == org_base})
+ (CDG)?
+)
+:org 
+-->
+ :org.TempOrganization= {kind = "unknown", rule = "OrgPersonAmbig"}
+
+ 
+
+/////////////////////////////////////////////////////////////////
+// Location rules
+
+Rule: 	Location1
+Priority: 80
+// Lookup = city, country, province, region, water
+
+// Western Europe
+// South China sea
+
+(
+ {Token.category == DT}
+)?
+(
+ ({Lookup.majorType == loc_key, Lookup.minorType == pre})*
+ ({GazLocation})+
+ ({Lookup.majorType == loc_key, Lookup.minorType == post})?
+)
+:locName -->
+{
+ gate.FeatureMap features = Factory.newFeatureMap();
+// create an annotation set consisting of all the annotations for locName 
+gate.AnnotationSet locSet = (gate.AnnotationSet)bindings.get("locName");
+// create an annotation set consisting of the annotation matching Lookup
+gate.AnnotationSet loc = (gate.AnnotationSet)locSet.get("Lookup");
+// if the annotation type Lookup exists
+if (loc != null && loc.size()>0)
+{
+// take the first element in the set
+  gate.Annotation locAnn = (gate.Annotation)loc.iterator().next();
+//propagate minorType feature (and value) from Lookup
+  features.put("locType", locAnn.getFeatures().get("minorType"));
+  outputAS.removeAll(loc);
+}
+else
+{ 
+ //if Lookup doesn't exist, take features from GazLocation
+  gate.AnnotationSet gpe = (gate.AnnotationSet)locSet.get("GazLocation");
+  gate.Annotation gpeAnn = (gate.Annotation) gpe.iterator().next();
+  features.put("locType", gpeAnn.getFeatures().get("locType"));
+outputAS.removeAll(gpe);
+}
+// create some new features
+  features.put("rule", "Location1");
+// create a TempLoc annotation and add the features we've created
+outputAS.add(locSet.firstNode(), locSet.lastNode(), "TempLocation",
+features);
+}
+
+
+Rule: Location2
+Priority: 80
+
+// differs from Location1 in that the result should be a Location not GPE
+// midtown Manhattan
+
+(
+ {Token.category == DT}
+)?
+(
+ ({Lookup.majorType == loc_key, Lookup.minorType == location_pre})
+ ({GazLocation})+
+ ({Lookup.majorType == loc_key, Lookup.minorType == post})?
+)
+:locName
+ -->
+//{}
+{
+gate.FeatureMap features = Factory.newFeatureMap();
+  // create an annotation set consisting of all the annotations for locName 
+gate.AnnotationSet locSet = (gate.AnnotationSet)bindings.get("locName");
+  // create some new features
+  features.put("rule", "Location2");
+  features.put("locType", "Unknown");
+  // create a TempLoc annotation and add the features we've created
+outputAS.add(locSet.firstNode(), locSet.lastNode(), "TempLocation",
+features);
+outputAS.removeAll(locSet);
+}
+
+
+
+Rule: 	LocationPre
+Priority: 75
+
+(
+ {Token.category == DT}
+)?
+(
+ ({Lookup.majorType == loc_key, Lookup.minorType == pre})
+ ({Lookup.majorType == loc_key, Lookup.minorType == pre})?
+ (({Upper})|{GazLocation})
+ ({Lookup.majorType == loc_key, Lookup.minorType == post})?
+)
+:locName -->
+{
+ gate.FeatureMap features = Factory.newFeatureMap();
+// create an annotation set consisting of all the annotations for locName 
+gate.AnnotationSet locSet = (gate.AnnotationSet)bindings.get("locName");
+// create an annotation set consisting of the annotation matching GazLocation
+gate.AnnotationSet loc = (gate.AnnotationSet)locSet.get("GazLocation");
+
+if (loc != null && loc.size()>0)
+{
+// if the annotation type Lookup exists, take the first element in the set
+  gate.Annotation locAnn = (gate.Annotation)loc.iterator().next();
+//propagate minorType feature (and value) from locAnn
+  features.put("locType", locAnn.getFeatures().get("locType"));
+}
+
+// create some new features
+  features.put("rule", "LocationPre");
+// create a TempLoc annotation and add the features we've created
+outputAS.add(locSet.firstNode(), locSet.lastNode(), "TempLocation",
+features);
+}
+
+Rule: 	LocationPreLower
+Priority: 75
+(
+ ({Token.category == DT})?
+ ({Lookup.majorType == loc_key_lower, Lookup.minorType == pre})
+)
+(
+ (({Upper})|{GazLocation})
+ ({Lookup.majorType == loc_key, Lookup.minorType == post})?
+)
+:locName -->
+{
+ gate.FeatureMap features = Factory.newFeatureMap();
+// create an annotation set consisting of all the annotations for loc 
+gate.AnnotationSet locSet = (gate.AnnotationSet)bindings.get("locName");
+// create an annotation set consisting of the annotation matching GazLocation
+gate.AnnotationSet loc = (gate.AnnotationSet)locSet.get("GazLocation");
+
+if (loc != null && loc.size()>0)
+{
+// if the annotation type Lookup exists, take the first element in the set
+  gate.Annotation locAnn = (gate.Annotation)loc.iterator().next();
+//propagate minorType feature (and value) from loc
+  features.put("locType", locAnn.getFeatures().get("locType"));
+}
+else
+{
+ features.put("locType", "Unknown");
+}
+
+// create some new features
+  features.put("rule", "LocationPreLower");
+// create a TempLoc annotation and add the features we've created
+outputAS.add(locSet.firstNode(), locSet.lastNode(), "TempLocation",
+features);
+outputAS.removeAll(locSet);
+}
+
+//note this isn't implemented because it depends whether the 
+// location thing is an adjective or a noun, and the rules are complex
+
+//Rule: GenericLocation
+//Priority: 300
+//(
+// ({Token.string == "a"}|
+//  {Token.string == "A"}|
+//  {Token.string == "an"}|
+ /// {Token.string == "An"})
+//)
+//(
+// {GazLocation.locType == countryadj}
+//)
+//:foo
+//-->
+//{
+// gate.FeatureMap features = Factory.newFeatureMap();
+// gate.AnnotationSet fooSet = (gate.AnnotationSet)bindings.get("foo");
+// outputAS.removeAll(fooSet);
+//}
+
+Rule:	GazLocation
+Priority: 250
+(
+ {Token.category == DT}
+)?  
+(
+ {GazLocation}
+)
+:locName
+ --> 	
+{
+ gate.FeatureMap features = Factory.newFeatureMap();
+// create an annotation set consisting of all the annotations for org 
+gate.AnnotationSet locSet = (gate.AnnotationSet)bindings.get("locName");
+// create an annotation set consisting of the annotation matching GazLocation
+gate.AnnotationSet loc = (gate.AnnotationSet)locSet.get("GazLocation");
+
+// if the annotation type Lookup doesn't exist, do nothing
+if (loc != null && loc.size()>0)
+{
+// if it does exist, take the first element in the set
+  gate.Annotation locAnn = (gate.Annotation)loc.iterator().next();
+//propagate minorType feature (and value) from loc
+  features.put("locType", locAnn.getFeatures().get("locType"));
+}
+// create some new features
+  features.put("rule", "GazLocation");
+// create a TempLoc annotation and add the features we've created
+outputAS.add(locSet.firstNode(), locSet.lastNode(), "TempLocation",
+features);
+outputAS.removeAll(locSet);
+}
+
+Rule: GPEPost
+Priority: 50
+(
+ {Token.category == DT}
+)?
+(
+ ({GazLocation}|{Token.category == NNP})
+ {Lookup.majorType == gpe_key, Lookup.minorType == post}
+)
+:locName
+-->
+ :locName.TempLocation = {locType = "city", rule = GPEPost}
+
+
+
+Rule: LocationPost
+Priority: 50
+(
+ {Token.category == DT}
+)?
+(
+ {Token.category == NNP}
+ {Lookup.majorType == loc_key, Lookup.minorType == post}
+)
+:locName
+-->
+ :locName.TempLocation = {kind = "locName", rule = LocationPost}
+
+/////////////////////////////////////////////////////////////////
+
+// Context-based Rules
+
+
+Rule:OrgContext1
+Priority: 1
+// company X
+
+(
+ {Token.string == "company"}
+)
+(
+ ({Upper})
+ ({Upper})?
+ ({Upper})? 
+)
+:org
+-->
+ :org.TempOrganization= {kind = "orgName", rule = "OrgContext1"}
+
+Rule: OrgContext2
+Priority: 5
+
+// Telstar laboratory
+// Medici offices
+
+(
+ ({Upper})
+ ({Upper})?
+ ({Upper})? 
+)
+: org
+(
+ ({Token.string == "offices"} |
+ {Token.string == "Offices"} |
+ {Token.string == "laboratory"} | 
+ {Token.string == "Laboratory"} |
+ {Token.string == "laboratories"} |
+ {Token.string == "Laboratories"})
+)
+-->
+ :org.TempOrganization= {kind = "orgName", rule = "OrgContext2"}
+
+
+
+Rule:JoinOrg
+Priority: 50
+// Smith joined Energis
+
+(
+ ({Token.string == "joined"}|
+  {Token.string == "joining"}|
+  {Token.string == "joins"}|
+  {Token.string == "join"}
+ )
+)
+(
+ ({Upper})
+ ({Upper})?
+ ({Upper})?
+)
+:org
+-->
+ :org.TempOrganization= {kind = "orgName", rule = "joinOrg"}
+
+Rule: GazFacility
+Priority: 50
+
+(
+ {Token.category == DT}
+)?
+(
+ {Lookup.majorType == facility, Lookup.minorType == building}
+):facName
+-->
+{
+ gate.FeatureMap features = Factory.newFeatureMap();
+// create an annotation set consisting of all the annotations for facName 
+gate.AnnotationSet facSet = (gate.AnnotationSet)bindings.get("facName");
+// create some new features
+features.put("rule", "GazFacility");
+// create a TempFac annotation and add the features we've created
+outputAS.add(facSet.firstNode(), facSet.lastNode(), "TempFacility",
+features);
+outputAS.removeAll(facSet);
+}
+
+
+
+Rule: 	LocFacility
+Priority: 75
+
+// Berlin Wall
+// Manchester Museum
+
+(
+ {Token.category == DT}
+)?
+(
+ ({Lookup.majorType == loc_key, Lookup.minorType == pre})?
+ ({GazLocation})+
+ ({Lookup.majorType == facility_key})+
+)
+:facName -->
+{
+ gate.FeatureMap features = Factory.newFeatureMap();
+// create an annotation set consisting of all the annotations for facName 
+gate.AnnotationSet facSet = (gate.AnnotationSet)bindings.get("facName");
+// create some new features
+features.put("rule", "LocFacility");
+// create a TempFac annotation and add the features we've created
+outputAS.add(facSet.firstNode(), facSet.lastNode(), "TempFacility",
+features);
+outputAS.removeAll(facSet);
+}
+
+Rule: Facility1
+Priority: 50
+
+// Stormont Castle
+
+
+(
+ {Token.category == DT}
+)?
+(
+ ({Token.category == NNP})+
+ ({Token.string == "'"}
+  {Token.string == "s"})?
+ ({Lookup.majorType == facility_key})+
+)
+:facName -->
+{
+ gate.FeatureMap features = Factory.newFeatureMap();
+// create an annotation set consisting of all the annotations for facName 
+gate.AnnotationSet facSet = (gate.AnnotationSet)bindings.get("facName");
+// create some new features
+features.put("rule", "Facility1");
+// create a TempFac annotation and add the features we've created
+outputAS.add(facSet.firstNode(), facSet.lastNode(), "TempFacility",
+features);
+outputAS.removeAll(facSet);
+}
+
+Rule: Facility2
+Priority: 40
+
+(
+ {Token.category == DT}
+)?
+
+({Lookup.majorType == facility_key}
+ ({Token.category == NNP})+
+)
+:facName -->
+{
+ gate.FeatureMap features = Factory.newFeatureMap();
+// create an annotation set consisting of all the annotations for facName 
+gate.AnnotationSet facSet = (gate.AnnotationSet)bindings.get("facName");
+// create some new features
+features.put("rule", "Facility2");
+// create a TempFac annotation and add the features we've created
+outputAS.add(facSet.firstNode(), facSet.lastNode(), "TempFacility",
+features);
+outputAS.removeAll(facSet);
+}
+
+
+Rule: FacilityExt
+Priority: 30
+
+// Schipol airport
+
+
+(
+ {Token.category == DT}
+)?
+(
+ ({Token.category == NNP})+
+):facName
+(
+ {Lookup.majorType == facility_key_ext}
+)
+ -->
+{
+ gate.FeatureMap features = Factory.newFeatureMap();
+  // create an annotation set consisting of all the annotations for facName 
+gate.AnnotationSet facSet = (gate.AnnotationSet)bindings.get("facName");
+  // create some new features
+features.put("rule", "FacilityExt");
+  // create a TempFac annotation and add the features we've created
+outputAS.add(facSet.firstNode(), facSet.lastNode(), "TempFacility",
+features);
+outputAS.removeAll(facSet);
+}
+
+Rule: FacilityExt2
+Priority: 30
+//airbase of Aviano
+(
+ ({Token.category == DT})?
+ ({Lookup.majorType == facility_key}|
+  {Lookup.majorType == facility_key_ext})
+ {Token.string == "of"}
+)
+( 
+ {Token.category == NNP}
+)+
+:facName
+-->
+{
+ gate.FeatureMap features = Factory.newFeatureMap();
+  // create an annotation set consisting of all the annotations for facName 
+gate.AnnotationSet facSet = (gate.AnnotationSet)bindings.get("facName");
+  // create some new features
+features.put("rule", "FacilityExt2");
+  // create a TempFac annotation and add the features we've created
+outputAS.add(facSet.firstNode(), facSet.lastNode(), "TempFacility",
+features);
+outputAS.removeAll(facSet);
+}
+
+Rule: FacilityStreet
+Priority: 30
+// Downing Street
+(
+ ({Token.category == NNP})+
+ {Lookup.minorType == street}
+):street
+-->
+:street.TempFacility = {rule = "FacilityStreet"}
+
+Rule:GenericCountryPerson
+Priority: 100
+// most Germans
+(
+ {Token.string == "most"}|
+ {Token.string == "Most"}|
+ {Token.string == "all"}|
+ {Token.string == "All"}
+)
+(
+ {Lookup.minorType == country_person}
+):person
+-->
+{
+gate.AnnotationSet person = (gate.AnnotationSet)bindings.get("person");
+gate.Annotation personAnn = (gate.Annotation)person.iterator().next();
+gate.FeatureMap features = Factory.newFeatureMap();
+features.put("kind", "personName");
+features.put("rule", "CountryPerson");
+features.put("GENERIC", "TRUE");
+outputAS.add(person.firstNode(), person.lastNode(), "GPE",
+features);
+}
+
+
+
+Rule:CountryPerson
+Priority: 50
+// the Germans
+
+(
+ {Token.category == DT}
+)?
+(
+ {Lookup.minorType == country_person}
+):person
+-->
+{
+gate.AnnotationSet person = (gate.AnnotationSet)bindings.get("person");
+gate.Annotation personAnn = (gate.Annotation)person.iterator().next();
+gate.FeatureMap features = Factory.newFeatureMap();
+features.put("kind", "personName");
+features.put("rule", "CountryPerson");
+outputAS.add(person.firstNode(), person.lastNode(), "GPE",
+features);
+}
+
+
+Rule: LocOrgXBase
+Priority: 150
+// London-based Hamas Group
+(
+ {GazLocation}
+):locName
+(
+ (
+  ({Upper})|
+  {Lookup.majorType == organization}
+ )
+ ({Upper})?
+ ({Upper})?
+ ({Lookup.majorType == org_base}|
+  {Lookup.majorType == govern_key}
+ )
+ (
+  {Token.string == "of"}
+  ({Upper})
+  ({Upper})?
+  ({Upper})?
+ )?
+)
+:orgName -->
+{
+ gate.FeatureMap features = Factory.newFeatureMap();
+// create an annotation set consisting of all the annotations for loc 
+gate.AnnotationSet locSet = (gate.AnnotationSet)bindings.get("locName");
+// create an annotation set consisting of the annotation matching GazLocation
+gate.AnnotationSet loc = (gate.AnnotationSet)locSet.get("GazLocation");
+
+// if the annotation type Lookup doesn't exist, do nothing
+if (loc != null && loc.size()>0)
+{
+// if it does exist, take the first element in the set
+  gate.Annotation locAnn = (gate.Annotation)loc.iterator().next();
+//propagate minorType feature (and value) from loc
+  features.put("locType", locAnn.getFeatures().get("locType"));
+ features.put("rule", "LocOrgXBase");
+}
+  outputAS.add(locSet.firstNode(), locSet.lastNode(), "TempLocation",
+features);
+outputAS.removeAll(loc);
+// now process Organization
+gate.AnnotationSet orgSet = (gate.AnnotationSet)bindings.get("orgName");
+features.put("orgType", "Unknown");
+features.put("rule", "LocOrgXBase");
+outputAS.add(orgSet.firstNode(), orgSet.lastNode(), "TempOrganization",
+features);
+outputAS.removeAll(orgSet);
+}
+
+
+
+
+
+
+
+
+
+
+
+

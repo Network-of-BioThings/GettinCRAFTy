@@ -1,0 +1,19 @@
+Phase: Sentence_String
+Input: Sentence
+Options: control=brill
+
+Rule: sent
+(
+	{Sentence}
+):s
+-->
+{
+gate.AnnotationSet sAS = (gate.AnnotationSet)bindings.get("s");
+gate.Annotation sentence = (gate.Annotation)sAS.iterator().next();
+gate.FeatureMap sMap = sentence.getFeatures();
+try {
+    sMap.put( gate.taggerframework.GenericTagger.STRING_FEATURE_NAME, doc.getContent().getContent(sentence.getStartNode().getOffset(), sentence.getEndNode().getOffset()).toString());
+    } catch (Exception ex) {
+      ex.printStackTrace();
+    }
+}

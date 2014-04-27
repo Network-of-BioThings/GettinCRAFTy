@@ -1,0 +1,122 @@
+/*
+* Splits Tokens that contain Chinese digits into one-character tokens of
+* type digit. 
+* Valentin Tablan November 2003
+* $id$
+*/
+
+Phase:	PostProcess
+Input: Lookup Token
+Options: control = appelt
+
+
+Rule:simpleSplit
+(
+ ({Lookup.minorType == digit})+
+ ):digit
+ -->
+{
+  //get the digit annotations
+  gate.AnnotationSet digitAS = (gate.AnnotationSet)bindings.get("digit");
+  //print statement to check we have something
+  //Out.prln("digits found " +  digitAS);
+
+  //store the offsets for the digits (annotations of length 1)
+  Iterator annIter = digitAS.iterator();
+  SortedMap digitsByOffset = new TreeMap();
+  while(annIter.hasNext()){
+    Annotation digitAnn = (Annotation)annIter.next();
+    digitsByOffset.put(digitAnn.getStartNode().getOffset(), digitAnn);
+  }
+  
+  //get all the tokens overlapping the digits area
+  AnnotationSet tokenAS = inputAS.get("Token", digitAS.firstNode().getOffset(),
+                                       digitAS.lastNode().getOffset());
+                                       
+  //process each token
+  annIter = tokenAS.iterator();
+  while(annIter.hasNext()){
+    Annotation tokenAnn = (Annotation)annIter.next();
+    long tokenStart = tokenAnn.getStartNode().getOffset().longValue();
+    Long lastPosition = tokenAnn.getStartNode().getOffset();
+    long lastPositionL = lastPosition.longValue();
+    //get the positions covered by digits
+    SortedMap digitsMap = digitsByOffset.subMap(
+        tokenAnn.getStartNode().getOffset(),
+        tokenAnn.getEndNode().getOffset());
+    Iterator positionsIter = digitsMap.keySet().iterator();
+    while(positionsIter.hasNext()){
+      Long aPosition = (Long)positionsIter.next();
+      long aPositionL = aPosition.longValue();
+      if(!lastPosition.equals(aPosition)){
+        //create a Token annotation from the last position to the new one
+        long start = lastPositionL;
+        long end = aPositionL;
+        FeatureMap features = Factory.newFeatureMap();
+        features.put(gate.creole.ANNIEConstants.TOKEN_LENGTH_FEATURE_NAME, 
+                     Integer.toString((int)(end - start)));
+        features.put(gate.creole.ANNIEConstants.TOKEN_STRING_FEATURE_NAME,
+                     ((String)tokenAnn.getFeatures().
+                     get(gate.creole.ANNIEConstants.TOKEN_STRING_FEATURE_NAME)).
+                     substring((int)(start - tokenStart), 
+                               (int)(end - tokenStart)));
+        features.put(gate.creole.ANNIEConstants.TOKEN_KIND_FEATURE_NAME,
+                     "word");
+        features.put("type", "other");
+        try{
+          outputAS.add(lastPosition, aPosition,
+                       gate.creole.ANNIEConstants.TOKEN_ANNOTATION_TYPE,
+                       features);
+        }catch(InvalidOffsetException ioe){
+          ioe.printStackTrace();
+        }
+      }
+      //create a new Digit annotation
+      FeatureMap features = Factory.newFeatureMap();
+      features.put(gate.creole.ANNIEConstants.TOKEN_LENGTH_FEATURE_NAME, "1");
+      features.put(gate.creole.ANNIEConstants.TOKEN_STRING_FEATURE_NAME,
+                   ((String)tokenAnn.getFeatures().
+                   get(gate.creole.ANNIEConstants.TOKEN_STRING_FEATURE_NAME)).
+                   substring((int)(aPositionL - tokenStart), 
+                             (int)(aPositionL - tokenStart + 1)));
+      features.put(gate.creole.ANNIEConstants.TOKEN_KIND_FEATURE_NAME, "digit");
+      try{
+        outputAS.add(aPosition, new Long(aPositionL + 1),
+                    gate.creole.ANNIEConstants.TOKEN_ANNOTATION_TYPE,
+                    features);
+      }catch(InvalidOffsetException ioe){
+        ioe.printStackTrace();
+      }
+      //set the last position
+      lastPosition = new Long(aPositionL + 1);
+      lastPositionL = lastPosition.longValue();
+    }
+    if(!lastPosition.equals(tokenAnn.getEndNode().getOffset())){
+      //create the last token annotation
+      long start = lastPositionL;
+      long end = tokenAnn.getEndNode().getOffset().longValue();
+      FeatureMap features = Factory.newFeatureMap();
+      features.put(gate.creole.ANNIEConstants.TOKEN_LENGTH_FEATURE_NAME, 
+                   Integer.toString((int)(end - start)));
+      features.put(gate.creole.ANNIEConstants.TOKEN_STRING_FEATURE_NAME,
+                   ((String)tokenAnn.getFeatures().
+                   get(gate.creole.ANNIEConstants.TOKEN_STRING_FEATURE_NAME)).
+                   substring((int)(start - tokenStart), 
+                             (int)(end - tokenStart)));
+      features.put(gate.creole.ANNIEConstants.TOKEN_KIND_FEATURE_NAME,
+                   "word");
+      features.put("type", "other");
+      try{
+        outputAS.add(lastPosition, 
+                    tokenAnn.getEndNode().getOffset(),
+                    gate.creole.ANNIEConstants.TOKEN_ANNOTATION_TYPE,
+                    features);
+      }catch(InvalidOffsetException ioe){
+        ioe.printStackTrace();
+      }
+    }
+
+  }//process each token
+  //remove old token(s)
+  inputAS.removeAll(tokenAS);
+}

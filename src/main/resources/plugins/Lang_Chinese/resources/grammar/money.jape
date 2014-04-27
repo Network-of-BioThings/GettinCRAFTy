@@ -1,0 +1,96 @@
+/*  money.jape
+*
+* Copyright (c) 1998-2001, The University of Sheffield.
+*
+*  This file is part of GATE (see http://gate.ac.uk/), and is free
+*  software, licenced under the GNU Library General Public License,
+*  Version 2, June 1991 (in the distribution as file licence.html,
+*  and also available at http://gate.ac.uk/gate/licence.html).
+*
+*  Diana Maynard, 1 October 2003
+* 
+*  $Id $
+*/
+
+Phase: Money
+Input: Lookup Number Token
+Options: control = appelt debug = false
+
+/*
+1) A number is 'Money' if a money_prefix precedes the number (e.g. 'invest 1
+million', the number 1 million should be recognised as Money, but it should
+not include the word 'invest').
+2) number + currency_unit (e.g. 1 pound)
+3) number_unit + currency_unit (e.g. millions of pounds)
+
+*/
+
+Rule: MoneyNumberCurrency
+// e.g. invest 1 pound, 1 pound
+(
+ ({Lookup.majorType == money_prefix})
+)?
+(
+ {Number}
+ ({Lookup.majorType == number_unit})?
+ {Lookup.majorType == currency_unit}
+):tag
+-->
+:tag.Money = {rule = MoneyNumberCurrencyTest}
+
+
+Rule: MoneyNumberUnitCurrency
+// e.g. millions of pounds
+(
+ (DIGIT)?
+ {Lookup.majorType == currency_unit}
+):tag
+-->
+:tag.Money = {rule = MoneyNumberUnitCurrencyTest}
+
+
+Rule: MoneyPrefixNumber
+(
+ {Lookup.majorType == money_prefix}
+)
+(
+ {Number}
+ ({Lookup.majorType == number_unit})?
+):tag
+-->
+:tag.Money = {rule = MoneyPrefixNumber}
+
+/*
+A new rule for MONEY
+A number is MONEY if it is in the following context:
+i)      money_prefix + 0,1,2,or 3 tokens + number
+ii)     number + 0, 1, or 2 tokens + money_suffix
+*/
+
+Rule: MoneyPrefixTokensNumber
+(
+ {Lookup.majorType == money_prefix}
+ ({Token})?
+ ({Token})?
+ ({Token})?
+)
+(
+ {Number}
+):tag
+-->
+:tag.Money = {rule = MoneyPrefixTokensNumber}
+
+Rule: NumberTokensMoneySuffix
+(
+ {Number}
+):tag
+(
+  ({Token})?
+  ({Token})?
+  {Lookup.majoType == money_suffix}
+)
+-->
+:tag.Money = {rule = NumberTokensMoneySuffix}
+
+
+

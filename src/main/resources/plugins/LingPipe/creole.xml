@@ -1,0 +1,59 @@
+<?xml version="1.0"?>
+<CREOLE-DIRECTORY>
+  <CREOLE>   
+    <!-- creole.xml for LingPipe resources -->
+    <RESOURCE>
+      <JAR>lingpipe.jar</JAR>
+      <JAR>lib/lingpipe-4.0.1.jar</JAR>
+      <NAME>LingPipe Tokenizer PR</NAME>
+      <CLASS>gate.lingpipe.TokenizerPR</CLASS>
+      <COMMENT>Provides a LingPipe tokenizer.</COMMENT>
+      <HELPURL>http://gate.ac.uk/userguide/sec:misc-creole:lingpipe:tokenizer</HELPURL>
+      <PARAMETER NAME="document" RUNTIME="true" COMMENT="Document to be tokenized">gate.Document</PARAMETER>
+      <PARAMETER NAME="outputASName" RUNTIME="true" OPTIONAL="true">java.lang.String</PARAMETER>
+    </RESOURCE>
+
+    <RESOURCE>
+      <JAR>lingpipe.jar</JAR>
+      <JAR>lib/lingpipe-4.0.1.jar</JAR>
+      <NAME>LingPipe NER PR</NAME>
+      <CLASS>gate.lingpipe.NamedEntityRecognizerPR</CLASS>
+      <COMMENT>LingPipe Named Entity Recognizer</COMMENT>
+      <HELPURL>http://gate.ac.uk/userguide/sec:misc-creole:lingpipe:ner</HELPURL>      
+      <PARAMETER NAME="document" RUNTIME="true" COMMENT="document to process">gate.Document</PARAMETER>
+      <PARAMETER NAME="outputASName" RUNTIME="true" OPTIONAL="true" COMMENT="Annotationset to put annotations into">java.lang.String</PARAMETER>
+      <PARAMETER NAME="modelFileUrl" RUNTIME="false" OPTIONAL="false" COMMENT="Model file to use for NE">java.net.URL</PARAMETER>
+    </RESOURCE>
+
+    <RESOURCE>
+      <JAR SCAN="true">lingpipe.jar</JAR>
+      <JAR>lib/lingpipe-4.0.1.jar</JAR>
+      <CLASS>gate.lingpipe.LanguageIdentifierPR</CLASS>
+    </RESOURCE>
+
+
+    <RESOURCE>
+      <JAR>lingpipe.jar</JAR>
+      <JAR>lib/lingpipe-4.0.1.jar</JAR>
+      <NAME>LingPipe POS Tagger PR</NAME>
+      <CLASS>gate.lingpipe.POSTaggerPR</CLASS>
+      <COMMENT>Provides a LingPipe part of speech tagger.</COMMENT>
+      <HELPURL>http://gate.ac.uk/userguide/sec:misc-creole:lingpipe:postagger</HELPURL>
+      <PARAMETER NAME="document" RUNTIME="true" COMMENT="Document to be tokenized">gate.Document</PARAMETER>
+      <PARAMETER NAME="inputASName" RUNTIME="true" OPTIONAL="true">java.lang.String</PARAMETER>
+      <PARAMETER NAME="modelFileUrl" RUNTIME="false" OPTIONAL="false" COMMENT="Model file to use for POS tags">java.net.URL</PARAMETER>
+      <PARAMETER NAME="applicationMode" RUNTIME="true" DEFAULT="FIRSTBEST" OPTIONAL="false">gate.lingpipe.POSApplicationMode</PARAMETER>
+    </RESOURCE>
+
+    <RESOURCE>
+      <JAR>lingpipe.jar</JAR>
+      <JAR>lib/lingpipe-4.0.1.jar</JAR>
+      <NAME>LingPipe Sentence Splitter PR</NAME>
+      <CLASS>gate.lingpipe.SentenceSplitterPR</CLASS>
+      <COMMENT>Provides an interface to LingPipe sentence splitter API.</COMMENT>
+      <HELPURL>http://gate.ac.uk/userguide/sec:misc-creole:lingpipe:splitter</HELPURL>      
+      <PARAMETER NAME="document" RUNTIME="true" COMMENT="Document where the results are stored">gate.Document</PARAMETER>
+      <PARAMETER NAME="outputASName" RUNTIME="true" OPTIONAL="true" COMMENT="Where the anotation will be stored">java.lang.String</PARAMETER>
+    </RESOURCE>
+  </CREOLE>
+</CREOLE-DIRECTORY>

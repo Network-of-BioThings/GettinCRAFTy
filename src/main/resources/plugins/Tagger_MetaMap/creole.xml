@@ -1,0 +1,7 @@
+<CREOLE-DIRECTORY>
+  <CREOLE>
+      <JAR SCAN="true">MetaMap.jar</JAR>
+      <JAR>lib/MetaMapApi.jar</JAR>
+      <JAR>lib/prologbeans.jar</JAR>
+  </CREOLE>
+</CREOLE-DIRECTORY>

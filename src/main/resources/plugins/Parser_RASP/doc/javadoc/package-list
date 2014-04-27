@@ -1,0 +1,5 @@
+com.digitalpebble.rasp2.morph
+com.digitalpebble.rasp2.parser
+com.digitalpebble.rasp2.tagger
+com.digitalpebble.rasp2.token
+com.digitalpebble.util

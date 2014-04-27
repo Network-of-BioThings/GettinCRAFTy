@@ -1,0 +1,122 @@
+<?xml version="1.0"?>
+<CREOLE-DIRECTORY>
+ 
+  <CREOLE>
+      <RESOURCE>
+      <NAME>RASP2 Tokenizer</NAME>
+      <CLASS>com.digitalpebble.rasp2.token.RASPTokenizer</CLASS>
+      <JAR>rasp2.jar</JAR>
+      <COMMENT>
+		RASP2 Tokenizer. Faster than the original GATE component but generates Tokens which have 
+		only a 'string' feature. Requires annotations of type Sentence. See RASP package for 
+		platform restrictions.
+	  </COMMENT>
+      <HELPURL>http://gate.ac.uk/userguide/sec:parsers:rasp</HELPURL>
+      <PARAMETER NAME="document" RUNTIME="true">gate.Document</PARAMETER>
+      <PARAMETER NAME="inputASName" RUNTIME="true" OPTIONAL="true">java.lang.String</PARAMETER>
+      <PARAMETER NAME="outputASName" RUNTIME="true" OPTIONAL="true">java.lang.String</PARAMETER>
+      <PARAMETER NAME="debug" RUNTIME="true" DEFAULT="false" OPTIONAL="false">java.lang.Boolean</PARAMETER>
+      <PARAMETER NAME="charset" RUNTIME="true" DEFAULT="ISO-8859-1" OPTIONAL="false">java.lang.String</PARAMETER>
+      <ICON>/rasp.png</ICON>
+    </RESOURCE>
+  </CREOLE>
+ 
+	<RESOURCE>
+			<NAME>RASP POS Converter</NAME>
+			<CLASS>com.digitalpebble.rasp2.tagger.C2Transducer</CLASS>
+			<JAR>rasp2.jar</JAR>
+			<COMMENT>
+				Converts from PennTreebank POS tags to the C2 tagset used by RASP.
+				Generates annotations of type MorphObj which hold the tag and lemma
+			</COMMENT>
+      <HELPURL>http://gate.ac.uk/userguide/sec:parsers:rasp</HELPURL>
+			<PARAMETER NAME="document" RUNTIME="true"
+				COMMENT="The document to be processed">
+				gate.Document
+			</PARAMETER>
+			<PARAMETER NAME="inputASName" RUNTIME="true"
+				COMMENT="The annotation set to be used as input for the transducer"
+				OPTIONAL="true">
+				java.lang.String
+			</PARAMETER>
+			<PARAMETER NAME="outputASName" RUNTIME="true"
+				COMMENT="The annotation set to be used as output for the transducer"
+				OPTIONAL="true">
+				java.lang.String
+			</PARAMETER>
+			<PARAMETER NAME="grammarURL"
+				COMMENT="The URL to the grammar file"
+				DEFAULT="resources/main.jape" SUFFIXES="jape">
+				java.net.URL
+			</PARAMETER>
+			<PARAMETER NAME="encoding" DEFAULT="UTF-8"
+				COMMENT="The encoding used for reading the grammar">
+				java.lang.String
+			</PARAMETER>
+			<ICON>/rasp.png</ICON>
+		</RESOURCE> 
+
+    <CREOLE>
+      <RESOURCE>
+      <NAME>RASP2 POS Tagger</NAME>
+      <CLASS>com.digitalpebble.rasp2.tagger.PosTagger</CLASS>
+      <JAR>rasp2.jar</JAR>
+      <COMMENT>RASP part-of-speech tagger, creating WordForm annotations</COMMENT>
+      <HELPURL>http://gate.ac.uk/userguide/sec:parsers:rasp</HELPURL>
+      <PARAMETER NAME="raspHome" RUNTIME="false" DEFAULT="file:/usr/local/bin/RASP" OPTIONAL="false">java.net.URL</PARAMETER>
+      <PARAMETER NAME="document" RUNTIME="true">gate.Document</PARAMETER>
+      <PARAMETER NAME="inputASName" RUNTIME="true" OPTIONAL="true">java.lang.String</PARAMETER>
+      <PARAMETER NAME="outputASName" RUNTIME="true" OPTIONAL="true">java.lang.String</PARAMETER>
+      <PARAMETER NAME="debug" RUNTIME="true" DEFAULT="false" OPTIONAL="false">java.lang.Boolean</PARAMETER>
+      <PARAMETER NAME="charset" RUNTIME="true" DEFAULT="ISO-8859-1" OPTIONAL="true">java.lang.String</PARAMETER>
+      <PARAMETER NAME="generateMultipleTags" RUNTIME="true" DEFAULT="true" OPTIONAL="false">java.lang.Boolean</PARAMETER>
+      <ICON>/rasp.png</ICON>
+    </RESOURCE>
+  </CREOLE>
+
+    <CREOLE>
+      <RESOURCE>
+      <NAME>RASP2 Morphological Analyser</NAME>
+      <CLASS>com.digitalpebble.rasp2.morph.MorphoAnnotator</CLASS>
+      <JAR>rasp2.jar</JAR>
+      <COMMENT>
+        RASP morphological analyser, which adds lemma and suffix to the
+        WordForm annotations produced by the RASP POS tagger (or the ANNIE POS
+        tagger plus the RASP converter)
+      </COMMENT>
+      <HELPURL>http://gate.ac.uk/userguide/sec:parsers:rasp</HELPURL>
+      <PARAMETER NAME="raspHome" RUNTIME="false" DEFAULT="file:/usr/local/bin/RASP" OPTIONAL="false">java.net.URL</PARAMETER>
+      <PARAMETER NAME="document" RUNTIME="true">gate.Document</PARAMETER>
+      <PARAMETER NAME="inputASName" RUNTIME="true" OPTIONAL="true">java.lang.String</PARAMETER>
+      <PARAMETER NAME="debug" RUNTIME="true" DEFAULT="false" OPTIONAL="false">java.lang.Boolean</PARAMETER>
+      <PARAMETER NAME="charset" RUNTIME="true" DEFAULT="ISO-8859-1" OPTIONAL="true">java.lang.String</PARAMETER>
+      <ICON>/rasp.png</ICON>
+    </RESOURCE>
+  </CREOLE>
+  
+  
+    <CREOLE>
+      <RESOURCE>
+      <NAME>RASP2 Parser</NAME>
+      <CLASS>com.digitalpebble.rasp2.parser.ParserAnnotator</CLASS>
+      <JAR>rasp2.jar</JAR>
+      <COMMENT>RASP dependency parser</COMMENT>
+      <HELPURL>http://gate.ac.uk/userguide/sec:parsers:rasp</HELPURL>
+      <PARAMETER NAME="raspHome" RUNTIME="false" DEFAULT="file:/usr/local/bin/RASP" OPTIONAL="false">java.net.URL</PARAMETER>
+      <PARAMETER NAME="outputFormat" DEFAULT="-og" RUNTIME="true" OPTIONAL="false">java.lang.String</PARAMETER>
+	  <!--
+	  <PARAMETER NAME="parseNum" RUNTIME="true" OPTIONAL="true">java.lang.Integer</PARAMETER>	
+	  <PARAMETER NAME="time" RUNTIME="true" OPTIONAL="true">java.lang.Integer</PARAMETER>
+	  -->
+	  <PARAMETER NAME="subcategorisation" RUNTIME="true" DEFAULT="true" OPTIONAL="true">java.lang.Boolean</PARAMETER>
+	  <PARAMETER NAME="phrasalVerbs" RUNTIME="true" DEFAULT="true" OPTIONAL="true">java.lang.Boolean</PARAMETER>
+      <PARAMETER NAME="document" RUNTIME="true">gate.Document</PARAMETER>
+      <PARAMETER NAME="inputASName" RUNTIME="true" OPTIONAL="true">java.lang.String</PARAMETER>
+      <PARAMETER NAME="outputASName" RUNTIME="true" OPTIONAL="true">java.lang.String</PARAMETER>
+      <PARAMETER NAME="debug" RUNTIME="true" DEFAULT="false" OPTIONAL="false">java.lang.Boolean</PARAMETER>
+      <PARAMETER NAME="charset" RUNTIME="true" DEFAULT="ISO-8859-1" OPTIONAL="false">java.lang.String</PARAMETER>
+      <ICON>/rasp.png</ICON>
+    </RESOURCE>
+  </CREOLE>
+
+</CREOLE-DIRECTORY>

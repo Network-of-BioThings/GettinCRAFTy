@@ -1,0 +1,10 @@
+gate.alignment
+gate.alignment.gui
+gate.alignment.gui.actions.impl
+gate.alignment.gui.views
+gate.alignment.utils
+gate.composite
+gate.composite.impl
+gate.compound
+gate.compound.gui
+gate.compound.impl

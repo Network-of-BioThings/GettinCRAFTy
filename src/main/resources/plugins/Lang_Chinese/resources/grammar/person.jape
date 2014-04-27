@@ -1,0 +1,54 @@
+/*
+*  person.jape
+*
+* Copyright (c) 1998-2001, The University of Sheffield.
+*
+*  This file is part of GATE (see http://gate.ac.uk/), and is free
+*  software, licenced under the GNU Library General Public License,
+*  Version 2, June 1991 (in the distribution as file licence.html,
+*  and also available at http://gate.ac.uk/gate/licence.html).
+*
+*  Diana Maynard, 10 Oct 2003
+* 
+*  $Id: person.jape 7451 2006-06-15 14:10:50Z ian_roberts $
+*/
+
+Phase:Person
+Input: Lookup Token
+Options: control = appelt
+
+
+/* People:
+	Lookup.majorType==person (This includes items in the following lists:
+person/person_relig/surname_foreign)
+*/
+/*
+ignores potential person if preceded by an adjective
+otherwise just gets whole person lookups
+*/
+
+Rule: NotPerson
+Priority:200
+
+(
+ {Lookup.majorType == adj_person}|
+ {Token.category == JJ}
+)
+ (
+ ({Token.category == NR})+
+):tag
+ -->
+:tag.NotPerson = {rule = "NotPerson"}
+
+
+Rule: PersonLookup
+Priority: 300
+
+(
+ {Lookup.majorType == person}
+):tag
+-->
+:tag.Person = {rule = PersonLookup}
+
+
+

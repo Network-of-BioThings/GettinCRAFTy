@@ -1,0 +1,68 @@
+
+This directory contains a Flex (and C) program that tokenises English
+text in plain ASCII or Latin-1 (8-bit) encodings. Sentence boundaries
+are assumed to have been marked already, by '^ ' (perhaps using the
+'sentence' tool also provided here). Text needs to be tokenised before
+tagging, morphological analysis and parsing. The tokeniser (the file
+token.flex) was written by John Carroll (University of Sussex, 2001-3).
+  
+----------------------------------------------------------------
+
+Files:
+
+token.flex
+run.prl
+token.test
+
+
+Compilation:
+
+$ flex token.flex                 - compiling the flex code
+$ gcc lex.yy.c -o token           - compiling the C code
+$ rm lex.yy.c                     - deleting the intermediate file
+
+Command line options: none.
+
+1) Run the tokeniser:
+
+   token < input_text > output
+
+   A test run:   
+
+   $ token < token.test > output     
+
+
+2) Run the tokeniser, output lines numbered:
+
+   perl run.prl input_text > output
+
+   Before running, change the variable assignment for $tokenexe in run.prl to
+   point to the executable that you wish to use. 
+
+   A test run:
+
+   $ perl run.prl token.test > output
+
+     
+
+----------------------------------------------------------------
+
+About the tokeniser:
+
+The tokeniser determines the basic units (words/tokens) for the tagger
+and parser. One basic function is to separate words from punctuation
+(taking care with ellipses, double quotes etc.), possessive markers
+("'s", "'") and contractions ("n't", "'ll"). Another is to recognise
+SGML entities (e.g. &pound).
+
+The program also handles multi-character punctuation ("...", "--"). All
+control chars, as well as space and Latin-1 non-breakable space, are
+regarded as whitespace.
+
+The program is just based on regular expressions and simple rules, and
+is therefore far from failproof. However, the tokeniser should give a
+very fast initial processing of raw ASCII text (e.g. from the Internet)
+with a relatively high accuracy, and can easily be customised and
+adjusted for special cases.
+
+For further details, see the comments included in token.flex.

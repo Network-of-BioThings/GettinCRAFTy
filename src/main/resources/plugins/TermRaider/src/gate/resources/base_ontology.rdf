@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE rdf:RDF [
+<!ENTITY xsd   "http://www.w3.org/2001/XMLSchema#">
+<!ENTITY arco  "http://www.gate.ac.uk/ns/ontologies/arcomem-data-model.rdf#">
+]>
+
+<rdf:RDF
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+   xmlns:arco="http://www.gate.ac.uk/ns/ontologies/arcomem-data-model.rdf#"
+   xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+   xml:base="http://gate.ac.uk/owlim#">
+
+
+  <rdfs:Class rdf:about="&arco;Entity">
+    <rdfs:label>Entity</rdfs:label>
+  </rdfs:Class>
+
+  <rdfs:Class rdf:about="&arco;WebObject">
+    <rdfs:label>WebObject</rdfs:label>
+  </rdfs:Class>
+
+  <rdfs:Class rdf:about="&arco;Term">
+    <rdfs:label>Term</rdfs:label>
+    <rdfs:subClassOf rdf:resource="&arco;Entity"/>
+  </rdfs:Class>
+
+  <rdfs:Class rdf:about="&arco;Text">
+    <rdfs:label>Text</rdfs:label>
+    <rdfs:subClassOf rdf:resource="&arco;WebObject"/>
+  </rdfs:Class>
+
+</rdf:RDF>

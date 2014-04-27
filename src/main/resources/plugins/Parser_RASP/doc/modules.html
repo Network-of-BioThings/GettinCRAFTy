@@ -1,0 +1,110 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head>
+
+
+
+
+
+  
+  
+  
+  
+  <meta content="text/html; charset=ISO-8859-1" http-equiv="content-type">
+
+
+
+
+  
+  
+  
+  
+  <title>RASP2 plugin for GATE</title></head>
+<body>
+
+
+
+
+
+<img style="width: 310px; height: 60px;" alt="" src="logo2.gif"><br>
+
+
+
+
+
+<h1>RASP2 plugin for GATE&nbsp;</h1>
+Previous:&nbsp;<a href="index.html">Overview and Installation</a>&nbsp; &nbsp;&nbsp;
+<h2>RASP2 modules </h2><span style="text-decoration: underline;"></span><span style="font-style: italic;"></span>
+The RASP2 plugin for GATE provides 4 Processing Resources, each one of
+them requires the annotation types from the previous ones.<br>
+<a href="http://www.informatics.sussex.ac.uk/research/groups/nlp/rasp/offline-demo.html">http://www.informatics.sussex.ac.uk/research/groups/nlp/rasp/offline-demo.html</a>&nbsp;contains a description of the&nbsp;original modules in RASP.<h3 style="text-decoration: underline;"><span style="font-weight: bold;">Tokenizer</span></h3>
+Creates annotations of type <span style="font-weight: bold;">Token</span>, using the information about <span style="font-weight: bold;">Sentences</span>. A <span style="font-weight: bold;">Token</span>&nbsp;is a simple annotation which contains only a feature '<span style="font-style: italic;">string</span>'
+(unlike the default component in GATE which has more information).
+Another difference with the GATE equivalent is that the Tokenizer
+requires annotations of type Sentence and hence can't be the first
+element of a pipeline. Check out the resources pages on the
+DigitalPebble website for our Toolbox which contains a Sentence
+Splitter. The original GATE tokenizer can be used instead of the RASP
+one.<br><span style="font-style: italic; color: black;"><br><span style="text-decoration: underline;">Runtime Parameters</span><br><br></span><table style="text-align: left; width: 1368px; height: 56px;" border="1" cellpadding="2" cellspacing="2"><tbody><tr><td style="width: 30%; font-style: italic;">inputASName</td><td>AnnotationSet where the <span style="font-style: italic;">Sentences&nbsp;</span><span style="font-style: italic;"></span>are taken from </td></tr><tr><td style="font-style: italic;">outputASName</td><td>AnnotationSet where the <span style="font-style: italic;">Tokens&nbsp;</span><span style="font-style: italic;"></span>are generated </td></tr><tr><td style="font-style: italic;">debug</td><td>Keeps the file returned by the Tokenizer in the /tmp directory</td></tr><tr><td style="font-style: italic;">charset</td><td>Specifies the charset to use for the communication with the Tokenizer</td></tr></tbody></table><span style="font-style: italic; color: black;"></span><a href="http://lirics.loria.fr/doc_pub/maf.pdf"></a><br style="font-weight: bold;">
+
+
+
+
+
+<h3 style="text-decoration: underline;"><span style="font-weight: bold;">POS Tagger</span></h3>The <span style="font-weight: bold;">Part of Speech Tagger </span>generates annotations of type  <span style="font-weight: bold;">WordForms. </span>This separation between Tokens and WForms is based on the <a href="http://lirics.loria.fr/doc_pub/maf.pdf">MAF ISO proposal</a>. <br>The tagset is close to CLAWS C7 (see e.g. Appendix C of Jurafsky,
+D. and Martin, J. Speech and Language Processing, Prentice-Hall, 2000
+for more details), although it is in fact a cut down version of the
+<a href="http://www.comp.lancs.ac.uk/computing/research/ucrel/claws2tags.html">
+CLAWS C2</a> tagset.<br>
+<br>
+A <span style="font-weight: bold;">WordForm </span>gets a <span style="font-style: italic;">POS</span> attribute, which is a simple String and a <span style="font-style: italic;">probability</span>.<br>
+<br><span style="text-decoration: underline;"><span style="font-style: italic;">Init</span></span><span style="font-style: italic; color: black;"><span style="text-decoration: underline;"> Parameter<br><br></span></span><table style="text-align: left; width: 1368px; height: 56px;" border="1" cellpadding="2" cellspacing="2"><tbody><tr><td style="width: 30%; font-style: italic;">raspHome</td><td>Directory where RASP is installed </td></tr></tbody></table><br><span style="font-style: italic; color: black;"><span style="text-decoration: underline;">Runtime Parameters</span></span><span style="font-style: italic; color: black;"><span style="text-decoration: underline;"></span><br><br></span><table style="text-align: left; width: 1368px; height: 56px;" border="1" cellpadding="2" cellspacing="2"><tbody><tr><td style="width: 30%; font-style: italic;">inputASName</td><td>AnnotationSet where&nbsp;<span style="font-style: italic;">Sentences and Tokens&nbsp;</span><span style="font-style: italic;"></span>are taken from </td></tr><tr><td style="font-style: italic;">outputASName</td><td>AnnotationSet where the <span style="font-style: italic;">WordForms&nbsp;</span><span style="font-style: italic;"></span>are generated </td></tr><tr><td style="font-style: italic;">debug</td><td>Keeps the file returned by the POSTagger in the /tmp directory</td></tr><tr><td style="font-style: italic;">charset</td><td>Specifies the charset to use for the communication with the&nbsp;POSTagger</td></tr><tr><td><span style="font-style: italic;">generateMultipleTags</span></td><td>Generates one or more <span style="font-style: italic;">WordForms</span> per Token</td></tr></tbody></table><span style="font-style: italic; color: black;"></span><br><h3 style="text-decoration: underline;"><span style="font-weight: bold;">POS Converter</span></h3>The <span style="font-weight: bold;">Part of Speech Converter </span>achieves
+a similar functionality as above but instead of getting the POS tags
+from the original RASP component, it converts the tags generated by the
+default GATE POS tagger (PennTreebank tagset) into the tagset used by
+RASP. This has an advantage of speeding up the processing at the cost
+of possible inaccuracies in the conversion.<br><br><span style="font-style: italic; color: black;"><span style="text-decoration: underline;">Runtime Parameters</span></span><span style="font-style: italic; color: black;"><span style="text-decoration: underline;"></span><br><br></span><table style="text-align: left; width: 1368px; height: 56px;" border="1" cellpadding="2" cellspacing="2"><tbody><tr><td style="width: 30%; font-style: italic;">inputASName</td><td>AnnotationSet where&nbsp;<span style="font-style: italic;">WordForms</span><span style="font-style: italic;"> </span>are&nbsp;taken from </td></tr><tr><td style="font-style: italic;">outputASName</td><td>AnnotationSet where the <span style="font-style: italic;">WordForms </span>are generated </td></tr><tr><td style="font-style: italic;">grammarURL</td><td>URL to the JAPE grammar file</td></tr><tr><td><span style="font-style: italic;">encoding</span></td><td>The encoding used for reading the grammar</td></tr></tbody></table><span style="font-style: italic; color: black;"></span><br style="font-weight: bold;">
+
+
+
+
+
+<h3 style="text-decoration: underline;"><span style="font-weight: bold;">Morphological Analyser</span></h3>
+<span style="font-weight: bold;"></span>
+Next the tagger output is lemmatized, based on the tags
+assigned to word tokens. See Briscoe and Carroll (2002) for further details
+and a reference to a detailed paper describing this module.<span style="font-weight: bold;"> </span>The<span style="font-weight: bold;"> Morphological Analyzer </span>adds an attribute <span style="font-style: italic;">lemma</span> to the&nbsp;<span style="font-weight: bold;">WordForms</span> found in the input AnnotationSet.<br><br><span style="text-decoration: underline;"><span style="font-style: italic;">Init</span></span><span style="font-style: italic; color: black;"><span style="text-decoration: underline;"> Parameter<br><br></span></span><table style="text-align: left; width: 1368px; height: 56px;" border="1" cellpadding="2" cellspacing="2"><tbody><tr><td style="width: 30%; font-style: italic;">raspHome</td><td>Directory where RASP is installed </td></tr></tbody></table><br><span style="font-style: italic; color: black;"><span style="text-decoration: underline;">Runtime Parameters</span></span><span style="font-style: italic; color: black;"><span style="text-decoration: underline;"></span><br><br></span><table style="text-align: left; width: 1368px; height: 56px;" border="1" cellpadding="2" cellspacing="2"><tbody><tr><td style="width: 30%; font-style: italic;">inputASName</td><td>AnnotationSet where&nbsp;<span style="font-style: italic;">WordForms</span><span style="font-style: italic;">&nbsp;</span><span style="font-style: italic;"></span>are taken from </td></tr><tr><td style="font-style: italic;">debug</td><td>Keeps the file returned by the Morpher in the /tmp directory</td></tr><tr><td style="font-style: italic;">charset</td><td>Specifies the charset to use for the communication with the Morpher</td></tr></tbody></table><br style="font-weight: bold;"><span style="font-weight: bold;">
+</span>
+
+
+
+
+<h3 style="text-decoration: underline;"><span style="font-weight: bold;">Parser</span></h3>
+
+
+
+
+
+
+The <span style="font-weight: bold;">probabilistic parser</span> analyses the PoS tag sequence or
+chart of initial more probable tags and generates a parse forest
+representation containing all possible subanalyses with associated
+probabilities. From this representation it is able to construct
+the n-best (weighted) grammatical relations.<br>
+<br>
+The parser generates annotations of the type<span style="font-weight: bold;"> Dependency</span>. <span style="font-weight: bold;">Dependencies </span>have a <span style="font-style: italic;">type</span> and <span style="font-style: italic;">subtype</span> <span style="font-style: italic;"></span>and link to two <span style="font-weight: bold;">WordForms </span>as <span style="font-style: italic;">head</span> and <span style="font-style: italic;">dependency</span>. This implementation does not generate annotations for <span style="font-weight: bold;">Clauses</span>.<br>
+<br>
+Note that the Parser requires a recent machine with minimum 1.5G of RAM.<br><br><span style="text-decoration: underline;"><span style="font-style: italic;">Init</span></span><span style="font-style: italic; color: black;"><span style="text-decoration: underline;"> Parameter<br><br></span></span><table style="text-align: left; width: 1368px; height: 56px;" border="1" cellpadding="2" cellspacing="2"><tbody><tr><td style="width: 30%; font-style: italic;">raspHome</td><td>Directory where RASP is installed </td></tr></tbody></table><br><span style="font-style: italic; color: black;"><span style="text-decoration: underline;">Runtime Parameters</span></span><span style="font-style: italic; color: black;"><span style="text-decoration: underline;"></span><br><br></span><table style="text-align: left; width: 1368px; height: 56px;" border="1" cellpadding="2" cellspacing="2"><tbody><tr><td style="width: 30%; font-style: italic;">inputASName</td><td>AnnotationSet where&nbsp;<span style="font-style: italic;">WordForms</span><span style="font-style: italic;"> and Sentences </span><span style="font-style: italic;"></span>are taken from </td></tr><tr><td style="font-style: italic;">outputASName</td><td>AnnotationSet where the <span style="font-style: italic;">Dependencies </span>are generated</td></tr><tr><td style="font-style: italic;">debug</td><td>Keeps the file returned by the Parser in the /tmp directory</td></tr><tr><td style="font-style: italic;">charset</td><td>Specifies the charset to use for the communication with the Parser</td></tr><tr><td style="font-style: italic;">subcategorisation</td><td>Turns subcategorisation on or off</td></tr><tr><td style="font-style: italic;">phrasalVerbs</td><td>Turns the use of phrasal verbs on or off</td></tr><tr><td><span style="font-style: italic;">outputFormat</span></td><td>Format returned by the Parser. Authorized values are "-og","-ogio", "-ogw". See RASP documentation for more information.</td></tr></tbody></table><br>
+<br>
+
+
+
+
+
+<br>
+
+
+
+
+
+&nbsp;
+</body></html>

@@ -1,0 +1,8 @@
+<CREOLE-DIRECTORY>
+  <JAR SCAN="true">PennBioTagger.jar</JAR>
+  <JAR>lib/mallet-deps.jar</JAR>
+  <JAR>lib/mallet-no_gnu.jar</JAR>
+  <JAR>lib/maxent.jar</JAR>
+  <JAR>lib/opennlp-tools-1.0.0.jar</JAR>
+  <JAR>lib/trove.jar</JAR>
+</CREOLE-DIRECTORY>

@@ -1,0 +1,27 @@
+Phase: Entities
+Input: Token
+Options: control = appelt
+
+Rule: Entity
+(
+	{Token.entity ==~ "B-.+"}
+	({Token.entity ==~ "I-.+"})*
+):entity
+-->
+{
+try {
+	AnnotationSet entity = (AnnotationSet)bindings.get("entity");
+	Annotation annot = entity.iterator().next();
+	
+	String type = (String)annot.getFeatures().get("entity");
+	type = type.substring(2);
+	
+	FeatureMap features = Factory.newFeatureMap();
+	features.put("type",type);
+	
+	outputAS.add(entity.firstNode().getOffset(),entity.lastNode().getOffset(),"Entity",features);
+}
+catch (Exception e) {
+	throw new LuckyException(e);
+}
+}

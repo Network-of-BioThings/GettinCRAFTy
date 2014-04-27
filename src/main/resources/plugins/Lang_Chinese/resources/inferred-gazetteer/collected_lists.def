@@ -1,0 +1,9 @@
+AdjPerson.lst:adj_person:inferred:chinese
+Location.lst:Location:inferred:chinese
+Money.lst:Money:inferred:chinese
+NounPerson.lst:noun_person:collected:chinese
+Organization.lst:Organization:inferred:chinese
+Percent.lst:Percent:inferred:chinese
+Person.lst:Person:inferred:chinese
+PersonVerb.lst:personverb::chinese
+VerbPerson.lst:verbperson::chinese

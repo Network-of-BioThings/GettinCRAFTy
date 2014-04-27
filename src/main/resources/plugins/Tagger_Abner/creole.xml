@@ -1,0 +1,6 @@
+<?xml version="1.0"?>
+<CREOLE-DIRECTORY>
+	<JAR SCAN="true">abner.jar</JAR>
+	<JAR>lib/abner1.0.0.jar</JAR>
+	<JAR>lib/mallet.jar</JAR>
+</CREOLE-DIRECTORY>

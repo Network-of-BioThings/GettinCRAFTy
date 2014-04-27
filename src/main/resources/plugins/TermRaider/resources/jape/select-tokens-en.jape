@@ -1,0 +1,56 @@
+Phase: Select
+Input: Token
+Options: control = appelt
+
+
+
+Rule: SelectToken
+Priority: 30
+({Token.kind == "word", Token.category ==~ "N.*", Token.length > 2, Token.string !=~ ".*-"}):token
+-->
+:token {
+  Annotation token = tokenAnnots.iterator().next();
+  String canonical = gate.termraider.util.Utilities.getCanonicalFromLemma(token, doc, "root");
+
+  FeatureMap oldFeatures = token.getFeatures();
+  oldFeatures.put("canonical", canonical);
+
+  FeatureMap newFeatures = Factory.newFeatureMap();
+  newFeatures.putAll(oldFeatures);
+  newFeatures.put("head", canonical);
+  
+  Long start = token.getStartNode().getOffset();
+  Long end   = token.getEndNode().getOffset();
+  
+  try {
+    outputAS.add(start, end, "TermCandidate", newFeatures);
+    outputAS.add(start, end, "SingleWord", newFeatures);
+  }
+  catch (InvalidOffsetException e) {
+    e.printStackTrace();
+  }
+
+}
+
+
+
+Rule: CanonicalVBG
+Priority: 20
+({Token.kind == "word", Token.category == "VBG"}|
+ {Token.kind == "word", Token.category == "VBN"}):token
+-->
+:token {
+  Annotation token = tokenAnnots.iterator().next();
+  gate.termraider.util.Utilities.setCanonicalFromString(token, doc);
+}
+
+
+Rule: CanonicalOther
+Priority: 10
+({Token}):token
+-->
+:token {
+  Annotation token = tokenAnnots.iterator().next();
+  gate.termraider.util.Utilities.setCanonicalFromString(token, doc);
+}
+

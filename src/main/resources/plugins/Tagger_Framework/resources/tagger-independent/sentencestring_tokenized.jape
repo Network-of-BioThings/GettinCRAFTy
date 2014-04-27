@@ -1,0 +1,29 @@
+Phase: Sentence_String_Tokenized
+Input: Sentence
+Options: control=brill
+
+Rule: sent
+(
+	{Sentence}
+):s
+-->
+{
+gate.AnnotationSet sAS = (gate.AnnotationSet)bindings.get("s");
+gate.Annotation sentence = (gate.Annotation)sAS.iterator().next();
+gate.FeatureMap sMap = sentence.getFeatures();
+gate.AnnotationSet sentenceTokens = inputAS.get("Token", sentence.getStartNode().getOffset(), sentence.getEndNode().getOffset());
+String sentenceString = "";
+
+List<Annotation> tokenAnnotations = new ArrayList<Annotation>(sentenceTokens);
+Collections.sort(tokenAnnotations, new gate.util.OffsetComparator());
+
+try {
+    for( gate.Annotation token:tokenAnnotations ) {
+	sentenceString = sentenceString + doc.getContent().getContent(token.getStartNode().getOffset(), token.getEndNode().getOffset()).toString() + " ";
+    }
+
+    sMap.put( gate.taggerframework.GenericTagger.STRING_FEATURE_NAME, sentenceString );
+    } catch (Exception ex) {
+      ex.printStackTrace();
+    }
+}

@@ -1,0 +1,229 @@
+<?xml version="1.0"?>
+<!-- $Id: creole.xml 9836 2008-08-22 18:41:31Z aborthwick $ -->
+<!-- creole.xml directory file for Romanian Processing resources -->
+<CREOLE-DIRECTORY>
+  <!-- Processing Resources -->
+  <CREOLE>
+   
+  <RESOURCE>
+      <NAME>Hindi Tokeniser</NAME>
+ <JAR>hindi.jar</JAR>
+      <CLASS>hindi.HindiTokeniser</CLASS>
+      <COMMENT>A customisable Hindi tokeniser.</COMMENT>
+      <PARAMETER NAME="document" COMMENT="The document to be tokenised"
+        RUNTIME="true">gate.Document</PARAMETER>
+      <PARAMETER NAME="annotationSetName" RUNTIME="true"
+        COMMENT="The annotation set to be used for the generated annotations"
+        OPTIONAL="true">java.lang.String</PARAMETER>
+      <PARAMETER NAME="tokeniserRulesURL"
+        DEFAULT="resources/tokeniser/multiTokeniser.rules"
+        COMMENT="The URL for the rules file" SUFFIXES="rules" >
+        java.net.URL</PARAMETER>     
+      <PARAMETER NAME="encoding"
+        COMMENT="The encoding used for reading the definitions" DEFAULT="UTF-8">
+        java.lang.String</PARAMETER>
+       <PARAMETER NAME="transducerGrammarURL"
+        DEFAULT="resources/tokeniser/postprocess.jape"
+        COMMENT="The URL for the postprocessing transducer" SUFFIXES="jape">
+        java.net.URL</PARAMETER>
+      <ICON>shefTokeniser.gif</ICON>
+    </RESOURCE>
+
+   <!-- creole.xml for Hindi gazetteer -->
+    <RESOURCE>
+      <NAME>Hindi Gazetteer</NAME>
+      <JAR>hindi.jar</JAR>
+      <CLASS>hindi.HindiGazetteer</CLASS>
+      <COMMENT>A list lookup component.</COMMENT>
+      <PARAMETER NAME="document" RUNTIME="true"
+        COMMENT="The document to be processed">gate.corpora.DocumentImpl</PARAMETER>
+      <PARAMETER NAME="annotationSetName" RUNTIME="true"
+        COMMENT="The annotation set to be used for the generated annotations"
+        OPTIONAL="true">java.lang.String</PARAMETER>
+      <PARAMETER NAME="listsURL"
+        DEFAULT="resources/gazetteer/lists.def"
+        COMMENT="The URL to the file with list of lists" SUFFIXES="def">
+        java.net.URL</PARAMETER>
+      <PARAMETER DEFAULT="UTF-8"
+        COMMENT="The encoding used for reading the definitions" NAME="encoding">
+        java.lang.String</PARAMETER>
+      <PARAMETER DEFAULT="true"
+        COMMENT="Should this gazetteer diferentiate on case"
+        NAME="caseSensitive">java.lang.Boolean</PARAMETER>
+      <PARAMETER DEFAULT="true"
+        COMMENT="Should this gazetteer only match whole words"
+        NAME="wholeWordsOnly">java.lang.Boolean</PARAMETER>
+      <ICON>shefGazetteer.gif</ICON>
+    </RESOURCE>
+
+ <!-- creole.xml for Hindi Splitter -->
+    <RESOURCE>
+      <NAME>Hindi Splitter</NAME>
+      <JAR>hindi.jar</JAR>
+      <CLASS>hindi.HindiSplitter</CLASS>
+      <COMMENT>A Sentence Splitter.</COMMENT>
+
+
+       <PARAMETER NAME="document" RUNTIME="true"
+        COMMENT="The document to be processed">gate.Document</PARAMETER>
+      <PARAMETER NAME="inputASName" RUNTIME="true"
+        COMMENT="The annotation set to be used as input for the transducer"
+        OPTIONAL="true">java.lang.String</PARAMETER>
+      <PARAMETER NAME="outputASName" RUNTIME="true"
+        COMMENT="The annotation set to be used as output for the transducer"
+        OPTIONAL="true">java.lang.String</PARAMETER>
+      <PARAMETER NAME="transducerURL" COMMENT="The URL to the grammar file"
+         DEFAULT="resources/splitter/grammar/main.jape"
+        SUFFIXES="jape">java.net.URL</PARAMETER>
+      <PARAMETER NAME="gazetteerListsURL"
+        DEFAULT="resources/splitter/gazetteer/lists.def"
+        COMMENT="The URL to the file with list of lists" SUFFIXES="def">
+        java.net.URL</PARAMETER>
+      <PARAMETER NAME="encoding" DEFAULT="UTF-8"
+        COMMENT="The encoding used for reading the grammar">
+        java.lang.String</PARAMETER>
+
+
+    </RESOURCE>
+
+ <!-- creole.xml for Hindi gazetteer -->
+    <RESOURCE>
+      <NAME>Hindi Tokeniser Gazetteer</NAME>
+      <JAR>hindi.jar</JAR>
+      <CLASS>hindi.HindiTokeniserGazetteer</CLASS>
+      <COMMENT>A list lookup component.</COMMENT>
+      <PARAMETER NAME="document" RUNTIME="true"
+        COMMENT="The document to be processed">gate.corpora.DocumentImpl</PARAMETER>
+      <PARAMETER NAME="annotationSetName" RUNTIME="true"
+        COMMENT="The annotation set to be used for the generated annotations"
+        OPTIONAL="true">java.lang.String</PARAMETER>
+      <PARAMETER NAME="listsURL"
+        DEFAULT="resources/tokeniser/lists.def"
+        COMMENT="The URL to the file with list of lists" SUFFIXES="def">
+        java.net.URL</PARAMETER>
+      <PARAMETER DEFAULT="UTF-8"
+        COMMENT="The encoding used for reading the definitions" NAME="encoding">
+        java.lang.String</PARAMETER>
+      <PARAMETER DEFAULT="true"
+        COMMENT="Should this gazetteer diferentiate on case"
+        NAME="caseSensitive">java.lang.Boolean</PARAMETER>
+      <PARAMETER DEFAULT="true"
+        COMMENT="Should this gazetteer only match whole words"
+        NAME="wholeWordsOnly">java.lang.Boolean</PARAMETER>
+      <ICON>shefGazetteer.gif</ICON>
+    </RESOURCE>
+
+
+
+  <!-- creole.xml for main JapeTransducer -->
+    <RESOURCE>
+      <NAME>Hindi Main Grammar</NAME>
+      <JAR>hindi.jar</JAR>
+      <CLASS>hindi.HindiTransducer</CLASS>
+      <COMMENT>A module for executing Jape grammars</COMMENT>
+    <PARAMETER NAME="document" RUNTIME="true"
+        COMMENT="The document to be processed">gate.Document</PARAMETER>
+      <PARAMETER NAME="inputASName" RUNTIME="true"
+        COMMENT="The annotation set to be used as input for the transducer"
+        OPTIONAL="true">java.lang.String</PARAMETER>
+      <PARAMETER NAME="outputASName" RUNTIME="true"
+        COMMENT="The annotation set to be used as output for the transducer"
+        OPTIONAL="true">java.lang.String</PARAMETER>
+      <PARAMETER NAME="grammarURL" COMMENT="The URL to the grammar file"
+         DEFAULT="resources/grammar/main.jape"
+        SUFFIXES="jape">java.net.URL</PARAMETER>
+      <PARAMETER NAME="encoding" DEFAULT="UTF-8"
+        COMMENT="The encoding used for reading the grammar">
+        java.lang.String</PARAMETER>
+
+    </RESOURCE>
+
+ <!-- creole.xml for tokeniser postprocessor -->
+    <RESOURCE>
+      <NAME>Hindi Tokeniser Postprocessor</NAME>
+      <JAR>hindi.jar</JAR>
+      <CLASS>hindi.HindiTokeniserPostprocessor</CLASS>
+      <COMMENT>A module for executing Jape grammars</COMMENT>
+      <PARAMETER NAME="document" RUNTIME="true"
+        COMMENT="The document to be processed">gate.Document</PARAMETER>
+      <PARAMETER NAME="inputASName" RUNTIME="true"
+        COMMENT="The annotation set to be used as input for the transducer"
+        OPTIONAL="true">java.lang.String</PARAMETER>
+      <PARAMETER NAME="outputASName" RUNTIME="true"
+        COMMENT="The annotation set to be used as output for the transducer"
+        OPTIONAL="true">java.lang.String</PARAMETER>
+      <PARAMETER NAME="grammarURL" COMMENT="The URL to the grammar file"
+         DEFAULT="resources/tokeniser/join.jape"
+        SUFFIXES="jape">java.net.URL</PARAMETER>
+      <PARAMETER NAME="encoding" DEFAULT="UTF-8"
+        COMMENT="The encoding used for reading the grammar">
+        java.lang.String</PARAMETER>
+    </RESOURCE>
+
+ <!-- creole.xml for namematch -->
+    <RESOURCE>
+      <NAME>Hindi OrthoMatcher</NAME>
+      <JAR>hindi.jar</JAR>
+      <CLASS>hindi.HindiOrthoMatcher</CLASS>
+      <COMMENT>Hindi Orthomatcher</COMMENT>
+      <PARAMETER DEFAULT="resources/orthomatcher/listsNM.def"
+        COMMENT="The URL for the definition file" SUFFIXES="def"
+        NAME="definitionFileURL">java.net.URL</PARAMETER>
+      <PARAMETER DEFAULT="0.50"
+		COMMENT="Minimum likelihood of nickname" 
+		NAME="minimumNicknameLikelihood">
+		java.lang.Double
+	  </PARAMETER>
+	  <PARAMETER NAME="highPrecisionOrgs" DEFAULT="false"
+		COMMENT="True indicates that we only use very safe features for matching orgs, such as ACME = ACME, Inc."
+		OPTIONAL="true">
+		java.lang.Boolean
+	  </PARAMETER>
+      <PARAMETER DEFAULT="UTF-8"
+        COMMENT="The encoding used for reading the definitions" NAME="encoding">
+        java.lang.String</PARAMETER>
+      <PARAMETER NAME="document" RUNTIME="true">gate.Document</PARAMETER>
+      <PARAMETER NAME="annotationSetName" RUNTIME="true" OPTIONAL="true">
+        java.lang.String</PARAMETER>
+      <PARAMETER NAME="caseSensitive" DEFAULT="false" OPTIONAL="true">
+        java.lang.Boolean</PARAMETER>
+      <PARAMETER NAME="annotationTypes"
+        DEFAULT="Organization;Person;Location;Date" RUNTIME="true"
+        OPTIONAL="true">java.util.ArrayList</PARAMETER>
+      <PARAMETER NAME="processUnknown" DEFAULT="true" OPTIONAL="true">
+        java.lang.Boolean</PARAMETER>
+      <PARAMETER NAME="organizationType" DEFAULT="Organization" OPTIONAL="true">
+        java.lang.String</PARAMETER>
+      <PARAMETER NAME="personType" DEFAULT="Person" OPTIONAL="true">
+        java.lang.String</PARAMETER>
+      <PARAMETER NAME="extLists" DEFAULT="true" OPTIONAL="true">
+        java.lang.Boolean</PARAMETER>
+    </RESOURCE>
+<!-- creole.xml for HepTag (Mark Hepple's POS tagger)-->
+    <RESOURCE>
+      <NAME>Hindi POS Tagger</NAME>
+      <COMMENT>Mark Hepple's Brill-style POS tagger, adapted for languages where entries are multiword</COMMENT>
+      <JAR>resources/creole/cebtag.jar</JAR>
+      <CLASS>cebtag.postag.CebuanoPOSTagger</CLASS>
+      <PARAMETER NAME="document"
+        COMMENT="The document to be processed"
+        RUNTIME="true">gate.Document</PARAMETER>
+      <PARAMETER NAME="inputASName"
+        COMMENT="The name of the annotation set used for input"
+        RUNTIME="true" OPTIONAL="true">java.lang.String</PARAMETER>
+      <PARAMETER NAME="lexiconURL" DEFAULT="resources/tagger/hindi_lexicon"
+        COMMENT="The URL for the lexicon file"
+        >java.net.URL</PARAMETER>
+      <PARAMETER NAME="rulesURL" DEFAULT="resources/tagger/ruleset"
+        COMMENT="The URL for the ruleset file"
+        >java.net.URL</PARAMETER>
+      <PARAMETER NAME="encoding"
+        DEFAULT="UTF-8"
+        COMMENT="The encoding to be used for the ruleset and lexicon files"
+        >java.lang.String</PARAMETER>	
+    </RESOURCE>
+
+
+ </CREOLE>
+
+</CREOLE-DIRECTORY>

@@ -1,0 +1,17 @@
+#!/bin/sh
+# 
+# This script is for using AbGene with the Tagger framework
+# ftp://ftp.ncbi.nlm.nih.gov/pub/tanabe/AbGene/
+# http://bioinformatics.oxfordjournals.org/content/18/8/1124.long
+#
+
+# set the correct location of your AbGene installation here
+ABGENE_DIR=/home/mark/abgene/
+
+cd ${ABGENE_DIR}
+
+LD_LIBRARY_PATH=.; export LD_LIBRARY_PATH
+
+./TestSen $1 > $1.tags
+./TestFP $1.tags > $1.fp
+./TestFN $1.fp | sed -e "s/ /\n/g"

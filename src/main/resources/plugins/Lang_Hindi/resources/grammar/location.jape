@@ -1,0 +1,192 @@
+/*
+*  location.jape
+*
+* Copyright (c) 1998-2001, The University of Sheffield.
+*
+*  This file is part of GATE (see http://gate.ac.uk/), and is free
+*  software, licenced under the GNU Library General Public License,
+*  Version 2, June 1991 (in the distribution as file licence.html,
+*  and also available at http://gate.ac.uk/gate/licence.html).
+*
+*  Diana Maynard, 10 Sep 2001
+* 
+*  $Id: location.jape 11883 2009-11-03 16:27:32Z markagreenwood $
+*/
+
+
+Phase:	Location
+Input: Token Lookup GazLocation Control
+Options: control = appelt debug = false
+
+///////////////////////////////////////////////////////////////////
+
+
+/////////////////////////////////////////////////////////////////
+// Location rules
+
+Rule: 	Location1
+Priority: 80
+// Lookup = city, country, province, region, water
+
+// Western Europe
+// South China sea
+
+(
+ ({Lookup.majorType == loc_key, Lookup.minorType == pre})*
+ ({GazLocation})+
+ ({Lookup.majorType == loc_key, Lookup.minorType == post})?
+)
+:locName -->
+{
+ gate.FeatureMap features = Factory.newFeatureMap();
+// create an annotation set consisting of all the annotations for locName 
+gate.AnnotationSet locSet = (gate.AnnotationSet)bindings.get("locName");
+// create an annotation set consisting of the annotation matching Lookup
+gate.AnnotationSet loc = (gate.AnnotationSet)locSet.get("Lookup");
+// if the annotation type Lookup exists
+if (loc != null && loc.size()>0)
+{
+// take the first element in the set
+  gate.Annotation locAnn = (gate.Annotation)loc.iterator().next();
+//propagate minorType feature (and value) from Lookup
+  features.put("locType", locAnn.getFeatures().get("minorType"));
+  outputAS.removeAll(loc);
+}
+else
+{ 
+ //if Lookup doesn't exist, take features from GazLocation
+  gate.AnnotationSet gpe = (gate.AnnotationSet)locSet.get("GazLocation");
+  gate.Annotation gpeAnn = (gate.Annotation) gpe.iterator().next();
+  features.put("locType", gpeAnn.getFeatures().get("locType"));
+outputAS.removeAll(gpe);
+}
+// create some new features
+  features.put("rule", "Location1");
+// create a TempLoc annotation and add the features we've created
+outputAS.add(locSet.firstNode(), locSet.lastNode(), "TempLocation",
+features);
+}
+
+
+Rule: Location2
+Priority: 80
+
+// differs from Location1 in that the result should be a Location not GPE
+// midtown Manhattan
+
+(
+ ({Lookup.majorType == loc_key, Lookup.minorType == location_pre})
+ ({GazLocation})+
+ ({Lookup.majorType == loc_key, Lookup.minorType == post})?
+)
+:locName
+ -->
+//{}
+{
+gate.FeatureMap features = Factory.newFeatureMap();
+  // create an annotation set consisting of all the annotations for locName 
+gate.AnnotationSet locSet = (gate.AnnotationSet)bindings.get("locName");
+  // create some new features
+  features.put("rule", "Location2");
+  features.put("locType", "Unknown");
+  // create a TempLoc annotation and add the features we've created
+outputAS.add(locSet.firstNode(), locSet.lastNode(), "TempLocation",
+features);
+outputAS.removeAll(locSet);
+}
+
+
+
+Rule: 	LocationPre
+Priority: 75
+
+(
+ ({Lookup.majorType == loc_key, Lookup.minorType == pre})
+ ({Lookup.majorType == loc_key, Lookup.minorType == pre})?
+ ({GazLocation})
+ ({Lookup.majorType == loc_key, Lookup.minorType == post})?
+)
+:locName -->
+{
+ gate.FeatureMap features = Factory.newFeatureMap();
+// create an annotation set consisting of all the annotations for locName 
+gate.AnnotationSet locSet = (gate.AnnotationSet)bindings.get("locName");
+// create an annotation set consisting of the annotation matching GazLocation
+gate.AnnotationSet loc = (gate.AnnotationSet)locSet.get("GazLocation");
+
+if (loc != null && loc.size()>0)
+{
+// if the annotation type Lookup exists, take the first element in the set
+  gate.Annotation locAnn = (gate.Annotation)loc.iterator().next();
+//propagate minorType feature (and value) from locAnn
+  features.put("locType", locAnn.getFeatures().get("locType"));
+}
+
+// create some new features
+  features.put("rule", "LocationPre");
+// create a TempLoc annotation and add the features we've created
+outputAS.add(locSet.firstNode(), locSet.lastNode(), "TempLocation",
+features);
+}
+
+
+
+Rule:	GazLocation
+Priority: 250
+
+(
+ {GazLocation}
+)
+:locName
+ --> 	
+{
+ gate.FeatureMap features = Factory.newFeatureMap();
+// create an annotation set consisting of all the annotations for org 
+gate.AnnotationSet locSet = (gate.AnnotationSet)bindings.get("locName");
+// create an annotation set consisting of the annotation matching GazLocation
+gate.AnnotationSet loc = (gate.AnnotationSet)locSet.get("GazLocation");
+
+// if the annotation type Lookup doesn't exist, do nothing
+if (loc != null && loc.size()>0)
+{
+// if it does exist, take the first element in the set
+  gate.Annotation locAnn = (gate.Annotation)loc.iterator().next();
+//propagate minorType feature (and value) from loc
+  features.put("locType", locAnn.getFeatures().get("locType"));
+}
+// create some new features
+  features.put("rule", "GazLocation");
+// create a TempLoc annotation and add the features we've created
+outputAS.add(locSet.firstNode(), locSet.lastNode(), "TempLocation",
+features);
+outputAS.removeAll(locSet);
+}
+
+Rule: GPEPost
+Priority: 50
+(
+ {Token.category == DT}
+)?
+(
+ ({GazLocation})
+ {Lookup.majorType == gpe_key, Lookup.minorType == post}
+)
+:locName
+-->
+ :locName.TempLocation = {locType = "city", rule = GPEPost}
+
+
+
+Rule: LocationPost
+Priority: 50
+(
+ {Token.category == DT}
+)?
+(
+ {Token.category == NNP}
+ {Lookup.majorType == loc_key, Lookup.minorType == post}
+)
+:locName
+-->
+ :locName.TempLocation = {kind = "locName", rule = LocationPost}
+

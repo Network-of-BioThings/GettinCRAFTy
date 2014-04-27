@@ -1,0 +1,37 @@
+Version 2.0 (Released 30/06/2006)
+=================================
+This version is an almost complete rewrite of the original code. While
+the old version worked I got a lot of feedback from one kind user showing
+me places where it failed miserably or didn't do as expected. These
+problems led to drastic rewrites and hence this version. The major new
+features include: the option to leave element annotations in the document
+when they are also part of a compound, a uri feature, and a mapping between
+element names and symbols (the kind feature tells you which was actually
+found and so the other is inferred and should not necessarily be relied
+upon to be accurate).
+
+Version 1.2 (Released 24/11/2005)
+=================================
+Now loads resources from the plugin directory rather than from inside the JAR
+file.  Also now explicitly releases references to the current document after
+processing, which should help when working with a corpus in a datastore.
+
+Version 1.1 (Released 26/03/2004)
+=================================
+This release is to fix a mistake I made in the clean up process which
+means the tagger can take a lot longer to run than it really should do
+especially on long documents. This version won't tag anything that v1.0
+didn't but it will do the job faster!
+
+Version 1.0 (Released 09/02/2004)
+=================================
+Currently compounds, elements and ions are tagged. Compounds which are
+made up only of capital letters are not tagged as it introduces too
+many false positives. For the same reason elements appearing as the
+first token in a sentence are not tagged.
+
+If a text contains "element token (Compound Formula)" then "element token"
+will be tagged as a compound name, e.g. sulphur dioxide is tagged in the
+text "sulphur dioxide (SO2)" (note that this also works if the formula is
+surrounded by commas instead of parenthesis). Hopefully support for
+compound names will be improved in a future release.

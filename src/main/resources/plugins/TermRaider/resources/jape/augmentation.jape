@@ -1,0 +1,39 @@
+Phase: Augmentation
+Input: SingleWord MultiWord
+Options: control = all
+
+
+Rule: AugMultiWord
+({SingleWord}|{MultiWord}):match
+-->
+:match {
+  Annotation inner = matchAnnots.iterator().next();
+  Long start = inner.getStartNode().getOffset();
+  Long end = inner.getEndNode().getOffset();
+  String head = inner.getFeatures().get("head").toString();
+  long innerLength = end - start;
+  
+  double score = 0.0F;
+  if (inner.getFeatures().containsKey("tfIdf.raw")) {
+     score = ((Double) inner.getFeatures().get("tfIdf.raw")).doubleValue();
+  }
+
+  AnnotationSet outers0 = inputAS.getCovering("SingleWord", start, end);
+  AnnotationSet outers1 = inputAS.getCovering("MultiWord", start, end);
+  Set<Annotation> outers = new HashSet<Annotation>();
+  outers.addAll(outers0);
+  outers.addAll(outers1);
+
+  for (Annotation outer : outers) {
+      if ( (gate.Utils.lengthLong(outer) > innerLength) &&
+          outer.getFeatures().containsKey("head") &&
+          outer.getFeatures().get("head").equals(head) &&
+          outer.getFeatures().containsKey("tfIdf.raw")) {
+      	  score += ((Double) outer.getFeatures().get("tfIdf.raw")).doubleValue();
+      }
+  }
+
+  if (score > 0.0F) {
+     inner.getFeatures().put("localAugTfIdf", score);
+  }
+}

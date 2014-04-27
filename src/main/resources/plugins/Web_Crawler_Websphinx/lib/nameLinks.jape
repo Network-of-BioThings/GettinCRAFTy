@@ -1,0 +1,13 @@
+Phase: nameLinks
+Input: Person
+Options: control = appelt
+
+Rule:Name
+( 
+  ({Token.kind=="Person"}) && ({Token.kind="a"})
+):NameLink
+-->
+:NameLink.link={}
+
+
+

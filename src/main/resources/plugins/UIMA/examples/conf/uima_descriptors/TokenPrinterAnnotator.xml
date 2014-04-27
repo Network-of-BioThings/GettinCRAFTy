@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8" ?> 
+<!--
+ *  Copyright (c) 2005, The University of Sheffield.
+ *
+ *  This file is part of the GATE/UIMA integration layer, and is free
+ *  software, released under the terms of the GNU Lesser General Public
+ *  Licence, version 2.1 (or any later version).  A copy of this licence
+ *  is provided in the file LICENCE in the distribution.
+ *
+ *  UIMA is a product of IBM, details are available from
+ *  http://alphaworks.ibm.com/tech/uima
+-->
+
+<!-- Descriptor for the example TokenPrinterAnnotator. -->
+
+<taeDescription xmlns="http://uima.apache.org/resourceSpecifier">
+<frameworkImplementation>org.apache.uima.java</frameworkImplementation>
+<primitive>true</primitive>
+<annotatorImplementationName>gate.uima.examples.TokenPrinterAnnotator</annotatorImplementationName>
+ 
+<analysisEngineMetaData>
+  <name>Token Printer annotator</name>
+  <description>
+    A very simple annotator which does not, in fact, annotate anything at all,
+    but rather prints on standard output the String values of certain features
+    from the input token annotations.
+  </description>
+  <version>1.0</version>
+  <vendor>GATE</vendor>
+ 
+<!-- TypeSystem Definition -->
+  <typeSystemDescription>
+    <types>
+      <typeDescription>
+        <name>gate.uima.cas.Token</name>
+        <description>A token in text</description>
+        <supertypeName>uima.tcas.Annotation</supertypeName>
+        <features>
+          <featureDescription>
+            <name>String</name>
+            <description>The string represented by the token</description>
+            <rangeTypeName>uima.cas.String</rangeTypeName>
+          </featureDescription>
+          <featureDescription>
+            <name>Kind</name>
+            <description>The kind of Token - word, symbol, etc.</description>
+            <rangeTypeName>uima.cas.String</rangeTypeName>
+          </featureDescription>  
+          <featureDescription>
+            <name>Orth</name>
+            <description>The orthography of the Token</description>
+            <rangeTypeName>uima.cas.String</rangeTypeName>
+          </featureDescription>  
+        </features>  
+      </typeDescription>
+    </types>
+  </typeSystemDescription>
+
+<!-- Capabilities: Inputs, Outputs, and Preconditions -->
+  <capabilities>
+    <capability>
+      <inputs>
+        <type allAnnotatorFeatures="true">gate.uima.cas.Token</type>
+      </inputs>
+      <outputs/>
+      <languagesSupported>
+        <language>en</language>
+      </languagesSupported>  
+    </capability>
+  </capabilities>
+
+</analysisEngineMetaData>
+</taeDescription>

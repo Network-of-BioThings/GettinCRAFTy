@@ -1,0 +1,42 @@
+2012-02-07: Exits processing gracefully for the current document if there's any communication problems between client and server, or if there are any other processing exceptions, rather than dumping an exception and halting the pipeline.
+
+Added new parameter annotNormalize, which can be set to 'None', 'LeadingDeterminer', or 'AllDeterminers' to control whether and how determiners within the content of each of inputASTypes are handled. This is most useful for CoReference mode, so that 'his hypertension' and 'the hypertension' are both processed by MetaMap as simply 'hypertension' and treated as equivalent strings for coreference purposes.
+
+
+2012-02-01: Added new parameters: 
+	excludeIfContains: If an entry within inputASTypes contains any of the annotations or annotation expressions (of the form Annotation.feature == value) in this list, then do not process this instance.
+
+	excludeIfWithin: If an entry within inputASTypes occurs within any of the annotations or annotation expressions (of the form Annotation.feature == value) in this list, then do not process that instance.
+
+
+inputASTypes parameter now also accepts entries in the form Annotation.feature == value so that you can filter your input annotations according to feature value (although regexes for value are not currently allowed).
+
+
+2011-07-25: Added additional outputMode options: 
+- HighestMappingLowestCUI: Where there is more than one highest-scoring mapping, returns the mapping where the head word map event has the lowest CUI.
+- HighestMappingMostSources: Where there is more than one highest-scoring mapping, returns the mapping where the head word map event has the highest number of source vocabulary occurrences.
+
+Added missing IsHead (true if the mapping is the head of the noun phrase) and IsOvermatch (true if the mapping is an overmatch, i.e. starts or terminates with non-matching words) boolean features to the output annotation.
+
+Output semantic types and sources as both List<String> and raw String so that they can be matched both in JAPE LHS expressions (using <Annot>.SemanticTypesString =~ "<value>" and <Annot>.SourcesString =~ "<value>") and Java RHS expression (e.g. iterating over <Annot>.SemanticTypes and <Annot>.Sources)
+
+
+
+2011-04-20: Improved whitespace handling. Document text is now pre-chunked into segments separated by 2 or more line breaks, keeping track of start offsets for each chunk. Removed lineBreakCount parameter as it is no longer required.
+
+
+
+2011-02-02: Plugin rewritten to make use of MetaMap 2010 Java API features.  Numerous performance enhancements and a bug fix where changes to the metaMapOptions run-time parameter were previously not enacted. The following parameters have been removed from the initial release version: mmServerHost , mmServerPort , mmServerTimeout , excludeSemanticTypes, restrictSemanticTypes, scoreThreshold.
+These can now be specified using the --metamap_server_host, --metamap_server_port, --metamap_server_timeout, -k, -J and -r options in the metaMapOptions run-time parameter string.
+
+outputASType has been made a run-time parameter.
+useNegEx has been renamed to annotateNegEx
+The following changes have been made to outputMode
+
+MappingsOnly has been renamed to AllMappings
+CandidatesOnly has been renamed to AllCandidates
+CandidatesAndMappings has been renamed to AllCandidatesAndMappings
+
+
+
+2010-11-20: First release version

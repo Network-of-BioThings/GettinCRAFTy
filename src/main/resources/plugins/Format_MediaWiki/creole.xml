@@ -1,0 +1,5 @@
+<?xml version="1.0"?>
+<CREOLE-DIRECTORY>
+  <JAR SCAN="true">format-mediawiki.jar</JAR>
+  <JAR>lib/bliki-core-3.0.19.jar</JAR>
+</CREOLE-DIRECTORY>

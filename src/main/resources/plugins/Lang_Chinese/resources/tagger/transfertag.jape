@@ -1,0 +1,40 @@
+Phase: TransferTag
+Input: POS
+Options: control = appelt debug = false
+
+/* transfers value of POS category from Penn Treebank to value of Token.category
+*/
+
+Rule: AddPosTag
+(
+ {POS}
+):bnctag
+-->
+{
+
+  gate.AnnotationSet tagSet = (gate.AnnotationSet)bindings.get("bnctag");
+  gate.Annotation tag = (gate.Annotation) tagSet.iterator().next();
+
+  gate.AnnotationSet tokenAS = inputAS.get("Token",
+                                           tag.getStartNode().getOffset(),
+                                           tag.getEndNode().getOffset());
+
+   //no tokens found
+   if (tokenAS == null || tokenAS.isEmpty())
+     return;
+
+//int size = tokenAS.size();
+//if(size > 1){
+//  List tokensList = new ArrayList(tokenAS);
+//  Collections.sort(tokensList, new OffsetComparator());
+//  System.err.print("Size: " + size  + ": " );
+//  for(int i = 0; i< tokensList.size(); i++){
+//    Annotation aToken = (Annotation)tokensList.get(i);
+//    System.err.print(aToken.getFeatures().get("string") + " ");
+//  }
+//  System.err.println();
+//}
+    //basically here we only transfer the type to the first token
+    gate.Annotation token = (gate.Annotation) tokenAS.iterator().next();
+    token.getFeatures().put("category", tag.getFeatures().get("CATEGORY"));
+}

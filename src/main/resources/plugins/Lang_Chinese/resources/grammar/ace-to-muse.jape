@@ -1,0 +1,56 @@
+Phase:	Acetomuse
+Input: Per Loc GPE Fac Org
+Options: control = appelt debug = false
+
+Rule: Person
+(
+ {Per}
+):tag
+--> 
+{
+ gate.AnnotationSet tagAS = (gate.AnnotationSet)bindings.get("tag"); 
+  gate.FeatureMap features = Factory.newFeatureMap();
+ outputAS.add(tagAS.firstNode(),
+	                       tagAS.lastNode(), 
+			       "Person", features);
+inputAS.removeAll(tagAS);			       
+}
+
+
+Rule: Org
+(
+ {Org}
+):tag
+-->{
+ gate.AnnotationSet tagAS = (gate.AnnotationSet)bindings.get("tag"); 
+  gate.FeatureMap features = Factory.newFeatureMap();
+ outputAS.add(tagAS.firstNode(),
+	                       tagAS.lastNode(), 
+			       "Organization", features);
+inputAS.removeAll(tagAS);			       
+}
+
+Rule: Location
+(
+ {GPE}|{Loc}
+):tag
+-->
+{
+ gate.AnnotationSet tagAS = (gate.AnnotationSet)bindings.get("tag"); 
+  gate.FeatureMap features = Factory.newFeatureMap();
+ outputAS.add(tagAS.firstNode(),
+	                       tagAS.lastNode(), 
+			       "Location", features);
+inputAS.removeAll(tagAS);			       
+}
+
+Rule: Fac
+(
+ {Fac}
+):tag
+-->
+{
+ gate.AnnotationSet tagAS = (gate.AnnotationSet)bindings.get("tag"); 
+inputAS.removeAll(tagAS);			       
+}
+

@@ -1,0 +1,41 @@
+<?xml version="1.0"?>
+<!-- $Id$ -->
+<CREOLE-DIRECTORY>
+  <!-- Processing Resources -->
+  <CREOLE>    
+    <!-- creole.xml for the IAA PR -->
+    <RESOURCE>
+      <NAME>IAA Computation PR</NAME>
+      <COMMENT>Compute inter-annotator agreement (IAA).</COMMENT>
+      <HELPURL>http://gate.ac.uk/userguide/sec:eval:iaaplugin</HELPURL>
+      <CLASS>gate.iaaplugin.IaaMain</CLASS>
+      <JAR>iaaMain.jar</JAR>
+
+      <PARAMETER NAME="annSetsForIaa"
+        COMMENT="The name of the annotation sets used for IAA computing" RUNTIME="true"
+        OPTIONAL="true">java.lang.String</PARAMETER>
+
+       <PARAMETER NAME="annTypesAndFeats"
+        COMMENT="The name of the annotation types and probably features used for merging" 
+        RUNTIME="true" OPTIONAL="true">java.lang.String</PARAMETER>
+
+        <PARAMETER NAME="measureType"
+        COMMENT="The type of IAA measures" RUNTIME="true" 
+              DEFAULT="FMEASURE"
+        OPTIONAL="false">gate.iaaplugin.MeasureType</PARAMETER>
+
+       <PARAMETER NAME="verbosity"
+        COMMENT="The verbosity level for the IAA results outputs" 
+        RUNTIME="true" OPTIONAL="false" DEFAULT="1">java.lang.String</PARAMETER>
+
+	<PARAMETER NAME="bdmScoreFile"
+        COMMENT="The URL storing the BDM scores" RUNTIME="true"
+        OPTIONAL="true">java.net.URL</PARAMETER>
+
+     </RESOURCE>
+     
+  </CREOLE>
+  
+  
+</CREOLE-DIRECTORY>
+

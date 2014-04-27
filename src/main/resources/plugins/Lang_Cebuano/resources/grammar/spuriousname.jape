@@ -1,0 +1,69 @@
+/*
+*  spuriousname.jape
+*
+* Copyright (c) 1998-2001, The University of Sheffield.
+*
+*  This file is part of GATE (see http://gate.ac.uk/), and is free
+*  software, licenced under the GNU Library General Public License,
+*  Version 2, June 1991 (in the distribution as file licence.html,
+*  and also available at http://gate.ac.uk/gate/licence.html).
+*
+*  Diana Maynard, 10 Sep 2001
+* 
+*  $Id: spuriousname.jape 11882 2009-11-03 16:08:22Z markagreenwood $
+*/
+
+
+Phase:	SpuriousName
+Input: Token Lookup TempLocation TempOrganization TempPerson
+Options: control = appelt
+
+/* this grammar eliminates things which look like names from being recongised, e.g. names of space shuttles, rockets etc.
+*/
+
+Rule: OrgSpurPre
+Priority: 100
+// Space Shuttle Columbia
+(
+ {Lookup.majorType == org_spur_key}
+ ({TempLocation}|{TempOrganization}|{TempPerson})
+):spur
+-->
+{
+gate.AnnotationSet spur = (gate.AnnotationSet) bindings.get("spur");
+gate.FeatureMap features = Factory.newFeatureMap();
+outputAS.add(spur.firstNode(), spur.lastNode(), "Spurious",
+features);
+outputAS.removeAll(spur);
+}
+
+Rule: OrgSpurPost
+Priority: 100
+// ABC News
+// nothing is annotated in this case
+(
+ {TempOrganization}
+ {Lookup.majorType == org_spur_key}
+):spur
+-->
+{
+gate.AnnotationSet spur = (gate.AnnotationSet) bindings.get("spur");
+gate.FeatureMap features = Factory.newFeatureMap();
+outputAS.add(spur.firstNode(), spur.lastNode(), "Spurious",
+features);
+outputAS.removeAll(spur);
+}
+
+
+//Rule: OrgSpur
+//Priority: 40
+//(
+// {Lookup.majorType == spur}
+//):spur
+//-->
+//:spur.Spur = {rule = "OrgSpur"}
+
+
+
+
+

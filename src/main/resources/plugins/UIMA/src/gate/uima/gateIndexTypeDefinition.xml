@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8" ?> 
+<!--
+ *  Copyright (c) 2005, The University of Sheffield.
+ *
+ *  This file is part of the GATE/UIMA integration layer, and is free
+ *  software, released under the terms of the GNU Lesser General Public
+ *  Licence, version 2.1 (or any later version).  A copy of this licence
+ *  is provided in the file LICENCE in the distribution.
+ *
+ *  UIMA is a product of IBM, details are available from
+ *  http://alphaworks.ibm.com/tech/uima
+-->
+
+<!-- Descriptor for the type system used by AnalysisEnginePR for the index that
+relates UIMA annotations to the GATE annotations they were created from.  This
+will be merged with the type system from the chosen analysis engine to produce
+a CAS for use by the AnalysisEnginePR -->
+<analysisEngineMetaData xmlns="http://uima.apache.org/resourceSpecifier">
+  <name>GATE/UIMA mapping index</name>
+  <version>1.0</version>
+  <vendor>GATE</vendor>
+
+  <typeSystemDescription>
+    <types>
+      <typeDescription>
+        <name>gate.uima.mapping.AnnotationSource</name>
+        <description>An index entry relating a UIMA annotation to its GATE source annotation</description>
+        <supertypeName>uima.cas.TOP</supertypeName>
+        <features>
+          <featureDescription>
+            <name>UIMAAnnotation</name>
+            <description>The UIMA annotation</description>
+            <rangeTypeName>uima.tcas.Annotation</rangeTypeName>
+          </featureDescription>
+          <featureDescription>
+            <name>GATEAnnotationID</name>
+            <description>The ID of the GATE annotation that the UIMA one was generated from</description>
+            <rangeTypeName>uima.cas.Integer</rangeTypeName>
+          </featureDescription>
+          <featureDescription>
+            <name>GATEAnnotationType</name>
+            <description>The type of the GATE annotation</description>
+            <rangeTypeName>uima.cas.String</rangeTypeName>
+          </featureDescription>
+        </features>
+      </typeDescription>
+    </types>
+  </typeSystemDescription>
+
+  <fsIndexCollection>
+    <fsIndexDescription>
+      <label>GATEIndex</label>
+      <typeName>gate.uima.mapping.AnnotationSource</typeName>
+      <kind>sorted</kind>
+      <keys>
+        <fsIndexKey>
+          <featureName>GATEAnnotationID</featureName>
+          <comparator>standard</comparator>
+        </fsIndexKey>
+      </keys>
+    </fsIndexDescription>
+  </fsIndexCollection>
+
+  <capabilities>
+    <capability>
+      <inputs/>
+      <outputs>
+        <type allAnnotatorFeatures="true">gate.uima.mapping.AnnotationSource</type>
+      </outputs>
+    </capability>
+  </capabilities>
+</analysisEngineMetaData>

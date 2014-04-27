@@ -1,0 +1,63 @@
+/************************************************************************
+ *            Chemistry Tagger - A GATE Processing Resource             *
+ *         Copyright (C) 2004-2009 The University of Sheffield          *
+ *       Developed by Mark Greenwood <m.greenwood@dcs.shef.ac.uk>       *
+ *                                                                      *
+ * This program is free software; you can redistribute it and/or modify *
+ * it under the terms of the GNU Lesser General Public License as       *
+ * published by the Free Software Foundation; either version 2.1 of the *
+ * License, or (at your option) any later version.                      *
+ *                                                                      *
+ * This program is distributed in the hope that it will be useful,      *
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of       *
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the        *
+ * GNU General Public License for more details.                         *
+ *                                                                      *
+ * You should have received a copy of the GNU Lesser General Public     *
+ * License along with this program; if not, write to the Free Software  *
+ * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.            *
+ ************************************************************************/
+
+Phase:	Clean
+Input:  ChemicalElement Token
+Options: control = brill
+
+
+Rule:InitialNotElement
+(
+	({ChemicalElement.kind == symbol}):element
+	({Token.string == "."}):dot
+) -->
+{
+	gate.AnnotationSet elSet = (gate.AnnotationSet)bindings.get("element");
+	gate.AnnotationSet dotSet = (gate.AnnotationSet)bindings.get("dot");
+	
+	
+	gate.AnnotationSet splits = outputAS.get("Split",dotSet.firstNode().getOffset(),dotSet.lastNode().getOffset());
+	
+	if (splits != null || splits.size() > 0)
+	{
+		outputAS.removeAll(elSet);
+	}
+}
+
+Rule:SentenceElement
+(
+	{ChemicalElement.kind == symbol}
+):element -->
+{
+	gate.AnnotationSet elSet = (gate.AnnotationSet)bindings.get("element");
+	
+	gate.AnnotationSet compounds = outputAS.get("ChemicalCompound",elSet.firstNode().getOffset(),elSet.lastNode().getOffset());
+
+	if (compounds == null || compounds.size() == 0)
+	{
+
+		gate.AnnotationSet sentences = outputAS.get("Sentence",elSet.firstNode().getOffset(),elSet.lastNode().getOffset());
+
+		if (sentences.firstNode().equals(elSet.firstNode()))
+		{
+			outputAS.removeAll(elSet);
+		}
+	}
+}

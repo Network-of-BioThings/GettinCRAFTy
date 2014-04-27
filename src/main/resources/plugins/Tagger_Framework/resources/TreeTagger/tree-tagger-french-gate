@@ -1,0 +1,170 @@
+#!/bin/sh
+############################################################
+#        SCRIPT FOR FRENCH PART OF SPEECH TAGGING
+# for Helmut Schmid's TreeTagger with Achim Stein's lexicon
+############################################################
+# Achim Stein
+# Universitaet Stuttgart, Institut fuer Linguistik-Romanistik
+# Keplerstrasse 17, D-70174 Stuttgart
+# e-mail: achim@ims.uni-stuttgart.de
+# October 1997
+###########################################################################
+
+# Use Option -h to display a help screen.
+
+# THESE VARIABLES HAVE TO BE SET:
+
+# For Windows, these should be Windows paths with backslashes (which will need
+# single-quoting), not Cygwin-style paths, e.g.
+# BIN='C:\TreeTagger\bin'
+# The script will probably fail if the BIN or LIB directory names contain
+# spaces.  You should install the tree tagger in a directory that does not
+# contain spaces in its path (i.e. not under "Program Files").
+
+BIN=/usr/local/durmtools/TreeTagger/bin
+LIB=/usr/local/durmtools/TreeTagger/lib
+
+# set your default options for the Tree Tagger
+TAGGEROPTS="-token -lemma -sgml"
+
+# set the path for the tagger command
+TAGGERCMD=${BIN}/tree-tagger
+
+# set the path for the parameter file
+PARAMETERS=${LIB}/french.par
+
+############################################################
+# The script requires gawk (we used V2.15), tr, grep,
+# the tree-tagger and the parameter file.
+# 
+# Input Files have to be in ISO-Latin-1, SGML-Codes (if any)
+# should be surrounded by carriage returns.
+#
+# WHAT THIS SCRIPT DOES:
+#
+# 1. PRE-PROCESSING:
+# The tokenization converts french text into a one-word-per-line
+# format which complies with our lexicon entries and with the
+# Parameter File(s) we distribute.
+#
+# 2. TAGGING with the options defined below or on the command line
+#
+# 3. POST-PROCESSING:
+# Some frequent errors are eliminated by the awk script following
+# the tagger command.
+#
+# 4. OPTIONALLY (if -m is set) MARKS SENTENCE BOUNDARIES:
+#
+###########################################################################
+
+HELP=0
+FILTER=0
+
+while getopts fho:p: myopts
+do case $myopts in
+   f) FILTER=1
+      TAGGERCMD=cat
+      TAGGEROPTS=""
+      PARAMETERS="";;
+   h) HELP=1;;
+   o) TAGGEROPTS="$OPTARG";;
+   p) PARAMETERS="$OPTARG";;
+   esac
+done
+shift `expr $OPTIND - 1`
+
+
+
+if [ $# -eq 1 ]
+then INPUT=$1
+else INPUT="$*"
+fi
+
+if [ "$HELP" -gt 0 ] || [ $# -gt 1 ];  then
+cat << EOM
+SYNTAX:
+  tree-tagger-french [Script-Options] [-o 'TreeTagger options'] [input]
+DESCRIPTION:
+- tokenizes and morphologically analyzes French texts
+- corrects the results
+- reads from stdin (unless input is specified), writes to stdout
+- requires Helmut Schmid's TreeTagger
+- requires Gnu Awk (Tested with gawk version 2.15, patchlevel 4)
+OPTIONS:
+ -p file   parameter file (Default: $PARAMETERS)
+TREETAGGER-OPTIONS:
+EOM
+$TAGGERCMD
+exit
+fi
+
+cat -s $INPUT |\
+
+
+$TAGGERCMD $PARAMETERS $TAGGEROPTS  |\
+
+
+###################  Improvement of the Tagging Results
+
+gawk '
+
+# Fehler 1: VER: statt VER:aux
+# Regel:  ersetze, wenn VER-VER oder VER-ADV-VER oder 
+# Effekt: +0.04%
+$2~/VER:[^a]/ && $3~/\352tre|avoir/{
+  p1 = $0
+  getline f1
+  if( (getline f2) == 0) {
+    print p1; print f1; last=f1; next
+  } 
+  if((match(f1, /VER:pper/)>0) || (match(f2, /VER:pper/)>0)) {
+    gsub(/VER:/, "VER:aux:", p1)
+    print p1
+    print f1
+    print f2; last=f2
+    count1++; next
+  }
+  print p1; print f1; print f2; last=f2; next
+}
+
+# Fehler 3: pour PRE statt CON:sub
+# Regel:  ersetze, wenn direkt danach ein VERb steht
+# Effekt: +0,09%
+$1~/^pour/ && $2~/PRE/ {
+  p1 = $0
+  getline f1
+  if(match(f1, /VER:/)>0) {
+    gsub(/PRE/, "CON:sub", p1)
+    print p1
+    print f1; last=f1
+    count3++; next
+  }
+  print p1; print f1; last=f1; next
+}
+
+# Fehler 4: grâce à/au/aux
+# Regel:  ersetze, wenn danach à kommt
+# Effekt: +0.06%
+$1~/^gr\342ce/ {
+  p1 = $0
+  getline f1
+  if(match(f1, /(\340|au|aux)/)>0) {
+    gsub(/NOM:femi:sg/, "PRE:1st", p1)
+    gsub(/PRE:det:(femi|masc):(pl|sg)/, "&:2nd", f1)
+    gsub(/NOM/, "PRE:1st", p1)
+    gsub(/PRE:det$/, "PRE:det:2nd", f1)
+    print p1
+    print f1; last=f1
+    count20++; next
+  }
+  print p1; print f1; last=f1; next
+}
+
+{print;last=$0}
+END {
+  printf"Rule based modification:\n" > "/dev/stderr"
+  printf"-- VER->VER:aux:                    %d\n", count1 > "/dev/stderr"
+  printf"-- PRE->CON:sub:                    %d\n", count3 > "/dev/stderr"
+  printf"-- grâce à: NOM->PRE:1st            %d\n", count20 > "/dev/stderr"
+}
+'

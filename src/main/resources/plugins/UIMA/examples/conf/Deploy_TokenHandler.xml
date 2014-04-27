@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<!--
+ *  Copyright (c) 2005, The University of Sheffield.
+ *
+ *  This file is part of the GATE/UIMA integration layer, and is free
+ *  software, released under the terms of the GNU Lesser General Public
+ *  Licence, version 2.1 (or any later version).  A copy of this licence
+ *  is provided in the file LICENCE in the distribution.
+ *
+ *  UIMA is a product of IBM, details are available from
+ *  http://alphaworks.ibm.com/tech/uima
+-->
+<deployment name="Vinci Token Handler Service">
+  <service name="gate.uima.TokenHandlerService" provider="vinci">
+    <parameter name="serializerClassName"
+               value="org.apache.uima.adapter.vinci.VinciXCASSerializer_NoDocText"/>
+
+    <parameter name="resourceSpecifierPath" value="uima_descriptors/TokenHandlerAggregate.xml"/>
+
+    <parameter name="numInstances" value="1"/>
+    <parameter name="timeoutPeriod" value="30000" />
+  </service>
+</deployment>

@@ -1,0 +1,41 @@
+
+/*  first.jape
+*
+* Copyright (c) 1998-2001, The University of Sheffield.
+*
+*  This file is part of GATE (see http://gate.ac.uk/), and is free
+*  software, licenced under the GNU Library General Public License,
+*  Version 2, June 1991 (in the distribution as file licence.html,
+*  and also available at http://gate.ac.uk/gate/licence.html).
+*
+*  Diana Maynard, 1 October 2003
+* 
+*  $Id $
+*/
+
+Phase: First
+Input: Lookup SpaceToken
+Options: control = appelt debug = false
+
+
+Rule: YearKey
+(
+ {Lookup.majorType == year_key}
+):tag
+-->
+ {
+ gate.AnnotationSet tagAS = (gate.AnnotationSet)bindings.get("tag");
+ 
+ // get Token info associated with the surname found
+ 
+gate.AnnotationSet tokenAS = inputAS.get("Token", 
+tagAS.firstNode().getOffset(),tagAS.lastNode().getOffset());
+ 
+//create new annotation			
+gate.FeatureMap features = Factory.newFeatureMap();		     
+	outputAS.add(tokenAS.firstNode(),
+	                       tokenAS.lastNode(), 
+			       "YearKey", features);
+}
+
+

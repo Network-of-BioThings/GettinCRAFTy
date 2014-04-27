@@ -1,0 +1,26 @@
+// date1.jape
+
+Phase:	Date1
+Input: Token SpaceToken Lookup
+Options: control = appelt
+
+/////////////////////////////////////////////////
+
+
+Rule: GazDate
+(SPACE | {Token.kind == punctuation})
+(
+ ({Lookup.minorType == day}) |
+ ({Lookup.minorType == month}) |
+ ({Lookup.minorType == festival})|
+ ({Lookup.minorType == age})
+)
+:date
+(SPACE | {Token.kind == punctuation})
+-->
+ :date.TempDate = {rule = "GazDate"}
+
+
+
+
+

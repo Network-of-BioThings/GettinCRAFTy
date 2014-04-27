@@ -1,0 +1,5 @@
+<CREOLE-DIRECTORY>
+  <JAR SCAN="true">MutationFinder.jar</JAR>
+  <JAR>lib/jakarta-oro-2.0.8.jar</JAR>
+  <JAR>lib/mutationFinder.jar</JAR>
+</CREOLE-DIRECTORY>

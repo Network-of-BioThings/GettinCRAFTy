@@ -1,0 +1,42 @@
+This directory contains a GATE wrapper for ABNER: A Biomedical Named
+Entity Recognizer.
+
+ABNER (as used by this plugin and included in the lib directory) is
+re-distributed under the terms of the Common Public License, a copy of
+which can be found in the LICENSE file.
+
+ABNER makes use of MALLET, the MAchine Learning for LanguagE
+Toolkit. A copy of MALLET is provided in the lib directory. It is also
+re-distributed under the terms of the Common Public License, a copy of
+which can be found in the LICENSE file. MALLET is available from
+http://mallet.cs.umass.edu/
+
+ABNER is copyright 2004 Burr Settles, Department of Computer Sciences,
+University of Wisconsin-Madison. It is provided "as is," with no
+representations or warranties of any kind.
+
+ABNER can be obtained from: http://pages.cs.wisc.edu/~bsettles/abner/
+
+ABNER is described in:
+
+B. Settles. ABNER: An open source tool for automatically tagging
+genes, proteins, and other entity names in text. Bioinformatics,
+21(14):3191-3192. 2005.
+
+
+    @article{settles.bioinf05,
+        Author = {B. Settles},
+        Journal = {Bioinformatics},
+        Number = {14},
+        Pages = {3191--3192},
+        Title = {{ABNER}: An open source tool for automatically tagging genes, 
+            proteins, and other entity names in text},
+        Volume = {21},
+        Year = 2005}
+
+
+Thanks are due to Georgi D. Georgiev of Ontotext for wrapping the
+OpenNLP tools for GATE, and to Burr Settles for ABNER.
+
+
+http://mallet.cs.umass.edu/

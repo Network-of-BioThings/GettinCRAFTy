@@ -1,0 +1,21 @@
+// phone_context.jape
+
+//note: organization should be included as part of the address
+
+Phase:	Final
+Options: control = appelt
+
+Rule: PhoneFinal
+Priority: 50
+
+({Phone}
+ (SPACE)?({Token.string == ";"}|COMMA) (SPACE)?
+)
+
+(
+ ( {Token.kind == number,Token.length == "9"}|
+ {Token.kind == number,Token.length == "6"}) 
+):phoneNumber
+
+-->
+ :phoneNumber.Phone = {kind = "phoneNumber", rule = "PhoneFinal"}

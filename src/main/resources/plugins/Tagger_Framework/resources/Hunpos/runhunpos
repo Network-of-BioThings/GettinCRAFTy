@@ -1,0 +1,12 @@
+#!/bin/sh
+# 
+# shell script to run the hunpos tagger from the GenericTagger PR in GATE
+# see http://code.google.com/p/hunpos/
+#
+
+# set the correct location of your hunpos installation here
+HUNPOS_DIR=/usr/local/durmtools/hunpos
+HUNPOS_TAG=hunpos-tag
+
+cd ${HUNPOS_DIR}
+${HUNPOS_DIR}/${HUNPOS_TAG} $1 < $2

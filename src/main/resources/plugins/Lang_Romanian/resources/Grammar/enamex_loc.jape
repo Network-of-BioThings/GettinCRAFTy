@@ -1,0 +1,147 @@
+// enamex_loc.jape
+// Location rules
+
+Phase:	enamex_loc
+Input: Token SpaceToken Lookup
+Options: control = appelt
+
+/////////////////////////////////////////////////////////////////
+Macro: LOCATION
+(
+  {Lookup.majorType == location}
+)
+
+Macro: PRE_LOCATION
+(
+  {Lookup.majorType == loc_key, Lookup.minorType == pre}
+)
+Macro: POST_LOCATION
+(
+  {Lookup.majorType == loc_direction, Lookup.minorType == post}
+)
+
+/////////////////////////////////////////////////////////////////
+
+// Location rules
+
+Rule:	GazLocation
+Priority: 10
+// Lookup = city, country, province, region, water
+
+(
+	LOCATION
+)
+:locName
+  --> 	
+ :locName.TempLocation = {kind = "locName", rule=GazLocation}  
+
+
+Rule: 	Location1
+Priority: 25
+
+
+// Europa de Vest
+// Marea Chinei de Sud
+// Europa centrala si de est
+// Europa centrala si vestica
+
+(
+ (PRE_LOCATION
+   SPACE
+ 
+  ({Token.string == "de"}
+   SPACE)?
+ )? 
+ 
+ LOCATION
+  
+ (SPACE POST_LOCATION)?
+ 
+ ((SPACE {Token.string == "şi"})?
+  (SPACE {Token.string == "de"})? 
+  SPACE POST_LOCATION)?
+)
+:locName -->
+  :locName.TempLocation = {kind = "locName", rule = "Location1"}
+
+
+Rule: 	Location2
+Priority: 25
+
+// Statiunea Mangalia
+// masivul muntos al Semenicului
+
+ {Lookup.majorType == loc_hint, Lookup.minorType == pre}
+ SPACE
+ (({Token.string == "al"}|{Token.string == "a"}) SPACE)?
+
+( 
+ (UPPER_LETTERS)+
+ 
+ (SPACE {Token.string == "de"} 
+  SPACE UPPER_LETTERS )?
+)
+:locName -->
+  :locName.TempLocation = {kind = "locName", rule = "Location2"}
+
+
+
+Rule: 	Location3
+Priority: 25
+
+// Marea Neagra
+// Piata Petrolistilor, Lacul Rosu
+
+(
+ PRE_LOCATION
+ (SPACE UPPER_LETTERS)+
+)
+:locName -->
+  :locName.TempLocation = {kind = "locName", rule = "Location3"}
+
+
+Rule: 	Location4
+Priority: 25
+// nordul Europei
+(
+ {Lookup.majorType == loc_direction, Lookup.minorType == pre}
+ (SPACE)
+ LOCATION
+)
+:locName -->
+  :locName.TempLocation = {kind = "locName", rule = "Location4"}
+
+ 
+/////////////////////////////////////////////////////////////////
+
+// Context-based Rules
+
+Rule:InLoc1
+Priority: 30
+// in IASI
+
+(
+ {Token.string == "în"}
+ (SPACE)
+)
+(
+ {Lookup.majorType == location, Token.orth == allCaps}
+)
+:locName
+-->
+ :locName.TempLocation = {kind = "locName", rule = InLoc1}
+
+// Context-based Rules
+
+Rule:LocContext
+Priority: 30
+//bulevardul Primaverii (when it is not followed by number)
+
+( 
+ {Lookup.minorType == "street"}
+  SPACE UPPER_LETTERS
+)
+:locName
+-->
+ :locName.TempLocation = {kind = "locName", rule = LocContext}
+

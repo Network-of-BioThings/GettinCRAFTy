@@ -1,0 +1,98 @@
+/*  number.jape
+*
+* Copyright (c) 1998-2001, The University of Sheffield.
+*
+*  This file is part of GATE (see http://gate.ac.uk/), and is free
+*  software, licenced under the GNU Library General Public License,
+*  Version 2, June 1991 (in the distribution as file licence.html,
+*  and also available at http://gate.ac.uk/gate/licence.html).
+*
+*  Diana Maynard, 1 October 2003
+* 
+*  $Id $
+*/
+
+Phase: Number
+Input: Token Lookup
+Options: control = appelt debug = false
+
+/*
+*	Lookup.majorType==number (This includes items in number.lst) 
+*	zero + point + number
+*	digit + number_unit
+*	digit + point + number
+*	digit + point + zero + number
+*	digit + point + digit + number
+	number + point + zero + number
+	number + zero + number
+	number + more + number_unit
+	numbers can be combined together to form a number.
+*/
+
+Macro: POINT
+(
+ {Lookup.majorType == point}
+)
+
+Macro: ZERO
+(
+ {Token.string == "零"}
+)
+
+Macro: DIGIT
+(
+ {Token.kind == digit}
+)
+
+Macro: NUMBER
+(
+ ({Lookup.majorType == number})+
+)
+
+Rule: SimpleDigit
+Priority:200
+( 
+ (DIGIT)
+):tag
+-->
+:tag.Number = {rule = SimpleDigit}
+
+Rule: DigitNumberUnit
+Priority: 50
+(
+ (DIGIT)
+ {Lookup.majorType == number_unit}
+):tag
+-->
+:tag.Number = {rule = DigitNumberUnit}
+
+Rule: LookupNumber
+Priority: 200
+(
+ NUMBER
+):tag
+-->
+:tag.Number = {rule = LookupNumber}
+
+Rule: DigitPointNumber
+Priority: 50
+(
+ (ZERO | DIGIT)
+ (POINT) 
+ (ZERO | DIGIT)?
+ (NUMBER)
+):tag
+-->
+:tag.Number = {rule = DigitPointNumber}
+
+ Rule: NumberZeroNumber
+ Priority: 50
+ (
+  (NUMBER)
+  (POINT)?
+  (ZERO)
+  (NUMBER)
+ ):tag
+ --> 
+ :tag.Number = {rule = NumberZeroNumber}
+ 

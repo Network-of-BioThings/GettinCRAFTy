@@ -1,0 +1,113 @@
+/*
+*  ForeignName.jape
+*
+* Copyright (c) 1998-2001, The University of Sheffield.
+*
+*  This file is part of GATE (see http://gate.ac.uk/), and is free
+*  software, licenced under the GNU Library General Public License,
+*  Version 2, June 1991 (in the distribution as file licence.html,
+*  and also available at http://gate.ac.uk/gate/licence.html).
+*
+*  Diana Maynard, 10 Oct 2003
+* 
+*  $Id: foreign_name.jape 11882 2009-11-03 16:08:22Z markagreenwood $
+*/
+
+Phase:ForeignName
+Input: Lookup SpaceToken Token
+Options: control = appelt
+
+/* Foreign name
+	forename + �.� + s_name  (forename consists of items from male.lst or female.lst)
+	forename + s_name  (forename consists of items from male.lst or female.lst)
+	s_name (title appears before or after)
+	s_name (person_ending appears after)
+	*/
+	
+Rule: FullName
+// NB this rule doesn't seem to fire ever //
+(
+ {Lookup.majorType == forename}
+ ({SpaceToken})*
+ ({Token.string == "."})?
+  ({SpaceToken})*
+ {Lookup.minorType == foreign_surname}
+):tag
+-->
+{
+gate.AnnotationSet person = (gate.AnnotationSet)bindings.get("tag");
+gate.Annotation personAnn = (gate.Annotation)person.iterator().next();
+gate.FeatureMap features = Factory.newFeatureMap();
+features.put("gender", personAnn.getFeatures().get("minorType"));
+features.put("kind", "foreign");
+features.put("rule", "FullName");
+outputAS.add(person.firstNode(), person.lastNode(), "Person",
+features);
+}
+
+Rule:TitleSurname
+/*if we find a surname in a gaz list, AND a title either before or after it, get the whole Token to which 
+ the surname belongs and tag it as a name
+ */
+
+(
+ {Lookup.majorType == title}
+ {SpaceToken}
+ )
+ (
+ {Lookup.minorType == foreign_surname}
+ ({SpaceToken}
+  {Lookup.minorType == foreign_surname}
+ )*
+ ):surname
+ -->
+ {
+ gate.AnnotationSet surnameAS = (gate.AnnotationSet)bindings.get("surname");
+ 
+ // get Token info associated with the surname found
+ 
+gate.AnnotationSet tokenAS = inputAS.get("Token", 
+surnameAS.firstNode().getOffset(),surnameAS.lastNode().getOffset());
+ 
+//create new annotation									     
+	gate.FeatureMap features = Factory.newFeatureMap();
+	features.put("kind", "titlename");
+	outputAS.add(tokenAS.firstNode(),
+	                       tokenAS.lastNode(), 
+			       "Person", features);
+}
+
+Rule:SurnameTitle
+
+ (
+ {Lookup.minorType == foreign_surname} 
+  ({SpaceToken}
+   {Lookup.minorType == foreign_surname}
+  )*
+ ):surname
+ (
+  {SpaceToken}
+  (
+   {Lookup.majorType == title}|
+    {Lookup.majorType == person_ending}
+  )
+ )
+ -->
+ {
+ gate.AnnotationSet surnameAS = (gate.AnnotationSet)bindings.get("surname");
+ 
+ // get Token info associated with the surname found
+ 
+gate.AnnotationSet tokenAS = inputAS.get("Token", 
+surnameAS.firstNode().getOffset(),surnameAS.lastNode().getOffset());
+ 
+//create new annotation									     
+	gate.FeatureMap features = Factory.newFeatureMap();
+	features.put("kind", "nametitle");
+	outputAS.add(tokenAS.firstNode(),
+	                       tokenAS.lastNode(), 
+			       "Person", features);
+}
+
+	
+	

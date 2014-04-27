@@ -1,0 +1,164 @@
+/************************************************************************
+ *            Chemistry Tagger - A GATE Processing Resource             *
+ *         Copyright (C) 2004-2009 The University of Sheffield          *
+ *       Developed by Mark Greenwood <m.greenwood@dcs.shef.ac.uk>       *
+ *                                                                      *
+ * This program is free software; you can redistribute it and/or modify *
+ * it under the terms of the GNU Lesser General Public License as       *
+ * published by the Free Software Foundation; either version 2.1 of the *
+ * License, or (at your option) any later version.                      *
+ *                                                                      *
+ * This program is distributed in the hope that it will be useful,      *
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of       *
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the        *
+ * GNU General Public License for more details.                         *
+ *                                                                      *
+ * You should have received a copy of the GNU Lesser General Public     *
+ * License along with this program; if not, write to the Free Software  *
+ * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.            *
+ ************************************************************************/
+
+Phase:	Compounds
+Input:  Token Lookup SpaceToken
+Options: control = appelt
+
+Rule:Compound
+(
+	{Lookup.majorType == chemTaggerSymbols}
+	({Token.kind == number})?
+	({Lookup.majorType == chemTaggerSymbols}
+	({Token.kind == number})?)*
+):compound -->
+{
+	
+	FeatureMap params = Factory.newFeatureMap();
+	params.put("rule","Compound");
+	params.put("kind","symbol");
+		
+	gate.AnnotationSet compSet = (gate.AnnotationSet)bindings.get("compound");
+	
+	
+	
+	if (compSet.size() > 1)
+	{
+		gate.AnnotationSet toks = (gate.AnnotationSet)outputAS.get("Token",compSet.firstNode().getOffset(),compSet.lastNode().getOffset());
+		gate.AnnotationSet lookups = compSet.get("Lookup",compSet.firstNode().getOffset(),compSet.lastNode().getOffset());
+
+		try
+		{
+			boolean ok = true;
+			
+			java.util.List seen = new java.util.ArrayList();
+			
+			Iterator lit = lookups.iterator();
+			while(lit.hasNext())
+			{
+				gate.Annotation lookup = (gate.Annotation)lit.next();
+				
+				String symbol = doc.getContent().getContent(lookup.getStartNode().getOffset(),lookup.getEndNode().getOffset()).toString();
+				
+				ok = ok && !seen.contains(symbol);
+				
+				//Out.println("Seen " + symbol+": " + ok);
+				
+				seen.add(symbol);
+			}
+			
+			if (!ok || !compSet.firstNode().getOffset().equals(toks.firstNode().getOffset()) || !compSet.lastNode().getOffset().equals(toks.lastNode().getOffset()))
+			{
+				outputAS.add(compSet.firstNode().getOffset(),compSet.lastNode().getOffset(),"NotACompound",params);
+			}
+			else
+			{
+		
+				Long start = compSet.firstNode().getOffset();
+				Long end = compSet.lastNode().getOffset();
+
+				String compound = doc.getContent().getContent(start,end).toString();
+
+				java.util.regex.Pattern p = java.util.regex.Pattern.compile("\\S+");
+				java.util.regex.Matcher m = p.matcher(compound);
+
+				while (m.find())
+				{
+
+					String formula = compound.substring(m.start(), m.end());
+
+					//Out.println("Testing " + formula+"...");
+
+
+					long begin = start.longValue() + m.start();
+
+
+
+					ok = true;
+
+					lookups = compSet.get("Lookup",new Long(start.longValue()+m.start()), new Long(start.longValue()+m.end()));
+
+					ok = ok && (lookups != null && lookups.size() != 1);
+
+					for (int i = 0 ; ok && i < formula.length() ; ++i)
+					{
+						if (!Character.isDigit(formula.charAt(i)))
+						{
+							lookups = compSet.get("Lookup",new Long(begin+i), new Long(begin+i+1));
+
+							ok = ok && (lookups != null && lookups.size() > 0);
+						}
+
+						//Out.println("   " + formula.charAt(i) + " " + ok);
+					}
+
+					if (ok)
+					{
+						outputAS.add(new Long(start.longValue() + m.start()),new Long(start.longValue() + m.end()),"ChemicalCompound",params);
+
+						FeatureMap epl = Factory.newFeatureMap();
+						epl.put("majorType","chemTaggerSymbols");
+
+						gate.AnnotationSet elements = compSet.get("Lookup",epl);
+
+
+
+						FeatureMap kep = Factory.newFeatureMap();
+						kep.put("majorType","CTelement");
+						kep.put("minorType","symbol");
+
+						gate.AnnotationSet known = outputAS.get("Lookup",kep);
+
+						Iterator eit = elements.iterator();
+						while(eit.hasNext())
+						{
+							FeatureMap ep = Factory.newFeatureMap();
+							ep.put("kind","symbol");
+							ep.put("rule", "Compound");
+
+							gate.Annotation e = (gate.Annotation)eit.next();
+
+							boolean add = true;
+
+							if (known != null && known.size() > 0)
+							{
+								gate.AnnotationSet overlap = known.get(e.getStartNode().getOffset(),e.getEndNode().getOffset());
+
+								add = (overlap == null || overlap.size() == 0);
+							}
+
+							if (add) outputAS.add(e.getStartNode().getOffset(),e.getEndNode().getOffset(),"ChemicalElement",ep);
+						}
+					}
+					else
+					{
+						outputAS.add(new Long(start.longValue() + m.start()),new Long(start.longValue() + m.end()),"NotACompound",params);
+					}
+				
+				}
+			}
+		}
+		catch (Exception e)
+		{
+			//we couldn't select the text so we will assume it's not a valid
+			//compound name
+		}
+	}
+}

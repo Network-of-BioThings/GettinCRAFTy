@@ -1,0 +1,34 @@
+<?xml version="1.0"?>
+<!-- $Id: creole.xml 16184 2012-10-29 18:57:26Z markagreenwood $ -->
+<!-- creole.xml directory file for Cebuano Processing resources -->
+<CREOLE-DIRECTORY>
+  <!-- Processing Resources -->
+  <CREOLE>
+    <JAR SCAN="true">cebuano.jar</JAR>     
+   
+     <!-- creole.xml for HepTag (Mark Hepple's POS tagger)-->
+    <RESOURCE>
+      <NAME>Cebuano POS Tagger</NAME>
+      <COMMENT>Mark Hepple's Brill-style POS tagger, adapted for languages where entries are multiword</COMMENT>
+      <JAR>cebtag.jar</JAR>
+      <CLASS>cebtag.postag.CebuanoPOSTagger</CLASS>
+      <PARAMETER NAME="document"
+        COMMENT="The document to be processed"
+        RUNTIME="true">gate.Document</PARAMETER>
+      <PARAMETER NAME="inputASName"
+        COMMENT="The name of the annotation set used for input"
+        RUNTIME="true" OPTIONAL="true">java.lang.String</PARAMETER>
+      <PARAMETER NAME="lexiconURL" DEFAULT="resources/postag/lexicon"
+        COMMENT="The URL for the lexicon file"
+        >java.net.URL</PARAMETER>
+      <PARAMETER NAME="rulesURL" DEFAULT="resources/postag/ruleset"
+        COMMENT="The URL for the ruleset file"
+        >java.net.URL</PARAMETER>
+      <PARAMETER NAME="encoding"
+        DEFAULT="UTF-8"
+        COMMENT="The encoding to be used for the ruleset and lexicon files"
+        >java.lang.String</PARAMETER>	
+    </RESOURCE>
+
+ </CREOLE>
+</CREOLE-DIRECTORY>

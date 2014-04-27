@@ -1,0 +1,19 @@
+Implement transitive closure Matcher 
+- e.g: ClosureMatcher(
+  relType:"coref", 
+  matcher: Or(Identity, Alias, Initials))
+- for a candidate antecedent, builds the closure (full coref chain) and only
+  matches if the provide matcher matches and *all* antecedents in the chain.   
+  
+  
+Implement AliasTaggerMatcher, that shares the internal data and behaves as both
+Tagger and Matcher.
+
+----------------------------------------------
+DONE
+----------------------------------------------
+
+Change configuration data:
+- no more rules
+- Taggers: <AnnType, Tagger>, ...
+- Matchers: <AnnType, AntecedentType, Matcher>,...

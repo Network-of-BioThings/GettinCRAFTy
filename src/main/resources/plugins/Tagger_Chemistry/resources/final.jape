@@ -1,0 +1,79 @@
+/************************************************************************
+ *            Chemistry Tagger - A GATE Processing Resource             *
+ *         Copyright (C) 2004-2009 The University of Sheffield          *
+ *       Developed by Mark Greenwood <m.greenwood@dcs.shef.ac.uk>       *
+ *                                                                      *
+ * This program is free software; you can redistribute it and/or modify *
+ * it under the terms of the GNU Lesser General Public License as       *
+ * published by the Free Software Foundation; either version 2.1 of the *
+ * License, or (at your option) any later version.                      *
+ *                                                                      *
+ * This program is distributed in the hope that it will be useful,      *
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of       *
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the        *
+ * GNU General Public License for more details.                         *
+ *                                                                      *
+ * You should have received a copy of the GNU Lesser General Public     *
+ * License along with this program; if not, write to the Free Software  *
+ * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.            *
+ ************************************************************************/
+
+Phase:	Final
+Input:  ChemicalIon ChemicalCompound NotACompound ChemicalElement Token
+Options: control = brill
+
+Rule:CleanIons
+(
+	{ChemicalIon}
+):elemSet -->
+{
+	gate.AnnotationSet annots = (gate.AnnotationSet)bindings.get("elemSet");
+	
+	gate.AnnotationSet overlap = (gate.AnnotationSet)outputAS.get("ChemicalCompound",annots.firstNode().getOffset(),annots.lastNode().getOffset());
+	if (overlap != null) outputAS.removeAll(overlap);
+	
+	overlap = (gate.AnnotationSet)outputAS.get("NotACompound",annots.firstNode().getOffset(),annots.lastNode().getOffset());
+	if (overlap != null) outputAS.removeAll(overlap);
+}
+
+Rule:CleanNotCompounds
+(
+	({NotACompound})
+):compSet -->
+{
+	gate.AnnotationSet annots = (gate.AnnotationSet)bindings.get("compSet");
+	
+	gate.AnnotationSet overlap = (gate.AnnotationSet)outputAS.get("ChemicalElement",annots.firstNode().getOffset(),annots.lastNode().getOffset());
+	if (overlap != null) outputAS.removeAll(overlap);
+}
+
+Rule:CompoundName
+(
+	({ChemicalElement.kind == name}
+	{Token}):compSet
+	({Token.string == "("}|{Token.string == ","})
+	{ChemicalCompound.kind == symbol}
+	({Token.string == ")"}|{Token.string == ","})
+) -->
+  :compSet.ChemicalCompound = {rule = "CompoundName", kind = "name"}
+
+Rule:ActuallyAnIon
+(
+	{ChemicalElement.kind == symbol}
+):element -->
+{
+	gate.AnnotationSet elSet = (gate.AnnotationSet)bindings.get("element");
+	
+	gate.AnnotationSet tokens = outputAS.get("Token",elSet.firstNode().getOffset(),elSet.lastNode().getOffset());
+		
+	gate.Annotation token = (gate.Annotation)tokens.iterator().next();
+	String string = (String)token.getFeatures().get("string");
+
+	if (string.endsWith("-") || string.endsWith("+"))
+	{
+		FeatureMap params = Factory.newFeatureMap();
+		params.put("rule","ActuallyAnIon");
+
+		outputAS.add(token.getStartNode(),token.getEndNode(),"ChemicalIon",params);
+	}
+}

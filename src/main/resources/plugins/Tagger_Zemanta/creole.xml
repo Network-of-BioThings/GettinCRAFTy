@@ -1,0 +1,6 @@
+<?xml version="1.0"?>
+<CREOLE-DIRECTORY>
+      <JAR scan="true">ZemantaTagger.jar</JAR>
+      <JAR>lib/zemapi-java.jar</JAR>
+      <JAR>lib/zemapi-java-test.jar</JAR>
+</CREOLE-DIRECTORY>

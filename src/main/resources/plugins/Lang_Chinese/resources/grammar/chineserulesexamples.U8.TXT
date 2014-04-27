@@ -1,0 +1,245 @@
+DATE:
+1) Lookup.majorType==date  
+This includes items in the following lists:
+-- Century, 下 世纪, 二十一世纪
+-- date, e.g. , 十九日, 十日
+-- date_spec, e.g. 今天, 昨天
+-- day
+-- decade, e.g., 九十年代
+-- festival, e.g.,  重阳节, 端午
+-- month, e.g., 六月份
+-- season
+--  year, e.g., 一九九四年, 一九九五年,  一九九一年, 一九九二年, 一九八六年, 
+一九九八年, 一九七三年, 一九九六年, 一九九三年, 一九九七年, 一九五八年, 
+一九六四年, 一九八八年, 一九七八年, 一九八七年
+-- year_spec, e.g., 今年, 去年, 明年
+
+2) adbc + century
+3) adbc + century + century_suffix
+4) decade +decade_suffix, e.g., 九十年代 初, 八十年代 初
+5) century +decade
+6) century +decade+decade_suffix
+7) month + month_suffix
+8) month + date,  e.g.,  二月 十一日, 二月 十六日, 二月 二十一日, 二月 二十三日, 二月 二十四日, 二月 二十七日, 二月 二十八日, 二月 二十九日, 二月 三日, 二月 七日, 三月 八日, 三月 十日, 三月 二日, 三月 十三日, 三月 十六日, 三月 十八日, 三月 十九日, 三月 二十三日, 三月 二十八日, 三月 三日, 三月 四日, 四月 六日, 四月 十六日, 四月 十八日, 四月 五日, 十二月 四日, 十二月 七日, 十二月 一日, 十二月 十一日, 十二月 十四日, 十二月 十五日, 十二月 十六日, 十二月 十七日, 十二月 十八日, 十二月 二十日, 十二月 二十一日,
+十二月 二日, 十二月 二十二日, 十二月 二十五日
+9) year + month + date, e.g.,  一九九四年 十一月 十八日, 一九九六年 三月 三十一日, 一九九八年 四月 六日
+10) year + month + date +day
+11) year + season, e.g., 今年 前 三 季度
+12) year + festival
+13) year + year_suffix , e.g., 一九九五年 底, 一九九九年 底
+14) year_spec+year_suffix, e.g.,  去年 年底, 去年 下半年, 今年 年初, 去年 底, 今年 下半年, 今年 年底
+15) year_spec+month, e.g.  去年 九月, 去年 十月, 今年 四月, 今年 七月, 今年 八月, 去年 十月份
+16) digits + year_key (digits consists of 1 to 4 items from the digit.lst)
+17) digits + year_key + year_suffix (digits consists of 1 to 4 items from the digit.lst)
+18) adbc + year
+19) adbc + digits + year_key 
+
+Supplementary rules for DATE:
+20) century + century_suffix , e.g., 本 世纪 末
+21) year + month, e.g., 一九九五年 十月, 一九九二年 三月
+22) year_spec+month + month_suffix, e.g.,  去年 十二月 底, 今年 十一月 初, 
+今年 十一月 底
+23) year_spec + month + date, e.g.,  今年 四月 十八日, 今年 三月 十五日,
+去年 十一月 二十七日
+24) digit + to + month, e.g., 一 至 十月, 一 至 十一月, 一 至 二月份, 一 至 十一月份
+25) year_spec + digit + to + month, e.g., 今年 一 至 二月份, 今年 一 至 十一月份,
+今年 一 至 十一月, 今年 一 至 十月, 今年 前 两 月, 今年 前 十 月
+26) year_spec + digit + to + season, e.g., 今年 一 至 三 季度
+
+Location:
+1) Lookup.majorType==location
+This includes items in the following lists:
+-- city_abbrev
+-- city_china, e.g., 北京, 杭州, 镇江, 徐州, 常州, 扬州, 深圳, 三亚, 海口, 宁波, 太原, 
+宜昌, 温州, 厦门, 福州, 常州市, 无锡市, 扬州市, 镇江市, 海拉尔市, 呼和浩特, 大连, 
+大连市, 茂名市, 郑州, 成都, 沈阳, 东莞市, 天津, 天津市, 广州, 南京, 连云港, 九江, 
+泉州, 惠州,南昌, 九江市, 长春, 珲春市, 西宁市, 西宁, 石家庄, 昆明, 长沙, 珲春, 上海市, 上海, 汕头, 汕头市, 南宁市, 南宁, 苏州, 贵阳, 珠海, 厦门市, 兰州, 西安, 满洲里
+-- city_world, e.g., 悉尼, 华盛顿, 吉隆坡
+-- country, e.g., 中国, 日本, 韩国, 加拿大, 台湾, 香港, 孟加拉国, 蒙古, 俄罗斯, 印度, 缅甸, 泰国, 印尼, 澳大利亚, 德国, 美国, 瑞典, 朝鲜, 印度尼西亚, 马来西亚, 墨西哥, 阿根廷, 新加坡, 菲律宾, 沙特阿拉伯, 阿联酋, 伊朗, 法国, 英国, 荷兰, 西班牙, 南非
+-- country_abbrev, e.g., 法, 日, 美, 韩, 缅, 泰, 俄, 中, 台, 蒙, 朝, 港, 澳, 英
+-- county, e.g. 海拉尔, 海参崴
+-- county_abbrev, e.g., 漳州, 金川 
+-- facility
+-- loc_relig
+-- mountain, e.g., 庐山
+-- province, e.g., 海南, 河南, 陕西, 浙江, 山西省, 浙江省, 福建省, 广东省, 广东, 辽宁, 辽宁省, 江西省, 江西, 四川, 四川省, 山东省, 湖南, 江苏省,吉林省, 江苏, 河南省, 福建, 青海, 台湾省
+-- province_abbrev, e.g., 粤, 闽
+-- region, e.g., 欧 美, 东南亚, 大陆, 亚太 区域, 黄河 金三角, 长江 三角洲, 东北, 华东,华南, 中东, 亚洲, 亚太 地区, 亚洲 地区, 拉美, 非洲, 珠江 三角洲, 三角洲, 东北亚, 东北亚 地区, 北方, 中西部, 中西部 地区, 粤西 地区, 华南 地区, 长江 流域, 大洋洲
+-- river, e.g., 长江, 地中海
+-- state
+-- town, e.g., 浦东
+-- island, e.g., 大榭岛, 台湾岛
+2) Token.String includes an item in loc_key.lst, e.g., 鼓山镇
+3) Locations can be combined together to form a location, e.g., 中国 山西, 中国 天津市, 吉林省 珲春市, 中国 长春, 中国 吉林, 四川 成都, 中国 北方, 中国 浦东, 甘肃 金川, 浙江 中西部 地区, 中国 中西部 地区, 闽 东南 地区, 中国 东西部
+
+Supplementary rules for Location:
+4) Location + loc_keyword, e.g., 宁波 保税区
+5) Location + facility_key, e.g., 九江 火车站
+6) river + river_suffix, e.g., 龙开河 下游段
+
+Money:
+1) number + currency_unit, e.g., 三点七亿 人民币, 一百零九亿 人民币, 
+二千三百八十一点五亿 人民币, 一千零五十五亿 人民币,
+一百八十五点六亿 人民币, 一千五百五十九亿 人民币,
+二点六亿 人民币, 四亿 人民币, 十亿 人民币, 一亿 人民币,
+一点二七亿 人民币, 一点二亿 人民币, 五亿 人民币, 三十亿 人民币,
+七十亿 人民币, 六百亿 人民币, 四十五亿 人民币, 十五亿 人民币,
+二点五亿 人民币, 一百亿 人民币, 二十六点二七亿 人民币
+2) number_unit + currency_unit, e.g., 亿元
+3) number (if a money_prefix precedes the number), e.g., 
+七十六点八亿, 四百三十八点八亿, 一千零九十八点二亿, 二千万,
+三十亿, 二百零九亿, 十点九二亿, 一百四十七亿, 二百亿,
+一百七十八亿, 一点三亿, 三十一亿, 一点六八亿, 二十二亿,
+二千多万, 二百五十亿, 一百六十九点八亿, 一百五十亿, 二亿,
+二十点五亿, 十五亿, 二十万, 一点五亿, 三百亿, 一点一三亿,
+十二亿, 三点六五亿, 八点一二亿, 六千万, 三点二亿,
+一千二百五十万, 六十亿, 五十亿, 二千九百七十万, 三点五亿,
+六千多万, 一千零三十七万, 四千多万, 二千八百三十万,
+一百八十四点九亿, 八十五点二亿, 九点五亿, 一百七十八点三亿,
+三百六十一亿, 四点九亿, 一百八十二点七亿, 一百六十五点九亿,
+四十二点九亿, 五十七点九亿, 一百五十八点一亿, 一亿,
+二十五点二四亿, 三十一点六亿, 十四点四亿, 一亿多, 八十二点七亿,
+六百万, 十亿多, 一亿五千万, 十二点四亿, 一百零九点九亿, 
+二点六亿, 七点八亿, 十亿, 四百多亿, 一点零一万亿, 八十多亿, 
+一千一百四十七亿, 五百一十五亿, 一百三十八点七亿, 七十亿, 
+四百八十亿, 四百九十六亿, 两千多万, 两千五百万, 一千万, 
+三十多亿, 八点八四亿, 十点六亿, 四千八百五十六万, 七千万, 
+一点四七亿, 三点四七亿, 五点七八亿, 十三亿五千七百多万, 
+十九点二七亿, 一百亿, 六十多亿, 一百万, 十万,
+四十三亿, 四百六十九点五九亿, 二点零五亿, 四百点零七亿, 
+四百八十四点六二亿, 三点一一亿, 二千三百亿, 二百三十八亿, 
+六十二点三五亿, 两亿, 六点一亿, 六亿, 二十八亿, 六点五亿, 
+一百四十五亿, 二点六五亿, 二百二十点二亿, 三十七亿, 
+一万二千七百四十七万, 六十四亿, 十八亿, 四十五点五亿, 
+三点六亿, 两千万, 五亿, 二千四百万, 五百万, 四十八点九亿, 
+八十五点七九亿, 九十亿, 三十八点六亿, 四亿, 一点八亿, 五千万, 
+二十六点六亿, 五点三亿, 六十四点一亿, 十六点三七亿, 
+二十四点六亿, 八点八九亿, 二十八点九亿,
+三十点三二亿, 七十七亿, 七点一六亿, 一千二百五十五亿, 
+二十一点八亿, 四十二亿, 三十五点二亿, 一百四十亿, 
+一千一百三十亿, 五十五亿, 二百三十亿, 三百四十亿, 
+三百一十八亿, 三千亿, 一百八十亿, 一百六十亿, 
+二千七百八十亿
+
+Organization:
+1) Lookup.majorType==organization 
+This includes items in the following lists: 
+-- association, e.g., 轻工总会
+-- company, e.g., 普康 公司, 美国 通用 电气, 通用 电气, 通用 公司, 西屋 电气,
+仙妮雷德 集团, 波音, 麦道, 福特, 爱立信 公司, 摩托罗拉, 松下, 夏普, 道琼斯 公司,
+美孚, 罗纳普郎克, 长江 实业, 岩谷, 壳牌, 立荣, 三菱, 埃索, 阿莫科, 美国 协和 石化
+-- company_CHN,e.g., 狗不理 包子店, 正大 粮油, 茅台 酒厂, 宁波 麦芽, 兴洋 毛毯, 
+金川 公司, 金川 有色 金属 公司, 民生 集团, 北仑 钢铁厂
+-- company_media, e.g., 新华社, 《 华尔街 日报 》
+-- government, e.g., 国务院, 卫生部, 经济部, 中国 银行, 中国 海关, 海关 总署, 中国 人民 银行, 进出口 银行, 外经贸部, 国家 开发 银行, 中国 科学院, 中科院, 
+对外 贸易 经济 合作部 亚洲司, 国务院 特区 办公室
+-- org_sport
+-- organization, e.g., 克林顿 政府, 东盟, 联合国 经社 事务部, 联合国, 欧盟, 工发 组织,
+联合国 工发 组织, 开发 计划署, 联合国 开发 计划署, 美国 传统 基金会, 传统 基金会
+世界 卫生 组织, 新 中国, 欧共体, 基金 组织
+-- university, e.g., 武汉 大学, 中国 东北 师范 大学
+2) org_prefix + organization
+3) Location + organization name + org_key (Where, organization name can be void or includes 1, 2 or 3 tokens.) e.g., 江苏 苏钢 集团 公司, 日本 野村 证券 公司, 
+日本 公社债 研究所, 韩国 驻华 使馆, 中国 进出口 银行, 日本 兴业 银行 证券 株式会社,
+日本 野村 证券 株式会社, 中国 （ 海南 ） 改革 开展 研究院, 中国 电子 进出口 总公司,
+中国 长江 三峡 工程 开发 总公司, 加拿大 太平 矿业 有限 公司, 美国 环球 集团 有限 公司, 瑞士 特联 投资 集团, 广东省 外经贸委, 东莞 地区 海关, 中国 国际 旅行社,
+中国 外 贸易 运输 总 公司, 香港 中华 总 商会, 福建 计算机 外部 设备厂,
+福建 日立 有限 公司, 福建 实达 电脑 股份 有限 公司, 福建 乡镇 企业局, 
+满洲里 国际 贸易 公司, 满洲里 服装厂, 韩国 乐金 集团, 厦华 电子 企业 有限 公司,
+天津 外经贸委, 日本 伊滕忠 商事 株式会社, 香港 德成 化工 有限 公司, 
+大连 斯大 精密 有限 公司, 澳大利亚 国卫 人寿 保险 公司, 新加坡 华侨 银行, 
+中国 人民 外 友好 协会, 天津市 外经贸委, 加拿大 政府, 缅甸 政府, 泰国 政府, 中国 政府,
+芬兰 政府, 日本 政府, 省政府, 华盛顿 国会, 澳 政府, 美国 政府, 河南省 政府, 
+青海省 政府, 上海 政府, 陕西省 人民 政府, 澳大利亚 新 政府, 中国 国家 气象局, 
+美国 克雷 公司, 连云港 钟山 氨纶丝 有限 公司, 日本 进出口 银行, 江苏省 农林厅,
+连云港 如意 集团, 比利时 通用 银行, 重庆 长安 汽车 股份 有限 公司
+大韩 贸易 振兴 公社, 中华 映像 公司, 中国 中医 研究院 中汇 制药 公司,
+中国 医学 科学院, 中国 中医 研究院, 上海市 外 经济 贸易 委员会,
+上海 施贵宝 制药 有限 公司, 美国 百时美 施贵宝 公司, 法国 罗纳普朗克 集团, 
+九江 民生 集团 有限 公司, 钟山 氨伦 有限 公司, 上海 外国 投资 工作 委员会,
+上海 浦东 海关, 香港 泰华 公司, 中国 贵州 茅台 酒厂, 中国 机械部,
+中国 信息 协会, 宁波 海天 机械 制造 有限 公司
+
+Supplementary rules for Organization:
+4) org_prefix + org_key, e.g., 国家 经贸委, 国家 计委, 中央 政府, 特区 政府, 
+国际 货币 基金 组织, 国家 医药 管理局, 国家 财政部
+5) organization+ location+org_key, e.g., 中国 贸易 促进会 广东 分会, 
+美国 商会 广东 分会, 美国 商会 中国 分会, 美国 商会 广州 分会,
+中国 银行 三峡 分行, 中国 医疗 器械 工业 公司 西南 医用 设备厂
+6) organization + org_key, e.g., 中国 新华 通讯社 对外部, 浙大 半导体厂, 
+新华社 对外部
+7) company + location + org_key, e.g., 东芝 大连 有限 公司, 欧姆龙 大连 有限 公司,
+佳能 大连 办公室 设备 有限 公司
+
+
+People:
+1) Lookup.majorType==person 
+This includes items in the following lists:
+-- person, e.g., 邹家华, 江泽民, 王震, 董建华, 钱其琛, 顾秀莲, 李铁映
+-- person_relig
+-- surname_foreign, e.g., 尼克松, 霍姆斯, 克罗维茨
+
+Chinese name
+2) surname + firstname (1 or 2 characters) (title appears before surname or after firstname) , e.g., 唐虹, 毛江森, 唐庆忠, 胡辛, 胡宏伟, 柴骥程, 胡靖国, 鄯宝红, 陆佑楣, 施勇峰, 曹银康, 许霆, 何涛, 赵华, 张云飞, 吞基, 丹瑞, 班汉, 钞文, 陈东升, 车晓蕙, 周亮, 顾万明, 李道佳, 唐纳, 凌广志, 牟文建, 梁小略, 王耕, 郭献文, 康永华, 应谦, 宋健, 李平, 江国成, 王翔, 刘义, 蒋秋生, 高德柱, 毛朝敬, 毕惠罗, 张翼飞, 栗建昌, 葛素红, 周长庆, 金硕仁,
+丁士晟, 全哲洙, 周放, 陈元, 柯西叶, 李成玉, 于海生, 王发恩, 王树柏, 吴定, 丁宝忠, 李安定, 秦杰, 吴宇, 朱晓明, 邓亚平, 浦乐, 周德孚, 张建松, 白惠良, 浦海, 翟景升, 申尊敬, 孙志平, 杨金义, 季克良, 房方, 周宗敏, 钱彤, 沈锡权, 马立新, □
+'5c祖华, 贾治邦, 李勇
+3) surname + person_ending
+4) surname + firstname (1 or 2 characters) ( person_ending appears after firstname)
+
+Foreign name
+5) forename + "." + s_name  (forename consists of items from male.lst or female.lst)
+6) forename + s_name  (forename consists of items from male.lst or female.lst)
+7) s_name (title appears before or after)
+8) s_name (person_ending appears after)
+
+Supplementary rules for People:
+9) country + jobtitle
+10) country_abbrev + jobtitle, e.g., 澳 外长
+
+Percent:
+1) Lookup.majorType==percent 
+This includes items in percent.lst, e.g., 九成, 四成, 三成, 七成
+
+2) percent_pre + number, e.g.,
+百分之三十八点六, 百分之三十六点七, 百分之四十三点二, 百分之三十七, 百分之三十九, 百分之七十, 百分之二十, 百分之七十四, 百分之四十四点八, 百分之四十四, 百分之五十一点二, 百分之十三点九, 百分之三十二点五, 百分之三十四点一, 百分之四十七点七, 百分之一点三, 百分之三点四, 百分之二十三点六, 百分之四十六点四, 百分之四十五点九, 百分之十五点七, 百分之六, 百分之四点七, 百分之百, 百分之八十, 百分之五十, 百分之八十五点六, 百分之九十, 百分之三十六点九, 百分之十, 百分之十六, 百分之六十, 百分之七十八, 百分之三十六, 百分之九点三, 百分之十五点八, 百分之三, 百分之二点四, 百分之十点五, 
+百分之七点四, 百分之五点七, 百分之三点二, 百分之九点七, 百分之三点二五, 百分之五,
+百分之十点八, 百分之零点五, 百分之一点二五, 百分之六点五, 百分之四点四, 百分之三点七, 百分之二, 百分之七, 百分之三点五, 百分之五点三, 百分之一点五, 百分之二点五,
+百分之五点二, 百分之零点八, 百分之九点四, 百分之六点二五, 百分之四, 百分之二点六,
+百分之一点七, 百分之五十四点九, 百分之四点一二, 百分之十四点五三, 百分之二十七,
+百分之二十七点零一, 百分之十五点三四, 百分之三十, 百分之二十七点一四, 百分之六十一点九八, 百分之十七点九, 四点一 百分点, 百分之三十一点五, 百分之九十三点一,
+百分之十四, 百分之七十三, 百分之三十二 , 百分之三十六点四, 百分之三十六点三,
+百分之三十一, 百分之十七 , 百分之三十七点四, 百分之四十五, 百分之七点七,
+百分之四点一, 百分之六点八, 百分之六点一, 百分之三点八, 百分之五点九,
+百分之三点九, 百分之四点九, 百分之三点六, 百分之八点六, 百分之九点六,
+百分之一点一, 百分之八十九点八九, 百分之二十六点五, 百分之八十八,
+百分之八十四点三, 百分之六点七, 百分之十三点六, 百分之六点三, 百分之十七点五,
+百分之十三点五, 百分之十一点九, 百分之十五点六, 百分之十六点零, 百分之三十点二,
+百分之十点二九, 百分之二十一, 百分之八, 百分之十点七, 百分之十二, 百分之九十七
+
+3) number + percent_end, e.g., 
+十二 百分点, 十一点一 百分点, 一点三 百分点, 一点七 百分点, 一点九 百分点
+
+Supplementary rules for Percent:
+4) percent + digit, e.g., 两成半
+
+Number:
+1) Lookup.majorType==number (This includes items in number.lst)
+2) zero + point + number
+3) digit + number_unit
+4) digit + point + number
+5) digit + point + zero + number
+6) digit + point + digit + number
+7) number + point + zero + number
+8) number + zero + number
+9) number + more + number_unit
+10) numbers can be combined together to form a number.
+
+
+The longest string gets the highest priority.
+For example,
+century +decade
+century +decade+decade_suffix
+
+both construct a 'DATE', but 'century +decade+decade_suffix' gets the higher priority.
+
+Another example, if locations are not separated words or symbols, they (the whole string) must be marked as a location.

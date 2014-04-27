@@ -1,0 +1,4 @@
+PER.lst:PER:inferred:hindi
+ORG.lst:ORG:inferred:hindi
+LOC.lst:LOC:inferred:hindi
+stop_words.lst:stop_words:spur:hindi

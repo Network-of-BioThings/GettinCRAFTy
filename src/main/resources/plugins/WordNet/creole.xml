@@ -1,0 +1,41 @@
+<?xml version="1.0"?>
+<!-- $Id: creole.xml 12650 2010-05-17 13:17:14Z markagreenwood $ -->
+<CREOLE-DIRECTORY>
+  <CREOLE>
+    <JAR>WordNet.jar</JAR>
+    <JAR>lib/jwnl.jar</JAR>
+
+    <RESOURCE>
+      <NAME>WordNet 1.6</NAME>
+      <CLASS>gate.wordnet.IndexFileWordNetImpl</CLASS>
+      <INTERFACE>gate.wordnet.WordNet</INTERFACE>
+      <COMMENT>Princeton WordNet 1.6.</COMMENT>
+      <HELPURL>http://gate.ac.uk/userguide/sec:misc-creole:wn</HELPURL>
+      <PARAMETER NAME="propertyUrl" SUFFIXES="xml" COMMENT="Property File">java.net.URL</PARAMETER>      
+      <ICON>controller.gif</ICON>
+      <PRIVATE/>
+    </RESOURCE>
+    
+    <RESOURCE>
+      <NAME>WordNet</NAME>
+      <CLASS>gate.wordnet.JWNLWordNetImpl</CLASS>
+      <INTERFACE>gate.wordnet.WordNet</INTERFACE>
+      <COMMENT>WordNet</COMMENT>
+      <HELPURL>http://gate.ac.uk/userguide/sec:misc-creole:wn</HELPURL>
+      <PARAMETER NAME="propertyUrl" SUFFIXES="xml" COMMENT="Property File">java.net.URL</PARAMETER>      
+      <ICON>wordnet</ICON>
+    </RESOURCE>
+
+    <RESOURCE>
+      <NAME>WordNet Viewer</NAME>
+      <COMMENT>WordNet viewer</COMMENT>
+      <CLASS>gate.gui.wordnet.WordNetViewer</CLASS>
+      <GUI TYPE="large">
+        <MAIN_VIEWER/>
+        <RESOURCE_DISPLAYED>gate.wordnet.WordNet</RESOURCE_DISPLAYED>
+      </GUI>
+    </RESOURCE>
+    
+  </CREOLE>
+</CREOLE-DIRECTORY>
+

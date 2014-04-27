@@ -1,0 +1,53 @@
+Chemistry Tagger v2.0
+Copyright (C) 2004-2006 The University of Sheffield
+
+=======================================================================
+COPYRIGHT AND WARRANTY INFORMATION
+=======================================================================
+
+This program is free software; you can redistribute it and/or modify
+it under the terms of the GNU Lesser General Public License as
+published by the Free Software Foundation; either version 2.1 of the
+License, or (at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU Lesser General Public
+License along with this program; if not, write to the Free Software
+Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+
+=======================================================================
+DESCRIPTION
+=======================================================================
+
+This GATE module is designed to tag a number of chemistry items in
+running text. Currently the tagger tags compound formulas (e.g.
+SO2, H2O, H2SO4 ...) ions (e.g. Fe3+, Cl-) and element names
+and symbols (e.g. Sodium and Na). Limited support for compound names
+is also provided (e.g. sulphur dioxide) but only when followed by
+a compound formula (in parenthesis or commas).
+
+=======================================================================
+OBTAINING THE SOFTWARE
+=======================================================================
+
+The chemistry tagger is distributed as part of GATE, and is available
+in the Chemistry_Tagger plugin directory.
+
+=======================================================================
+USING THE TAGGER WITHIN GATE
+=======================================================================
+
+Using the tagger should be really simple.  When you run the GATE GUI
+register this directory (use the '-d URL' command line switch or the
+plugin management console) and then simply add the "Chemistry Tagger"
+to your pipeline, accepting the default parameter settings.
+
+To use the tagger once created it has to be part of a pipeline in which
+the document has already been tokenised and sentence split.
+The annotations added to documents are "ChemicalCompound", "ChemicalIon"
+and "ChemicalElement" (currently they are always placed in the default
+annotation set).

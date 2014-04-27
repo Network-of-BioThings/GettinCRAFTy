@@ -1,0 +1,104 @@
+/*
+*  trained.jape
+*
+* Copyright (c) 1998-2001, The University of Sheffield.
+*
+*  This file is part of GATE (see http://gate.ac.uk/), and is free
+*  software, licenced under the GNU Library General Public License,
+*  Version 2, June 1991 (in the distribution as file licence.html,
+*  and also available at http://gate.ac.uk/gate/licence.html).
+*
+*  Diana Maynard, 10 Sep 2001
+* 
+*  $Id $
+*/
+
+
+Phase:	Trained
+Input: Lookup Token
+Options: control = appelt debug = false
+
+Rule: LocInferred
+Priority:200
+(
+ {Lookup.majorType == LOC, Lookup.minorType == inferred}
+ ):loc
+ -->
+:loc.LOC = {kind = inferred, rule = "LocInferred"}
+
+Rule:Spurious
+Priority:500
+(
+  {Lookup.majorType == stop_word}
+):spur
+--> {}
+
+Rule: OrgInferred
+Priority:100
+
+(
+ {Lookup.majorType == ORG, Lookup.minorType == inferred}
+ ):loc
+ -->
+:loc.ORG = {kind = inferred, rule = "OrgInferred"}
+
+Rule: Personinferred1
+Priority:150
+
+(
+ {Lookup.majorType == PER, Lookup.minorType == inferred}
+ {Lookup.majorType == PER, Lookup.minorType == inferred}
+ ({Lookup.majorType == PER, Lookup.minorType == inferred})?
+ ({Lookup.majorType == PER, Lookup.minorType == inferred})?
+ ):loc
+ -->
+:loc.PER = {kind = inferred, rule = "PersonInferredJoined"}
+
+
+Rule: Personinferred
+Priority:100
+
+(
+ {Lookup.majorType == PER, Lookup.minorType == inferred}
+ ):loc
+ -->
+{
+  gate.AnnotationSet locSet = (gate.AnnotationSet)bindings.get("loc");
+  gate.Annotation location = (gate.Annotation) locSet.iterator().next();
+
+  gate.AnnotationSet tokens = inputAS.get("Token", location.getStartNode().getOffset(),
+	location.getEndNode().getOffset());
+
+  FeatureMap features = Factory.newFeatureMap();
+  features.put("rule", "Personinferred");
+  if (tokens == null || tokens.isEmpty()) {
+    outputAS.add(location.getStartNode(), location.getEndNode(), "LOC", features);
+    return;
+  }
+  
+  if (tokens.size() > 1)
+    outputAS.add(location.getStartNode(), location.getEndNode(), "PER", features);
+  else {
+    gate.AnnotationSet spurs = inputAS.get("Lookup", location.getStartNode().getOffset(),
+	location.getEndNode().getOffset());
+
+    Iterator iter = spurs.iterator();
+    boolean isStopWord = false;
+    while (iter.hasNext()) {
+      gate.Annotation annot = (gate.Annotation) iter.next();
+      if (annot.getFeatures().get("majorType").equals("stop_word"))
+        isStopWord = true;
+    }
+    if (tokens != null && ! tokens.isEmpty()) {
+	String length = (String) 
+	  ((gate.Annotation)tokens.iterator().next()).getFeatures().get("length");
+	if (length != null && Integer.parseInt(length) <= 3)
+        return;
+    }	
+	
+    if (! isStopWord)
+      outputAS.add(location.getStartNode(), location.getEndNode(), "Unknown", features);
+  }
+
+}
+

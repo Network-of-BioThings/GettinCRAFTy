@@ -1,0 +1,44 @@
+Phase: MultiWord2
+Input: MultiWord VG
+Options: control = all
+
+Rule: MultiWordPart2
+({MultiWord}|{VG}):mw
+-->
+:mw  {
+  Annotation mw = mwAnnots.iterator().next();
+  String rawString = gate.Utils.stringFor(doc, mw).replaceAll("\\s+", " ");
+  FeatureMap features = mw.getFeatures();
+  features.put("raw_string", rawString);
+  
+  Long start = mwAnnots.firstNode().getOffset();
+  Long end   = mwAnnots.lastNode().getOffset();
+  AnnotationSet contained = inputAS.getContained(start, end);
+  List<Annotation> tokens = new ArrayList<Annotation>();
+  tokens.addAll(contained.get("Token"));
+  tokens.addAll(contained.get("SpaceToken"));
+  
+  Collections.sort(tokens, new OffsetComparator());
+  StringBuilder sb = new StringBuilder();
+  for (Annotation token : tokens) {
+    if (token.getType().equals("Token")) {
+      sb.append(token.getFeatures().get("canonical").toString());
+    }
+    else {
+      sb.append(' ');
+    }
+  }
+
+  String canonical = sb.toString().replaceAll("\\s+"," ");
+  features.put("canonical", canonical);
+
+  try {
+    // MultiWord and TermCandidate need to share the FeatureMap
+    // for the event application to work properly afterwards
+    outputAS.add(start, end, "TermCandidate", features);
+  }
+  catch (InvalidOffsetException e) {
+    e.printStackTrace();
+  }
+
+}

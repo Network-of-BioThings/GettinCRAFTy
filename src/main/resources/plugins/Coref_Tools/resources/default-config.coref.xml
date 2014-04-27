@@ -1,0 +1,88 @@
+<coref.Config>
+  <taggers>
+    <default.taggers.DocumentText annotationType="Organization"/>
+    <default.taggers.Initials annotationType="Organization"/>
+    <default.taggers.MwePart annotationType="Organization"/>
+    
+    <default.taggers.DocumentText annotationType="Person"/>
+    <default.taggers.MwePart annotationType="Person"/>
+    <default.taggers.Initials annotationType="Person"/>
+    <default.taggers.Alias id="1" annotationType="Person" 
+        aliasFile="nicknames.txt" encoding="UTF-8"/>
+    
+    <default.taggers.DocumentText annotationType="Location"/>
+    <default.taggers.MwePart annotationType="Location"/>
+    
+    <default.taggers.DocumentText annotationType="Unknown"/>
+    <default.taggers.MwePart annotationType="Unknown"/>
+    <default.taggers.Initials annotationType="Unknown"/>
+  </taggers>
+  
+  <matchers>
+    <!-- ## Organization ## -->
+    <!-- Identity -->
+    <default.matchers.DocumentText annotationType="Organization" antecedentType="Organization"/>
+
+    <!-- Heuristics, only if they match all references in the chain -->  
+    <default.matchers.TransitiveAnd annotationType="Organization" antecedentType="Organization">
+      <default.matchers.Or annotationType="Organization" antecedentType="Organization">
+        <!-- Identical references always match -->
+        <default.matchers.DocumentText annotationType="Organization" antecedentType="Organization"/>
+        <default.matchers.Initials annotationType="Organization" antecedentType="Organization"/>
+        <default.matchers.MwePart annotationType="Organization" antecedentType="Organization"/>
+      </default.matchers.Or>
+    </default.matchers.TransitiveAnd>
+    
+    <default.matchers.TransitiveAnd annotationType="Unknown" antecedentType="Organization">
+      <default.matchers.Or annotationType="Unknown" antecedentType="Organization">
+        <!-- Identical references always match -->
+        <default.matchers.DocumentText annotationType="Unknown" antecedentType="Organization"/>
+        <default.matchers.Initials annotationType="Unknown" antecedentType="Organization"/>
+        <default.matchers.MwePart annotationType="Unknown" antecedentType="Organization"/>
+      </default.matchers.Or>
+    </default.matchers.TransitiveAnd>
+    
+    <!-- ## Person ## -->
+    <!-- Identity -->
+    <default.matchers.DocumentText annotationType="Person" antecedentType="Person"/>
+    <!-- Heuristics, only if they match all references in the chain -->  
+    <default.matchers.TransitiveAnd annotationType="Person" antecedentType="Person">
+      <default.matchers.Or annotationType="Person" antecedentType="Person">
+        <!-- Identical references always match -->
+        <default.matchers.DocumentText annotationType="Person" antecedentType="Person"/>
+        <default.matchers.Initials annotationType="Person" antecedentType="Person"/>
+        <default.matchers.MwePart annotationType="Person" antecedentType="Person"/>
+        <default.matchers.Alias annotationType="Person" antecedentType="Person" encoding="UTF-8">
+          <aliasTagger reference="1"/>
+        </default.matchers.Alias>        
+      </default.matchers.Or>
+    </default.matchers.TransitiveAnd>
+    <default.matchers.TransitiveAnd annotationType="Unknown" antecedentType="Person">
+      <default.matchers.Or annotationType="Unknown" antecedentType="Person">
+        <!-- Identical references always match -->
+        <default.matchers.DocumentText annotationType="Unknown" antecedentType="Person"/>
+        <default.matchers.Initials annotationType="Unknown" antecedentType="Person"/>
+        <default.matchers.MwePart annotationType="Unknown" antecedentType="Person"/>
+      </default.matchers.Or>
+    </default.matchers.TransitiveAnd>
+    
+    <!-- ## Location ## -->
+    <!-- Identity -->
+    <default.matchers.DocumentText annotationType="Location" antecedentType="Location"/>
+    <!-- Heuristics, only if they match all references in the chain -->  
+    <default.matchers.TransitiveAnd annotationType="Location" antecedentType="Location">
+      <default.matchers.Or annotationType="Location" antecedentType="Location">
+        <!-- Identical references always match -->
+        <default.matchers.DocumentText annotationType="Location" antecedentType="Location"/>
+        <default.matchers.MwePart annotationType="Location" antecedentType="Location"/>
+      </default.matchers.Or>
+    </default.matchers.TransitiveAnd>
+    <default.matchers.TransitiveAnd annotationType="Unknown" antecedentType="Location">
+      <default.matchers.Or annotationType="Unknown" antecedentType="Location">
+        <!-- Identical references always match -->
+        <default.matchers.DocumentText annotationType="Unknown" antecedentType="Location"/>
+        <default.matchers.MwePart annotationType="Unknown" antecedentType="Location"/>
+      </default.matchers.Or>
+    </default.matchers.TransitiveAnd>    
+  </matchers>
+</coref.Config>

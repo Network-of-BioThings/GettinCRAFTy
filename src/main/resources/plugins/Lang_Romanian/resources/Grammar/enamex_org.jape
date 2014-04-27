@@ -1,0 +1,440 @@
+// enamex_org.jape
+// Organisation rules
+
+Phase:	enamex_org
+Input: Token SpaceToken Lookup
+Options: control = appelt
+
+/////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////
+//general macro
+
+Macro: SPACE
+// space
+// control
+// space control
+// control space
+
+( 
+ (({SpaceToken.kind == space})+
+  ({SpaceToken.kind == control})?
+  ({SpaceToken.kind == control})?
+ )
+|
+ ({SpaceToken.kind == control}
+  ({SpaceToken.kind == control})?
+  ({SpaceToken.kind == space})?
+ )
+)
+
+Macro: COMMA
+({Token.string == ","})
+
+Macro: DASH
+({Token.string == "-"})
+
+Macro: COLON
+({Token.string == ":"})
+
+Macro: DOT
+({Token.string == "."})
+
+Macro: SLASH
+  ({Token.string == "/"})
+
+MACRO: UPPER_LETTERS
+({Token.orth == upperInitial}| 
+ {Token.orth == allCaps}|
+ {Token.orth == mixedCaps})   
+////////////////////////////////////////////////////////////////////////
+ 
+// Organisation Rules
+
+Macro:  CDG
+// cdg is something like "S.A."
+ (
+  ({Lookup.majorType == cdg})|
+  (COMMA (SPACE) {Lookup.majorType == cdg})
+ )
+
+Macro:  DOUBLEINITIAL
+// A&A
+ (
+  {Token.orth == upperInitial, Token.length == "1"}
+  (SPACE)?
+  {Token.string == "&"}
+  (SPACE)?
+  {Token.orth == upperInitial, Token.length == "1"}
+ )
+
+
+Macro: SAINT
+(
+ (({Token.string == "St"} (DOT)?) |
+ {Token.string == "Sfantul"})
+)
+
+Macro: CHURCH
+(
+{Token.string == "Biserica"}|{Token.string == "biserica"}|
+{Token.string == "Catedrala"}|{Token.string == "catedrala"}|
+{Token.string == "Capela"}|{Token.string == "capela"}
+)
+
+Macro: ORGANIZATION
+(
+  {Lookup.majorType == organization}
+)
+
+/////////////////////////////////////////////////////////////
+Rule:	GazOrganization
+Priority: 5
+(
+ ORGANIZATION
+ (SPACE ORGANIZATION)?
+)
+:orgName -->  
+  :orgName.TempOrganization = {kind = "orgName", rule=GazOrganization}
+
+
+Rule:	OrganizationLocation
+Priority: 50
+// Politia Cehoslovaca
+(
+ORGANIZATION
+(SPACE ORGANIZATION)?
+
+(SPACE ({Token.string == "a"}|{Token.string == "al"})? (SPACE)?)
+
+({Lookup.majorType == location} |
+{Lookup.majorType == country_adj})
+)
+:orgName -->  
+  :orgName.TempOrganization = {kind = "orgName", rule=OrganizationLocation}
+
+
+Rule:	OrgXandY
+Priority: 20
+
+// Bradford & Bingley
+// Bradford & Bingley SA
+
+(
+ (CDG)?
+ 	
+ ((SPACE)? 
+   UPPER_LETTERS )+
+ 
+ (SPACE)? 
+ {Token.string == "&"}
+
+ ((SPACE)?
+  UPPER_LETTERS)
+
+ (SPACE UPPER_LETTERS)?
+
+ ((SPACE)? CDG)?
+)
+:orgName -->
+  :orgName.TempOrganization = {kind = "orgName", rule = "OrgXandY"}
+
+
+Rule:	OrgXEnding1
+Priority: 20
+
+// S.C. XXX S.A.
+//S.C. Apa-Canal S.A.
+
+({Token.string == "("})?
+(
+  (CDG)
+  
+  (SPACE | (DOT (SPACE)?))
+  ({Token.string == "„"})?	
+  
+  (UPPER_LETTERS)
+  
+  ((SPACE|DASH) 
+   (UPPER_LETTERS)
+  )*
+  ({Token.string == "”"})?	
+   
+ (SPACE CDG)?
+)
+:orgName -->
+  :orgName.TempOrganization = {kind = "orgName", rule = "OrgXEnding1"}
+
+Rule:	OrgXEnding2
+Priority: 20
+// XXX S.R.L.
+
+(
+  (DOUBLEINITIAL SPACE)?    	
+  (UPPER_LETTERS)
+
+  (SPACE UPPER_LETTERS )*
+   
+  ((SPACE)? CDG)
+)
+:orgName -->
+  :orgName.TempOrganization = {kind = "orgName", rule = "OrgXEnding2"}
+
+Rule:	OrgKeyX
+Priority: 15
+
+// Aaaa SRL
+// ACC Xxx Serviciul SRL. 
+
+(
+  (CDG(SPACE)?)?
+  
+  {Lookup.majorType == org_key}	
+  
+  (SPACE UPPER_LETTERS)  
+  
+  (SPACE 
+   ({Token.string == "de"}|{Token.string == "al"}|{Token.string == "a"})
+   SPACE UPPER_LETTERS
+  )?
+  
+  (SPACE UPPER_LETTERS)*
+   
+  (SPACE CDG)?
+)
+:orgName -->
+  :orgName.TempOrganization = {kind = "orgName", rule = "OrgKeyX"}
+
+
+Rule:	OrgKeyXandY
+Priority: 20
+
+// Aaaa Ltd.
+// Xxx Services Ltd. 
+// AA and BB Services Ltd.
+// but NOT A XXX Services Ltd.
+
+(
+  (CDG SPACE)?
+  
+  {Lookup.majorType == org_key}
+  
+  (SPACE UPPER_LETTERS)
+   
+  SPACE
+  ({Token.string == "şi"} | 
+   {Token.string == "&"})
+   
+  (SPACE UPPER_LETTERS)   
+  
+  (SPACE UPPER_LETTERS)*
+  
+  (SPACE CDG)?
+)
+:orgName -->
+  :orgName.TempOrganization = {kind = "orgName", rule = "OrgKeyXandY"}
+
+Rule:	OrgBaseX1
+Priority: 30
+
+// same as OrgXKey but uses base instead of key
+// includes govern_key e.g. academy
+
+// Banca Ion Tiriac
+// Academia Regala de Arta
+// Departamentul Informatiilor Publice al Guvernului
+// Uniunea si Liga Societatilor Romane Americane
+
+(
+ ({Lookup.majorType == org_base}|
+  {Lookup.majorType == govern_key})
+  
+ (SPACE {Token.string == "şi"} SPACE
+  ({Lookup.majorType == org_base}|
+  {Lookup.majorType == govern_key}))?
+  
+  
+ (SPACE UPPER_LETTERS)
+   
+ (SPACE UPPER_LETTERS)?
+  
+ (SPACE UPPER_LETTERS)?
+   
+ (SPACE
+  ((({Token.string == "şi"} SPACE)? 
+     ({Token.string == "al"}|{Token.string == "a"}))|
+     {Token.string == "de"})
+    
+  (SPACE UPPER_LETTERS)
+   
+  (SPACE UPPER_LETTERS)?
+ )?
+)
+:orgName -->
+  :orgName.TempOrganization = {kind = "orgName", rule = "OrgBaseX1"}
+
+Rule:	OrgBaseX2
+Priority: 30
+
+// Biroului Politiei Economico-Financiare
+// Politiei Sanitar-Veterinare
+// S.C. Editura Orient - Occident 
+
+(
+ (CDG SPACE)?
+  
+ ({Lookup.majorType == org_base}|
+  {Lookup.majorType == govern_key})
+ 
+ (SPACE UPPER_LETTERS)
+ 
+ (SPACE UPPER_LETTERS)?
+ 
+ ((SPACE)? DASH)
+ 
+ ((SPACE)? UPPER_LETTERS)
+)
+:orgName -->
+  :orgName.TempOrganization = {kind = "orgName", rule = "OrgBaseX2"}  
+
+Rule:	OrgBaseX3
+Priority: 30
+
+// Centrul de Combatere a Crimei Organizate
+// Institutul de Cercetare si Prevenire a Criminalitatii
+// Departamentul de Matematica si Fizica
+
+(
+ ({Lookup.majorType == org_base}|
+  {Lookup.majorType == govern_key})
+  
+ (SPACE {Token.string == "de"})
+  	
+ (SPACE UPPER_LETTERS)
+
+ (SPACE UPPER_LETTERS)*
+  
+ (SPACE {Token.string == "şi"} 
+ 
+  SPACE UPPER_LETTERS)?
+  
+ ((SPACE ({Token.string == "al"}|{Token.string == "a"}|DASH))?
+  (SPACE UPPER_LETTERS)+
+ )?
+  
+)
+:orgName -->
+  :orgName.TempOrganization = {kind = "orgName", rule = "OrgBaseX3"}  
+
+
+Rule:	OrgBaseXandY
+Priority: 30
+// Asociatia Politiilor si Jandarmeriilor Europene si Mediteraneene
+// Ministerul Sanatatii si Familiei
+
+(
+ ({Lookup.majorType == org_base}|
+  {Lookup.majorType == govern_key})
+  
+ (SPACE UPPER_LETTERS)
+  
+ (SPACE {Token.string == "şi"}) 
+ 
+ (SPACE UPPER_LETTERS)
+ 
+ ((SPACE {Lookup.majorType == country_adj})
+
+  (SPACE {Token.string == "şi"}   
+   SPACE {Lookup.majorType == country_adj}
+  )?
+ )? 
+)
+:orgName -->
+  :orgName.TempOrganization = {kind = "orgName", rule = "OrgBaseXandY"}
+  
+  
+Rule:	OrgPreX
+Priority: 30
+
+// firmei America OnLine
+
+({Lookup.majorType == org_pre} SPACE)
+
+(
+ (UPPER_LETTERS)
+
+ (SPACE UPPER_LETTERS)*
+)
+:orgName -->
+  :orgName.TempOrganization = {kind = "orgName", rule = "OrgPreX"}
+
+Rule:  OrgBaseXNull
+Priority: 150
+// Universitatea I
+// Colegiul I
+(
+
+ ({Lookup.majorType == org_base}|
+  {Lookup.majorType == govern_key})
+ (SPACE)
+ ({Token.orth == upperInitial,Token.length == "1"}|{Token.orth == upperInitial,Token.length == "2"})
+)
+:organizationNull 
+-->
+{}  
+
+Rule:	OrgPreXNull
+Priority: 30
+
+// firmei A.C.
+
+({Lookup.majorType == org_pre} SPACE)
+
+(
+ ({Token.orth == upperInitial,Token.length == "1"}| 
+  {Token.orth == allCaps, Token.length == "1"})
+ {Token.string == "."} 
+)
+:orgName -->
+ {}
+
+Rule:	OrgPostX
+Priority: 30
+
+// Partidul National Liberal
+// Consiliu National Director
+
+(
+ (CDG SPACE)?
+ 
+ (UPPER_LETTERS)+
+  
+ (SPACE {Lookup.majorType == org_post})
+
+ (SPACE UPPER_LETTERS)
+
+)
+:orgName -->
+  :orgName.TempOrganization = {kind = "orgName", rule = "OrgPostX"}
+
+
+Rule: OrgChurch
+Priority: 50
+// Biserica Sfantul Ioan
+// Biserica Sfantul Ioan Botezatorul
+
+(
+  (CHURCH)
+  (SPACE)
+  (SAINT)
+  (SPACE UPPER_LETTERS)
+  (SPACE UPPER_LETTERS)?
+  
+)
+:orgName -->
+  :orgName.TempOrganization = {kind = "orgName", rule = "OrgChurch"}
+  
+  
+
+
+
+

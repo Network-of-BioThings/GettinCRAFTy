@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<taeDescription xmlns="http://uima.apache.org/resourceSpecifier">
+  <frameworkImplementation>org.apache.uima.java</frameworkImplementation>
+  <primitive>true</primitive>
+  <annotatorImplementationName>org.apache.uima.examples.tokenizer.SimpleTokenAndSentenceAnnotator</annotatorImplementationName>
+  <analysisEngineMetaData>
+    <name>Simple Token and Sentence Annotator</name>
+    <description>Annotates tokens and sentences.</description>
+    <version>1.0</version>
+    <vendor>IBM</vendor>
+    <configurationParameters/>
+    <configurationParameterSettings/>
+    <typeSystemDescription>
+      <types>
+        <typeDescription>
+          <name>org.apache.uima.examples.tokenizer.Token</name>
+          <description></description>
+          <supertypeName>uima.tcas.Annotation</supertypeName>
+        </typeDescription>
+        <typeDescription>
+          <name>org.apache.uima.examples.tokenizer.Sentence</name>
+          <description></description>
+          <supertypeName>uima.tcas.Annotation</supertypeName>
+        </typeDescription>
+      </types>
+    </typeSystemDescription>
+    <capabilities>
+      <capability>
+        <inputs/>
+        <outputs>
+          <type allAnnotatorFeatures="true">org.apache.uima.examples.tokenizer.Sentence</type>
+          <type allAnnotatorFeatures="true">org.apache.uima.examples.tokenizer.Token</type>
+        </outputs>
+        <languagesSupported>
+          <language>en</language>
+        </languagesSupported>
+      </capability>
+    </capabilities>
+  </analysisEngineMetaData>
+</taeDescription>

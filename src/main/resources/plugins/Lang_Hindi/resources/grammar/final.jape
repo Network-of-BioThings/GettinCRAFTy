@@ -1,0 +1,68 @@
+/*
+*  final.jape
+*
+* Copyright (c) 1998-2001, The University of Sheffield.
+*
+*  This file is part of GATE (see http://gate.ac.uk/), and is free
+*  software, licenced under the GNU Library General Public License,
+*  Version 2, June 1991 (in the distribution as file licence.html,
+*  and also available at http://gate.ac.uk/gate/licence.html).
+*
+*  Diana Maynard, 10 Sep 2001
+* 
+*  $Id $
+*/
+
+
+Phase:	Final
+Input: TempLocation TempPerson TempOrganization Split Lookup
+Options: control = appelt debug = false
+
+Rule: LocFinal
+Priority:100
+(
+ {TempLocation}
+ ):loc
+ -->
+ {
+//removes TempLoc annotation, gets the rule feature and adds a new Loc annotation
+gate.AnnotationSet loc = (gate.AnnotationSet)bindings.get("loc");
+gate.Annotation locAnn = (gate.Annotation)loc.iterator().next();
+gate.FeatureMap features = Factory.newFeatureMap();
+features.put("locType",locAnn.getFeatures().get("locType"));
+features.put("rule1", locAnn.getFeatures().get("rule"));
+features.put("rule2", "LocFinal");
+outputAS.add(loc.firstNode(), loc.lastNode(), "LOC",
+features);
+outputAS.removeAll(loc);
+}
+
+Rule: PersonFinal
+Priority:100
+(
+ {TempPerson}
+ ):per
+ -->
+ {
+//removes TempPerson annotation, gets the rule feature and adds a new Person annotation
+gate.AnnotationSet per = (gate.AnnotationSet)bindings.get("per");
+gate.Annotation perAnn = (gate.Annotation)per.iterator().next();
+gate.FeatureMap features = Factory.newFeatureMap();
+features.put("perType",perAnn.getFeatures().get("gender"));
+features.put("rule1", perAnn.getFeatures().get("rule"));
+features.put("rule2", "PersonFinal");
+outputAS.add(per.firstNode(), per.lastNode(), "PER",
+features);
+outputAS.removeAll(per);
+}
+
+
+
+
+/*Rule: UnknownNE
+Priority:20
+(
+ {Lookup.majorType == ne}
+ ):ne
+ -->
+ :ne.LPNE = {rule = UnknownNE}*/

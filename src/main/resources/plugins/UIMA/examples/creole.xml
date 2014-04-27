@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<!-- This plugin does not provide any GATE resources, but simply puts the
+example UIMA annotators into the GATE plugin classloader, so they can be
+accessed by AnalysisEnginePR -->
+<CREOLE-DIRECTORY>
+  <JAR>uima-gate-examples.jar</JAR>
+</CREOLE-DIRECTORY>

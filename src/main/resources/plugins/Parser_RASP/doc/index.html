@@ -1,0 +1,103 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head>
+<meta content="text/html; charset=ISO-8859-1" http-equiv="content-type"><title>RASP2 plugin for GATE</title>
+
+</head>
+<body>
+<img style="width: 310px; height: 60px;" alt="" src="logo2.gif"><br>
+<h1>RASP2 plugin for GATE</h1>
+<div style="text-align: left;">Next: <a href="modules.html">Modules</a>&nbsp;
+&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;
+&nbsp;
+</div>
+<h2>Overview</h2>
+<span style="font-weight: bold;"></span>This
+resource is
+an integration of the <a href="http://www.informatics.susx.ac.uk/research/groups/nlp/rasp/index.html">RASP
+System</a> into the <a href="http://gate.ac.uk"><span style="text-decoration: underline;">GATE</span></a>
+framework.<br>
+<br>
+<span style="font-weight: bold;">RASP</span> is a
+domain-independent, robust parsing system for English. For
+ease of installation, the system is distributed in the form of binaries
+for 3 widespread unix architectures (Intel-32bit and -64bit/Linux, and
+Sparc/Solaris). It is free for
+research and evaluation purposes. RASP is described in :<br>
+<br>
+<table cellpadding="6">
+<tbody>
+<tr>
+<td valign="top"></td>
+<td valign="top">Briscoe, E., J. Carroll and R.
+Watson (2006) <a href="http://acl.ldc.upenn.edu/P/P06/P06-4020.pdf">The
+Second Release of the
+RASP System</a>. In <i>Proceedings of the COLING/ACL 2006
+Interactive
+Presentation Sessions</i>, Sydney, Australia.</td>
+</tr>
+</tbody>
+</table>
+<br>
+<span style="font-weight: bold;"></span>
+<p class="noindent"><span style="font-weight: bold;">GATE</span>
+is an infrastructure for developing and deploying software components
+that process human
+language. GATE helps scientists and developers in three ways: </p>
+<ol class="enumerate1">
+<li value="1" class="enumerate">by speci&#64257;ying an <span class="cmbx-12">architecture</span>, or organisational
+structure, for language processing software; </li>
+<li class="enumerate" value="2">by providing a <span class="cmbx-12">framework</span>, or class library,
+that implements the architecture and can be used to embed language
+processing capabilities in diverse applications; </li>
+<li class="enumerate" value="3">by providing a <span class="cmbx-12">development environment </span>built
+on top of the framework made up of convenient graphical tools for
+developing components.</li>
+</ol>
+Please contact the respective projects for any&nbsp;question
+related to RASP or GATE. You can use the <a href="http://groups.google.com/group/digitalpebble">DigitalPebble
+user group</a> for any question specific to this plugin.
+<h2>Installation</h2>
+<span style="font-weight: bold;">RASP</span> <br>
+<br>
+RASP needs to be installed. Please note that RASP is available <span style="font-weight: bold;">only on Unix, Linux or Mac
+platforms</span>. In the rest of this document we'll assume that
+RASP has been installed on <span style="font-style: italic;">/usr/local/bin/RASP2.<br>
+<br>
+</span>First go to the directory where you've installed RASP and
+enter the following command :<br>
+<br>
+<span style="font-style: italic;">echo "This is a test" |
+./scripts/rasp.sh</span>"<br>
+<br>
+after a few seconds you should get something similar to :<br>
+<br>
+<span style="font-style: italic;">(|This:1_DD1|
+|be+s:2_VBZ| |a:3_AT1| |test:4_NN1|) 1 ; (-4.902)</span><br style="font-style: italic;">
+<br style="font-style: italic;">
+<span style="font-style: italic;">(|ncsubj| |be+s:2_VBZ|
+|This:1_DD1| _)</span><br style="font-style: italic;">
+<span style="font-style: italic;">(|xcomp| _ |be+s:2_VBZ|
+|test:4_NN1|)</span><br style="font-style: italic;">
+<span style="font-style: italic;">(|det| |test:4_NN1|
+|a:3_AT1|)</span><br>
+<br>
+If this is not the case, check that you've installed RASP properly and
+that it is available for your platform.<br>
+<span style="font-weight: bold;"><br>
+</span><span style="font-weight: bold;">RASP2 plugin<br>
+<br>
+</span>The
+plugin is provided as a jar file compiled with Java 1.5. However, if
+you need to make changes or compile it with a different version, you
+can use the ANT script &nbsp;to recompile the source code. <br>
+<br>
+<span style="font-style: italic;"></span><span style="font-weight: bold;"></span>The
+RASP2 plugin needs to be enabled from the plugin console in the GATE
+GUI. Check the GATE documentation to see how to do that.<br>
+<br>
+The plugin consists in a number or modules which are detailed in the <a href="modules.html">following section</a>.<br>
+<br>
+<br>
+<br>
+&nbsp;
+</body></html>

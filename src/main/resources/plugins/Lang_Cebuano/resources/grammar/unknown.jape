@@ -1,0 +1,151 @@
+/*
+*  unknown.jape
+*
+* Copyright (c) 1998-2001, The University of Sheffield.
+*
+*  This file is part of GATE (see http://gate.ac.uk/), and is free
+*  software, licenced under the GNU Library General Public License,
+*  Version 2, June 1991 (in the distribution as file licence.html,
+*  and also available at http://gate.ac.uk/gate/licence.html).
+*
+*  Diana Maynard, 10 Sep 2001
+* 
+*  $Id: unknown.jape 7451 2006-06-15 14:10:50Z ian_roberts $
+*/
+
+Phase:	Unknown
+Input: Location Person Date Organization Address Money Percent Token JobTitle Title Lookup Spurious Facility GPE Spur Initials
+Options: control = appelt
+
+
+
+Rule: Known
+Priority: 150
+(
+ {Location}| 
+ {Person}|
+ {Date}|
+ {Organization}|
+ {Address}|
+ {Money} |
+ {Percent}|
+ {Token.string == "Dear"}|
+ {JobTitle}|
+ {Title}|
+ {Spurious}|
+ {Spur}|
+ {Facility}|
+ {GPE}|
+ {Initials}|
+ {Lookup}|
+ {Token.string == "the"}
+)+
+:known
+(
+ {Token.orth == apostrophe}
+)?
+-->
+:known.Known = {}
+
+Rule: Lookup
+Priority: 100
+// Lookup doesn't get annotated as known or unknown, so it can be used later 
+// but not included in OM rules
+
+(
+
+ {Lookup}
+):lookup
+-->
+:lookup.LookupUnknown = {}
+
+Rule: KnownHyphen
+Priority: 150
+(
+ {Token.orth == upperInitial, Token.hyphen == hashyphen}|
+ {Token.orth == allCaps, Token.hyphen == hashyphen}|
+ {Token.orth == mixedCaps, Token.hyphen == hashyphen}
+):unknown
+-->
+:unknown.Unknown = {kind = "hyphen"}
+
+Rule: Unknown1
+Priority: 100
+( 
+ ({Token.category == NNP}|{Token.category == NNPS})
+):unknown
+(
+ (
+  {Location}| 
+  {Person}|
+  {Date}|
+  {Organization}|
+  {Address}|
+  {Money} |
+  {Percent}|
+  {JobTitle}|
+  {Title}|
+  {Spurious}|
+  {Facility}|
+  {GPE}|
+  {Lookup}
+ )+
+)
+-->
+ :unknown.Unknown = {kind = "PN", rule = Unknown1}
+
+Rule: Unknown2
+Priority: 100
+
+ (
+  {Location}| 
+  {Person}|
+  {Date}|
+  {Organization}|
+  {Address}|
+  {Money} |
+  {Percent}|
+  {JobTitle}|
+  {Title}|
+  {Spurious}|
+  {Facility}|
+  {GPE}|
+  {Initials}|
+  {Lookup}
+ )+
+
+( 
+ ({Token.category == NNP}|{Token.category == NNPS})
+):unknown
+-->
+ :unknown.Unknown = {kind = "PN", rule = Unknown2}
+
+
+Rule:UnknownPossessive
+Priority: 50
+( 
+ ({Token.category == NNP}|{Token.category == NNPS})
+) 
+:unknown
+(
+ {Token.orth == apostrophe}
+)
+-->
+ :unknown.Unknown = {kind = "PN", rule = UnknownPossessive}
+
+Rule:Unknown
+Priority: 50
+( 
+ ({Token.category == NNP}|{Token.category == NNPS})
+ ({Token.category == NNP}|{Token.category == NNPS})?
+) 
+:unknown
+-->
+ :unknown.Unknown = {kind = "PN", rule = Unknown}
+
+
+
+
+
+
+

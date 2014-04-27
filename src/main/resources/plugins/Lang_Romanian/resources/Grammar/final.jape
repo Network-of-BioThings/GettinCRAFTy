@@ -1,0 +1,173 @@
+// final.jape
+
+//note: organization should be included as part of the address
+
+Phase:	Final
+Options: control = appelt
+
+///////////////////////////////////////////////////////////////
+
+Rule: PersonFinal
+Priority: 10
+(
+ {TempPerson.kind == personName}
+)
+:person
+--> 
+:person.Person = {rule = "PersonFinal"}
+
+//////////////////////////////////////////////////////////////////
+
+Rule:OrgUni
+Priority: 25
+
+//Universitatea "Al.I.Cuza"
+
+(
+ {Lookup.majorType == org_base}
+ (SPACE ({Token.string == "\""})?
+   (INITIALS)+
+   (SPACE)?
+    UPPER_LETTERS
+   ({Token.string == "\""})? 
+  )
+)
+:orgName -->
+  :orgName.Organization = {rule = "OrgFinal"}
+
+
+Rule: OrgFinal
+Priority: 10
+(
+ {TempOrganization}
+)
+:org
+--> 
+:org.Organization = {rule = "OrgFinal"}
+
+Rule: OrgLOcFinal
+Priority: 10
+(
+ {TempOrganization}
+ (SPACE)
+ {TempLocation}
+)
+:org
+--> 
+:org.Organization = {rule = "OrgLocFinal"}
+
+////////////////////////////////////////////////////////////////
+
+Rule: LocFinal
+Priority: 10
+(
+ {TempLocation}
+)
+:loc
+--> 
+:loc.Location = {rule = "LocFinal"}
+
+
+//////////////////////////////////////////////////////////////
+// Rules from Timex
+
+//Date Only Rules
+
+Rule: DateOnlyFinal
+Priority: 10
+(
+ {TempDate}
+)
+:date 
+-->
+ :date.Date = {kind = "date", rule = "DateOnlyFinal"}
+
+Rule: YearDateFinal
+Priority: 10
+(
+ {TempYear}
+ COMMA
+ SPACE {TempDate}
+ 
+)
+:date
+-->
+ :date.Date = {kind = "date", rule = "YearDateFinal"}
+
+// Date + Time Rules
+Rule: DateTimeFinal
+Priority: 20
+
+// Vineri 10 Ianuarie 2000 2pm
+
+(
+ {TempDate}
+ (SPACE | COLON |COMMA)*
+ {TempTime}
+ (SPACE {TempYear})?
+ (SPACE {TempZone})?
+)
+:date
+-->
+ :date.Date = {kind = "dateTime", rule = "DateTimeFinal"}
+
+Rule: TimeDateFinal
+Priority: 10
+// 2pm 10 Ianuarie 2000
+// 2pm 10 Ianuarie 2000 +0400
+(
+ {TempTime}
+ (SPACE |COLON|COMMA)*
+ {TempDate} 
+ (SPACE {TempYear})?
+ (SPACE {TempZone})?
+)
+:date
+-->
+ :date.Date = {kind = "dateTime", rule = "TimeDateFinal"}
+ 
+Rule: TimeYearFinal
+Priority: 10
+// 21:00:00 2000 +0400
+
+(
+ {TempTime}
+ (SPACE |COLON)? 
+ (SPACE {TempYear})
+ (SPACE {TempZone})?
+)
+:date
+-->
+ :date.Date = {kind = "dateTime", rule = "TimeYearFinal"}
+ 
+Rule: YearOnlyFinal
+Priority: 10
+(
+ {TempYear.kind == positive}
+)
+:date
+-->
+ :date.Date = {kind = "date", rule = "YearOnlyFinal"}
+
+
+Rule: TimeOnlyFinal
+Priority: 10
+(
+ {TempTime.kind == positive}
+)
+:date
+-->
+ :date.Date = {kind = "time", rule = "TimeOnlyFinal"}
+ 
+///////////////////////////////////////////////////////////////////////
+
+Rule: IdentifierFinal
+Priority: 10
+
+(
+ {TempIdentifier}
+)
+:ident
+-->
+ :ident.Identifier = {rule = "IdentifierFinal"}
+ 

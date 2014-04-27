@@ -1,0 +1,66 @@
+/*
+*  gazlocation.jape
+*
+* Copyright (c) 1998-2001, The University of Sheffield.
+*
+*  This file is part of GATE (see http://gate.ac.uk/), and is free
+*  software, licenced under the GNU Library General Public License,
+*  Version 2, June 1991 (in the distribution as file licence.html,
+*  and also available at http://gate.ac.uk/gate/licence.html).
+*
+*  Diana Maynard, 22 Oct 2001
+* 
+*  $Id: gazlocation.jape 11882 2009-11-03 16:08:22Z markagreenwood $
+*/
+
+
+Phase:	GazLocation
+Input: Lookup
+Options: control = appelt
+
+
+Rule: Spur
+// English-speaking
+(
+ {Lookup.majorType == spur}
+):spur
+-->
+:spur.Spur = {rule = Spur}
+
+
+Rule:	GazLocation
+(
+ {Lookup.majorType == location}
+)
+:locName
+ --> 	
+{
+ gate.FeatureMap features = Factory.newFeatureMap();
+// create an annotation set consisting of all the annotations for org 
+gate.AnnotationSet locSet = (gate.AnnotationSet)bindings.get("locName");
+
+// create an annotation set consisting of the annotation matching Lookup
+gate.AnnotationSet loc = (gate.AnnotationSet)locSet.get("Lookup");
+// if the annotation type Lookup doesn't exist, do nothing
+if (loc != null && loc.size()>0)
+{
+// if it does exist, take the first element in the set
+  gate.Annotation locAnn = (gate.Annotation)loc.iterator().next();
+//propagate minorType feature (and value) from loc
+  features.put("locType", locAnn.getFeatures().get("minorType"));
+}
+// create some new features
+   features.put("rule", "GazLocation");
+// create a GazLoc annotation and add the features we've created
+outputAS.add(locSet.firstNode(), locSet.lastNode(), "GazLocation",
+features);
+outputAS.removeAll(loc);
+}
+
+
+Rule: LocKey
+(
+ {Lookup.majorType == loc_general_key}
+):lockey
+-->
+:lockey.LocKey = {}

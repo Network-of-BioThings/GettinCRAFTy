@@ -1,0 +1,448 @@
+<?xml version="1.0" encoding="UTF-8"?>  
+<ML-CONFIG>  
+  <DATASET>  
+  <!-- The type of annotation used as instance -->  
+  <INSTANCE-TYPE>Token</INSTANCE-TYPE>  
+  <ATTRIBUTE>  
+    <!-- The name given to the attribute -->  
+    <NAME>Lookup(0)</NAME>  
+    <!-- The type of annotation used as attribute -->  
+    <TYPE>Lookup</TYPE>  
+    <!-- The position relative to the instance annotation -->  
+    <POSITION>0</POSITION>  
+  </ATTRIBUTE>  
+ 
+ 
+  <ATTRIBUTE>  
+    <!-- The name given to the attribute -->  
+    <NAME>Lookup_MT(-1)</NAME>  
+    <!-- The type of annotation used as attribute -->  
+    <TYPE>Lookup</TYPE>  
+    <!-- Optional: the feature name for the feature used to extract values  
+    for the attribute -->  
+    <FEATURE>majorType</FEATURE>  
+ 
+    <!-- The position relative to the instance annotation -->  
+    <POSITION>-1</POSITION>  
+    <!-- The list of permitted values.  
+    if present, marks a nominal attribute;  
+    if absent, the attribute is numeric (double)        -->  
+    <VALUES>  
+      <!-- One permitted value -->  
+      <VALUE>address</VALUE>  
+      <VALUE>cdg</VALUE>  
+      <VALUE>country_adj</VALUE>  
+      <VALUE>currency_unit</VALUE>  
+      <VALUE>date</VALUE>  
+      <VALUE>date_key</VALUE>  
+      <VALUE>date_unit</VALUE>  
+      <VALUE>facility</VALUE>  
+      <VALUE>facility_key</VALUE>  
+      <VALUE>facility_key_ext</VALUE>  
+      <VALUE>govern_key</VALUE>  
+      <VALUE>greeting</VALUE>  
+      <VALUE>ident_key</VALUE>  
+      <VALUE>jobtitle</VALUE>  
+      <VALUE>loc_general_key</VALUE>  
+      <VALUE>loc_key</VALUE>  
+      <VALUE>location</VALUE>  
+      <VALUE>number</VALUE>  
+      <VALUE>org_base</VALUE>  
+      <VALUE>org_ending</VALUE>  
+      <VALUE>org_key</VALUE>  
+      <VALUE>org_pre</VALUE>  
+      <VALUE>organization</VALUE>  
+      <VALUE>organization_noun</VALUE>  
+      <VALUE>person_ending</VALUE>  
+      <VALUE>person_first</VALUE>  
+      <VALUE>person_full</VALUE>  
+      <VALUE>phone_prefix</VALUE>  
+      <VALUE>sport</VALUE>  
+      <VALUE>spur</VALUE>  
+      <VALUE>spur_ident</VALUE>  
+      <VALUE>stop</VALUE>  
+      <VALUE>surname</VALUE>  
+      <VALUE>time</VALUE>  
+      <VALUE>time_modifier</VALUE>  
+      <VALUE>time_unit</VALUE>  
+      <VALUE>title</VALUE>  
+      <VALUE>year</VALUE>  
+    </VALUES>  
+    <!-- Optional: if present marks the attribute used as CLASS  
+    Only one attribute can be marked as class -->  
+  </ATTRIBUTE>  
+ 
+  <ATTRIBUTE>  
+    <!-- The name given to the attribute -->  
+    <NAME>Lookup_MT(0)</NAME>  
+    <!-- The type of annotation used as attribute -->  
+    <TYPE>Lookup</TYPE>  
+    <!-- Optional: the feature name for the feature used to extract values  
+    for the attribute -->  
+    <FEATURE>majorType</FEATURE>  
+ 
+    <!-- The position relative to the instance annotation -->  
+    <POSITION>0</POSITION>  
+    <!-- The list of permitted values.  
+    if present, marks a nominal attribute;  
+    if absent, the attribute is numeric (double)        -->  
+    <VALUES>  
+      <!-- One permitted value -->  
+          <VALUE>address</VALUE>  
+      <VALUE>cdg</VALUE>  
+      <VALUE>country_adj</VALUE>  
+      <VALUE>currency_unit</VALUE>  
+      <VALUE>date</VALUE>  
+      <VALUE>date_key</VALUE>  
+      <VALUE>date_unit</VALUE>  
+      <VALUE>facility</VALUE>  
+      <VALUE>facility_key</VALUE>  
+      <VALUE>facility_key_ext</VALUE>  
+      <VALUE>govern_key</VALUE>  
+      <VALUE>greeting</VALUE>  
+      <VALUE>ident_key</VALUE>  
+      <VALUE>jobtitle</VALUE>  
+      <VALUE>loc_general_key</VALUE>  
+      <VALUE>loc_key</VALUE>  
+      <VALUE>location</VALUE>  
+      <VALUE>number</VALUE>  
+      <VALUE>org_base</VALUE>  
+      <VALUE>org_ending</VALUE>  
+      <VALUE>org_key</VALUE>  
+      <VALUE>org_pre</VALUE>  
+      <VALUE>organization</VALUE>  
+      <VALUE>organization_noun</VALUE>  
+      <VALUE>person_ending</VALUE>  
+      <VALUE>person_first</VALUE>  
+      <VALUE>person_full</VALUE>  
+      <VALUE>phone_prefix</VALUE>  
+      <VALUE>sport</VALUE>  
+      <VALUE>spur</VALUE>  
+      <VALUE>spur_ident</VALUE>  
+      <VALUE>stop</VALUE>  
+      <VALUE>surname</VALUE>  
+      <VALUE>time</VALUE>  
+      <VALUE>time_modifier</VALUE>  
+      <VALUE>time_unit</VALUE>  
+      <VALUE>title</VALUE>  
+      <VALUE>year</VALUE>  
+    </VALUES>  
+    <!-- Optional: if present marks the attribute used as CLASS  
+    Only one attribute can be marked as class -->  
+  </ATTRIBUTE>  
+ 
+  <ATTRIBUTE>  
+    <!-- The name given to the attribute -->  
+    <NAME>Lookup_MT(1)</NAME>  
+    <!-- The type of annotation used as attribute -->  
+    <TYPE>Lookup</TYPE>  
+    <!-- Optional: the feature name for the feature used to extract values  
+    for the attribute -->  
+    <FEATURE>majorType</FEATURE>  
+ 
+    <!-- The position relative to the instance annotation -->  
+    <POSITION>1</POSITION>  
+ 
+    <!-- The list of permitted values.  
+    if present, marks a nominal attribute;  
+    if absent, the attribute is numeric (double)        -->  
+    <VALUES>  
+      <!-- One permitted value -->  
+      <VALUE>address</VALUE>  
+      <VALUE>cdg</VALUE>  
+      <VALUE>country_adj</VALUE>  
+      <VALUE>currency_unit</VALUE>  
+      <VALUE>date</VALUE>  
+      <VALUE>date_key</VALUE>  
+      <VALUE>date_unit</VALUE>  
+      <VALUE>facility</VALUE>  
+      <VALUE>facility_key</VALUE>  
+      <VALUE>facility_key_ext</VALUE>  
+      <VALUE>govern_key</VALUE>  
+      <VALUE>greeting</VALUE>  
+      <VALUE>ident_key</VALUE>  
+      <VALUE>jobtitle</VALUE>  
+      <VALUE>loc_general_key</VALUE>  
+      <VALUE>loc_key</VALUE>  
+      <VALUE>location</VALUE>  
+      <VALUE>number</VALUE>  
+      <VALUE>org_base</VALUE>  
+      <VALUE>org_ending</VALUE>  
+      <VALUE>org_key</VALUE>  
+      <VALUE>org_pre</VALUE>  
+      <VALUE>organization</VALUE>  
+      <VALUE>organization_noun</VALUE>  
+      <VALUE>person_ending</VALUE>  
+      <VALUE>person_first</VALUE>  
+      <VALUE>person_full</VALUE>  
+      <VALUE>phone_prefix</VALUE>  
+      <VALUE>sport</VALUE>  
+      <VALUE>spur</VALUE>  
+      <VALUE>spur_ident</VALUE>  
+      <VALUE>stop</VALUE>  
+      <VALUE>surname</VALUE>  
+      <VALUE>time</VALUE>  
+      <VALUE>time_modifier</VALUE>  
+      <VALUE>time_unit</VALUE>  
+      <VALUE>title</VALUE>  
+      <VALUE>year</VALUE>  
+    </VALUES>  
+    <!-- Optional: if present marks the attribute used as CLASS  
+    Only one attribute can be marked as class -->  
+  </ATTRIBUTE>  
+ 
+  <ATTRIBUTE>  
+    <!-- The name given to the attribute -->  
+    <NAME>POS_category(-1)</NAME>  
+    <!-- The type of annotation used as attribute -->  
+    <TYPE>Token</TYPE>  
+    <!-- Optional: the feature name for the feature used to extract values  
+    for the attribute -->  
+    <FEATURE>category</FEATURE>  
+ 
+    <!-- The position relative to the instance annotation -->  
+    <POSITION>-1</POSITION>  
+ 
+    <!-- The list of permitted values.  
+    if present, marks a nominal attribute;  
+    if absent, the attribute is numeric (double)        -->  
+    <VALUES>  
+      <!-- One permitted value -->  
+        <VALUE>NN</VALUE>  
+        <VALUE>NNP</VALUE>  
+        <VALUE>NNPS</VALUE>  
+        <VALUE>NNS</VALUE>  
+        <VALUE>NP</VALUE>  
+        <VALUE>NPS</VALUE>  
+        <VALUE>JJ</VALUE>  
+        <VALUE>JJR</VALUE>  
+        <VALUE>JJS</VALUE>  
+        <VALUE>JJSS</VALUE>  
+        <VALUE>RB</VALUE>  
+        <VALUE>RBR</VALUE>  
+        <VALUE>RBS</VALUE>  
+        <VALUE>VB</VALUE>  
+        <VALUE>VBD</VALUE>  
+        <VALUE>VBG</VALUE>  
+        <VALUE>VBN</VALUE>  
+        <VALUE>VBP</VALUE>  
+        <VALUE>VBZ</VALUE>  
+        <VALUE>FW</VALUE>  
+        <VALUE>CD</VALUE>  
+        <VALUE>CC</VALUE>  
+        <VALUE>DT</VALUE>  
+        <VALUE>EX</VALUE>  
+        <VALUE>IN</VALUE>  
+        <VALUE>LS</VALUE>  
+        <VALUE>MD</VALUE>  
+        <VALUE>PDT</VALUE>  
+        <VALUE>POS</VALUE>  
+        <VALUE>PP</VALUE>  
+        <VALUE>PRP</VALUE>  
+        <VALUE>PRP$</VALUE>  
+        <VALUE>PRPR$</VALUE>  
+        <VALUE>RP</VALUE>  
+        <VALUE>TO</VALUE>  
+        <VALUE>UH</VALUE>  
+        <VALUE>WDT</VALUE>  
+        <VALUE>WP</VALUE>  
+        <VALUE>WP$</VALUE>  
+        <VALUE>WRB</VALUE>  
+        <VALUE>SYM</VALUE>  
+        <VALUE>\"</VALUE>  
+        <VALUE>#</VALUE>  
+        <VALUE>$</VALUE>  
+        <VALUE>'</VALUE>  
+        <VALUE>(</VALUE>  
+        <VALUE>)</VALUE>  
+        <VALUE>,</VALUE>  
+        <VALUE>--</VALUE>  
+        <VALUE>-LRB-</VALUE>  
+        <VALUE>.</VALUE>  
+        <VALUE>''</VALUE>  
+        <VALUE>:</VALUE>  
+        <VALUE>::</VALUE>  
+        <VALUE>`</VALUE>  
+    </VALUES>  
+    <!-- Optional: if present marks the attribute used as CLASS  
+    Only one attribute can be marked as class -->  
+  </ATTRIBUTE>  
+ 
+  <ATTRIBUTE>  
+    <!-- The name given to the attribute -->  
+    <NAME>POS_category(0)</NAME>  
+    <!-- The type of annotation used as attribute -->  
+    <TYPE>Token</TYPE>  
+    <!-- Optional: the feature name for the feature used to extract values  
+    for the attribute -->  
+    <FEATURE>category</FEATURE>  
+ 
+    <!-- The position relative to the instance annotation -->  
+    <POSITION>0</POSITION>  
+ 
+    <!-- The list of permitted values.  
+    if present, marks a nominal attribute;  
+    if absent, the attribute is numeric (double)        -->  
+    <VALUES>  
+      <!-- One permitted value -->  
+        <VALUE>NN</VALUE>  
+        <VALUE>NNP</VALUE>  
+        <VALUE>NNPS</VALUE>  
+        <VALUE>NNS</VALUE>  
+        <VALUE>NP</VALUE>  
+        <VALUE>NPS</VALUE>  
+        <VALUE>JJ</VALUE>  
+        <VALUE>JJR</VALUE>  
+        <VALUE>JJS</VALUE>  
+        <VALUE>JJSS</VALUE>  
+        <VALUE>RB</VALUE>  
+        <VALUE>RBR</VALUE>  
+        <VALUE>RBS</VALUE>  
+        <VALUE>VB</VALUE>  
+        <VALUE>VBD</VALUE>  
+        <VALUE>VBG</VALUE>  
+        <VALUE>VBN</VALUE>  
+        <VALUE>VBP</VALUE>  
+        <VALUE>VBZ</VALUE>  
+        <VALUE>FW</VALUE>  
+        <VALUE>CD</VALUE>  
+        <VALUE>CC</VALUE>  
+        <VALUE>DT</VALUE>  
+        <VALUE>EX</VALUE>  
+        <VALUE>IN</VALUE>  
+        <VALUE>LS</VALUE>  
+        <VALUE>MD</VALUE>  
+        <VALUE>PDT</VALUE>  
+        <VALUE>POS</VALUE>  
+        <VALUE>PP</VALUE>  
+        <VALUE>PRP</VALUE>  
+        <VALUE>PRP$</VALUE>  
+        <VALUE>PRPR$</VALUE>  
+        <VALUE>RP</VALUE>  
+        <VALUE>TO</VALUE>  
+        <VALUE>UH</VALUE>  
+        <VALUE>WDT</VALUE>  
+        <VALUE>WP</VALUE>  
+        <VALUE>WP$</VALUE>  
+        <VALUE>WRB</VALUE>  
+        <VALUE>SYM</VALUE>  
+        <VALUE>\"</VALUE>  
+        <VALUE>#</VALUE>  
+        <VALUE>$</VALUE>  
+        <VALUE>'</VALUE>  
+        <VALUE>(</VALUE>  
+        <VALUE>)</VALUE>  
+        <VALUE>,</VALUE>  
+        <VALUE>--</VALUE>  
+        <VALUE>-LRB-</VALUE>  
+        <VALUE>.</VALUE>  
+        <VALUE>''</VALUE>  
+        <VALUE>:</VALUE>  
+        <VALUE>::</VALUE>  
+        <VALUE>`</VALUE>  
+    </VALUES>  
+    <!-- Optional: if present marks the attribute used as CLASS  
+    Only one attribute can be marked as class -->  
+  </ATTRIBUTE>  
+ 
+  <ATTRIBUTE>  
+    <!-- The name given to the attribute -->  
+    <NAME>POS_category(1)</NAME>  
+    <!-- The type of annotation used as attribute -->  
+    <TYPE>Token</TYPE>  
+    <!-- Optional: the feature name for the feature used to extract values  
+    for the attribute -->  
+    <FEATURE>category</FEATURE>  
+ 
+    <!-- The position relative to the instance annotation -->  
+    <POSITION>1</POSITION>  
+ 
+    <!-- The list of permitted values.  
+    if present, marks a nominal attribute;  
+    if absent, the attribute is numeric (double)        -->  
+    <VALUES>  
+      <!-- One permitted value -->  
+        <VALUE>NN</VALUE>  
+        <VALUE>NNP</VALUE>  
+        <VALUE>NNPS</VALUE>  
+        <VALUE>NNS</VALUE>  
+        <VALUE>NP</VALUE>  
+        <VALUE>NPS</VALUE>  
+        <VALUE>JJ</VALUE>  
+        <VALUE>JJR</VALUE>  
+        <VALUE>JJS</VALUE>  
+        <VALUE>JJSS</VALUE>  
+        <VALUE>RB</VALUE>  
+        <VALUE>RBR</VALUE>  
+        <VALUE>RBS</VALUE>  
+        <VALUE>VB</VALUE>  
+        <VALUE>VBD</VALUE>  
+        <VALUE>VBG</VALUE>  
+        <VALUE>VBN</VALUE>  
+        <VALUE>VBP</VALUE>  
+        <VALUE>VBZ</VALUE>  
+        <VALUE>FW</VALUE>  
+        <VALUE>CD</VALUE>  
+        <VALUE>CC</VALUE>  
+        <VALUE>DT</VALUE>  
+        <VALUE>EX</VALUE>  
+        <VALUE>IN</VALUE>  
+        <VALUE>LS</VALUE>  
+        <VALUE>MD</VALUE>  
+        <VALUE>PDT</VALUE>  
+        <VALUE>POS</VALUE>  
+        <VALUE>PP</VALUE>  
+        <VALUE>PRP</VALUE>  
+        <VALUE>PRP$</VALUE>  
+        <VALUE>PRPR$</VALUE>  
+        <VALUE>RP</VALUE>  
+        <VALUE>TO</VALUE>  
+        <VALUE>UH</VALUE>  
+        <VALUE>WDT</VALUE>  
+        <VALUE>WP</VALUE>  
+        <VALUE>WP$</VALUE>  
+        <VALUE>WRB</VALUE>  
+        <VALUE>SYM</VALUE>  
+        <VALUE>\"</VALUE>  
+        <VALUE>#</VALUE>  
+        <VALUE>$</VALUE>  
+        <VALUE>'</VALUE>  
+        <VALUE>(</VALUE>  
+        <VALUE>)</VALUE>  
+        <VALUE>,</VALUE>  
+        <VALUE>--</VALUE>  
+        <VALUE>-LRB-</VALUE>  
+        <VALUE>.</VALUE>  
+        <VALUE>''</VALUE>  
+        <VALUE>:</VALUE>  
+        <VALUE>::</VALUE>  
+        <VALUE>`</VALUE>  
+    </VALUES>  
+    <!-- Optional: if present marks the attribute used as CLASS  
+    Only one attribute can be marked as class -->  
+  </ATTRIBUTE>  
+ 
+  <ATTRIBUTE>  
+    <!-- The name given to the attribute -->  
+    <NAME>Entity(0)</NAME>  
+    <!-- The type of annotation used as attribute -->  
+    <TYPE>Entity</TYPE>  
+    <!-- The position relative to the instance annotation -->  
+    <POSITION>0</POSITION>  
+ 
+    <CLASS/>  
+    <!-- Optional: if present marks the attribute used as CLASS  
+    Only one attribute can be marked as class -->  
+  </ATTRIBUTE>  
+ 
+ 
+  </DATASET>  
+ 
+  <ENGINE>  
+    <WRAPPER>gate.creole.ml.weka.Wrapper</WRAPPER>  
+    <OPTIONS>  
+        <CLASSIFIER OPTIONS="-S -C 0.25 -B -M 2">weka.classifiers.trees.J48</CLASSIFIER>  
+        <CONFIDENCE-THRESHOLD>0.85</CONFIDENCE-THRESHOLD>  
+    </OPTIONS>  
+  </ENGINE>  
+</ML-CONFIG>
