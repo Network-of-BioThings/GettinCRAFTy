@@ -26,6 +26,8 @@ public class JapeExample  {
 
       // initialise GATE
       //Gate.setGateHome(new File("C:\\Program Files\\GATE_Developer_7.1"));
+      Gate.setGateHome(new File("src/main/resources/gate"));
+      Gate.setPluginsHome(new File("src/main/resources/gate/plugins"));
       Gate.init();
 
       // load ANNIE plugin - you must do this before you can create tokeniser
