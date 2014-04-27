@@ -1,5 +1,7 @@
 package GettingCRAFTy.Examples;
 
+import CRAFTReaderEnvironment;
+
 import java.util.*;
 import java.io.*;
 import java.net.*;
@@ -50,6 +52,8 @@ public class JapeExample  {
 						new File(japeFilePath).toURI().toURL(),
       						"encoding", "UTF-8")); 
 
+      // Here we want to add things to the pipeline
+      new CRAFTReaderEnvironment();
       pipeline.add(tokeniser);
       pipeline.add(jape);
 
