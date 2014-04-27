@@ -15,6 +15,6 @@ public class Example {
 	//     PersistenceManager.loadObjectFromFile(new File(new File( 
 	// 							    Gate.getPluginsHome(), ANNIEConstants.PLUGIN_DIR), 
 	// 						   ANNIEConstants.DEFAULT_FILE));
-l	
+
     }
 }
