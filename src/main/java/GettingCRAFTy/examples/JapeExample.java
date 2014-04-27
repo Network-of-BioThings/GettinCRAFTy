@@ -25,7 +25,7 @@ public class JapeExample  {
   public static void main(String args[]) throws GateException, IOException {
 
       // initialise GATE
-      Gate.setGateHome(new File("C:\\Program Files\\GATE_Developer_7.1"));
+      //Gate.setGateHome(new File("C:\\Program Files\\GATE_Developer_7.1"));
       Gate.init();
 
       // load ANNIE plugin - you must do this before you can create tokeniser
@@ -39,12 +39,14 @@ public class JapeExample  {
 	  .createResource("gate.creole.SerialAnalyserController");
       LanguageAnalyser tokeniser = (LanguageAnalyser)Factory
 	  .createResource("gate.creole.tokeniser.DefaultTokeniser");
-      LanguageAnalyser jape = (LanguageAnalyser)Factory
-	  .createResource("gate.creole.Transducer", 
-			  gate.Utils.featureMap("grammarURL", new File("D:\\path\\to\\my-grammar.jape").toURI().toURL(),
-						"encoding", "UTF-8")); // ensure this matches the file
+
+      // LanguageAnalyser jape = (LanguageAnalyser)Factory
+      // 	  .createResource("gate.creole.Transducer", 
+      // 			  gate.Utils.featureMap("grammarURL", new File("D:\\path\\to\\my-grammar.jape").toURI().toURL(),
+      // 						"encoding", "UTF-8")); // ensure this matches the file
+
       pipeline.add(tokeniser);
-      pipeline.add(jape);
+      //pipeline.add(jape);
 
       // create document and corpus
       Corpus corpus = Factory.newCorpus(null);
