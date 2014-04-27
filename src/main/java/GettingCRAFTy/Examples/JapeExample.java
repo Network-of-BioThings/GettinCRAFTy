@@ -10,6 +10,10 @@ import gate.util.*;
 import gate.util.persistence.PersistenceManager;
 import gate.corpora.RepositioningInfo;
 import gate.creole.ontology.*;
+import gate.creole.gazetteer.*;
+import gate.creole.gazetteer.DefaultGazetteer;
+//import gate.clone.ql.*;
+
 
 /**
  * This class illustrates how to use ANNIE as a sausage machine
@@ -36,12 +40,50 @@ public class JapeExample  {
       Gate.getCreoleRegister()
 	  .registerDirectories(new File(Gate.getPluginsHome(), "ANNIE").toURI().toURL());
 
+      Gate.getCreoleRegister()
+	  .registerDirectories(new File(Gate.getPluginsHome(), "Tools").toURL()); 
+
+      File ontoHome = new File(Gate.getPluginsHome(),"Ontology"); 
+      Gate.getCreoleRegister().addDirectory(ontoHome.toURL()); 
+
+      File gazOntoHome = new File(Gate.getPluginsHome(),"Gazetteer_Ontology_Based"); 
+      Gate.getCreoleRegister().addDirectory(gazOntoHome.toURL()); 
+
+      File ontToolsHome = new File(Gate.getPluginsHome(),"Ontology_Tools"); 
+      Gate.getCreoleRegister().addDirectory(ontToolsHome.toURL()); 
+
+
+      // Gate.getCreoleRegister()
+      //   .registerDirectories(new File(Gate.getPluginsHome(), ANNIEConstants.PLUGIN_DIR).toURI().toURL()); 
+      
+      //FeatureMap params = ;
+
       // Build the pipeline
       SerialAnalyserController pipeline =
 	  (SerialAnalyserController)Factory
 	  .createResource("gate.creole.SerialAnalyserController");
+
+      LanguageAnalyser ssplit = (LanguageAnalyser)Factory
+	  .createResource("gate.creole.splitter.SentenceSplitter");
+
       LanguageAnalyser tokeniser = (LanguageAnalyser)Factory
 	  .createResource("gate.creole.tokeniser.DefaultTokeniser");
+
+      LanguageAnalyser ontTokeniser = (LanguageAnalyser)Factory
+	  .createResource("gate.creole.tokeniser.DefaultTokeniser");
+
+      ProcessingResource morpher = (ProcessingResource) 
+	  Factory.createResource("gate.creole.morph.Morph");
+
+      ProcessingResource tagger = (ProcessingResource) 
+	  Factory.createResource("gate.creole.POSTagger", Factory.newFeatureMap());
+
+      ProcessingResource morpherX = (ProcessingResource) 
+	  Factory.createResource("gate.creole.morph.Morph");
+
+      ProcessingResource taggerX = (ProcessingResource) 
+	  Factory.createResource("gate.creole.POSTagger", Factory.newFeatureMap());
+
 
       String japeFilePath = "src/main/resources/gate/jape/CellExample.jape";
 
@@ -71,8 +113,6 @@ public class JapeExample  {
       //if(!Gate.isInitialized()) { Gate.init(); } 
       
       // step 2: load the Ontology plugin that contains the implementation 
-      File ontoHome = new File(Gate.getPluginsHome(),"Ontology"); 
-      Gate.getCreoleRegister().addDirectory(ontoHome.toURL()); 
       
       System.out.println("GATE HOME:\n");
       System.out.println(Gate.getGateHome());
@@ -80,6 +120,7 @@ public class JapeExample  {
       // step 3: set the parameters 
       FeatureMap fm = Factory.newFeatureMap(); 
       fm.put("rdfXmlURL", "../../../../../../src/main/resources/owl/CL.owl");
+      fm.put("name", "CL");
       //fm.put("rdfXmlURL", "../owl/CL.owl");
       //this is crap - but it seems to be relative to the plug-in not the gate home
       fm.put("dataDirectoryURL", "../../../../../../src/main/resources/gate/");
@@ -94,15 +135,15 @@ public class JapeExample  {
 	  Factory.createResource("gate.creole.ontology.impl.sesame.OWLIMOntology", 
 				 fm); 
  
-      // //PRINT ALL THE CLASSES
-      // // retrieving a list of top classes 
+      //PRINT ALL THE CLASSES
+      // retrieving a list of top classes 
       // Set<OClass> topClasses = ontology.getOClasses(true); 
       //  // for all top classes, printing their direct sub classes and print 
       // // their URI or blank node ID in turtle format. 
       // for(OClass c : topClasses) { 
       // 	  Set<OClass> dcs = c.getSubClasses(OConstants.DIRECT_CLOSURE); 
       // 	  for(OClass sClass : dcs) { 
-      // 	      System.out.println(sClass.getONodeID().toTurtle()); 
+      // 	      //System.out.println(sClass.getONodeID().toTurtle()); 
       // 	      System.out.println(sClass.getLabels());
       // 	  } 
       // } 
@@ -121,35 +162,61 @@ public class JapeExample  {
       // LanguageAnalyser sharedGazetteer = (LanguageAnalyser)Factory
       // 	  .createResource("gate.creole.gazetteer.SharedDefaultGazetteer", params);
 
-      // FeatureMap paramsOntoGaz = Factory.newFeatureMap();     
-      // paramsOntoGaz.put("ontology",ontology); 
-      // paramsOntoGaz.put("tokeniser",tokenizer);
-      // paramsOntoGaz.put("posTagger",this.tagger);
-      // paramsOntoGaz.put("morpher",this.morphologicalAnalyser);     
-      // LanguageAnalyser ontoGaz = (gate.clone.ql.OntoRootGaz)Factory
-      // 	  .createResource("gate.clone.ql.OntoRootGaz",paramsOntoGaz);            
 
+      //params.put("listsUrl", listsDefLocation);  
+      // FeatureMap paramsGaz = Factory.newFeatureMap();     
+      // LanguageAnalyser mainGazetteer = (LanguageAnalyser)Factory
+      // 	  .createResource("gate.creole.gazetteer.DefaultGazetteer", paramsGaz);
 
-      // testing
+      FeatureMap paramsOntoGaz = Factory.newFeatureMap();     
+      paramsOntoGaz.put("ontology",ontology); 
+      paramsOntoGaz.put("tokeniser",ontTokeniser);
+      paramsOntoGaz.put("posTagger",tagger);
+      paramsOntoGaz.put("morpher",morpher);     
+      LanguageAnalyser ontGazetteer = (LanguageAnalyser)Factory
+	  .createResource("gate.clone.ql.OntoRootGaz",paramsOntoGaz);      
+      ontGazetteer.init();      
+      //.createResource("gate.creole.gazetteer.DefaultGazetteer", paramsOntoGaz);
+
+      FeatureMap paramsFlexGaz = Factory.newFeatureMap();     
+      paramsFlexGaz.put("gazetteerInst",ontGazetteer); 
+      ArrayList inputAnnos = new ArrayList();
+      inputAnnos.add ("Token.root");
+      //inputAnnos.add ("Token.lemma");
+      //inputAnnos.add ("Token.string");
+      paramsFlexGaz.put("inputFeatureNames", inputAnnos);
+
+      LanguageAnalyser flexGazetteer = (LanguageAnalyser)Factory
+	  .createResource("gate.creole.gazetteer.FlexibleGazetteer",paramsFlexGaz);
 
       pipeline.add(tokeniser);
-      //pipeline.add(ontology);
+      pipeline.add(ssplit);
+      pipeline.add(taggerX);
+      pipeline.add(morpherX);
+      pipeline.add(flexGazetteer);
       pipeline.add(jape);
 
       // create document and corpus
       Corpus corpus = Factory.newCorpus(null);
-      Document doc = Factory.newDocument("This is test. And this is a mention of cell.");
+      Document doc = Factory.newDocument("This cementocyte is test. And this is a mention of blood cell. Blood Cell");
       corpus.add(doc);
       pipeline.setCorpus(corpus);
 
       // run it
       pipeline.execute();
 
+      System.out.println(
+       ((gate.creole.gazetteer.DefaultGazetteer)ontGazetteer)
+       .lookup("blood cell"));
+
       // extract results
       System.out.println("Found annotations of the following types: " +
 			 doc.getAnnotations().getAllTypes());
       System.out.println("Number of annotations: " +
 			 doc.getAnnotations().size());
+      System.out.println("Annotations: " +
+			 doc.getAnnotations());
+
 
 
     System.exit(0);

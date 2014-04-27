@@ -8,3 +8,16 @@ Rule: cell
 ):cell 
 -->  
 :cell.Cell = {rule = "Cell", text = :cell@string, size = :cell@length}
+
+
+Phase: Location
+Input: Lookup
+Options: control = all
+
+ 
+Rule: TestTheLocation
+(
+ ({Lookup.majorType == CL}) 
+):match
+-->
+:match.Location = {rule=TestTheLocation}
