@@ -17,7 +17,7 @@
  */
 
 //package sheffield.examples;
-package GettingCRAFTy;
+package GettingCRAFTy.Examples;
 
 import java.util.*;
 import java.io.*;

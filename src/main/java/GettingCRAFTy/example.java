@@ -1,8 +1,8 @@
-package GettingCRAFTy;
+package GettingCRAFTy.Examples;
 
 import gate.Gate;
 
-public class example {
+public class Example {
 
     // method main(): ALWAYS the APPLICATION entry point
     public static void main (String[] args) throws Exception{
@@ -15,6 +15,6 @@ public class example {
 	//     PersistenceManager.loadObjectFromFile(new File(new File( 
 	// 							    Gate.getPluginsHome(), ANNIEConstants.PLUGIN_DIR), 
 	// 						   ANNIEConstants.DEFAULT_FILE));
-	
+l	
     }
 }
